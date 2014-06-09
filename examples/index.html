@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AlgernonTrap -- Test</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="/app.css" />
+  </head>
+  <body>
+    <div>
+      <h2>State (@&lt;body&gt;)</h2>
+      <dl>
+        <dt>State:</dt>
+        <dd><span id="body-state">stopped</span></dd>
+        <dt>Buffer:</dt>
+        <dd>
+          <pre id="body-buffer">
+          </pre>
+        </dd>
+      </dl>
+    </div>
+    <div>
+      <h2>Example 1</h2>
+      <ul>
+        <li><a href="#" id="ex1-start">start</a> &mdash; start mouse movement tracking.</li>
+        <li><a href="#" id="ex1-stop">stop</a> &mdash; stop mouse movement tracking.</li>
+        <li><a href="#" id="ex1-show-buffer">show buffer</a> &mdash; show current buffer contents.</li>
+        <li><a href="#" id="ex1-show-raw-buffer">show raw-buffer</a> &mdash; show current raw buffer contents.</li>
+        <li><a href="#" id="ex1-send">send</a> &mdash; send buffer contents to server in a POST request (check your server logs for details).</li>
+      </ul>
+    </div>
+    <script src="/bundle.min.js"></script>
+  </body>
+</html>

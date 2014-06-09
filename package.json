@@ -1,0 +1,39 @@
+{
+  "name": "algernon-trap",
+  "description": "Lightweight mouse movement motion tracker",
+  "homepage": "http://github.com/gbence/algernon-trap",
+  "version": "0.1.0",
+  "author": {
+    "name": "Golda Bence",
+    "url": "https://github.com/gbence"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gbence/algernon-trap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gbence/algernon-trap/issues"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-browserify": "*",
+    "gulp-concat": "*",
+    "body-parser": "*",
+    "multiparty": "*",
+    "gulp-connect": "*",
+    "gulp-rename": "*",
+    "gulp-uglify": "*",
+    "karma": "~0.10.1",
+    "karma-mocha": "~0.1.0",
+    "karma-chrome-launcher": "~0.1.0",
+    "karma-ie-launcher": "~0.1.1",
+    "karma-firefox-launcher": "~0.1.0",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma-safari-launcher": "~0.1.1"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --browsers Firefox --single-run"
+  }
+}
