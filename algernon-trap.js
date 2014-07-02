@@ -1,8 +1,8 @@
 /*! algernon-trap v0.1.0 - MIT license */
 
 /*
- * Motion event (mouse movement, touch, gyro, etc.) catcher for browsers
- * emitting data compatible with Algernon's motion analyzer engine.
+ * Motion event (mouse movement) catcher for browsers emitting data compatible
+ * with Algernon's motion analyzer engine. (touch, gyro, etc. is WIP)
  *
  * Copyright (c) 2012--2014, GOLDA Bence <gbence@algernon.hu>
  *
@@ -197,12 +197,12 @@ return algernonTrap;
 // ---------------------------------------------------------------------------
 
 } if (typeof exports === 'object') {
-    // node export
-    module.exports = moduleDefinition(/*require('dependency')*/);
+  // node export
+  module.exports = moduleDefinition(/*require('dependency')*/);
 } else if (typeof define === 'function' && define.amd) {
-    // amd anonymous module registration
-    define([/*'dependency'*/], moduleDefinition);
+  // amd anonymous module registration
+  define([/*'dependency'*/], moduleDefinition);
 } else {
-    // browser global
-    global.algernonTrap = moduleDefinition(/*global.dependency*/);
+  // browser global
+  global.algernonTrap = moduleDefinition(/*global.dependency*/);
 }}(this));

@@ -15,7 +15,7 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest('./examples'))
 });
 
-gulp.task('serve', function () {
+gulp.task('serve', ['scripts'], function () {
   // var bodyParser = require('body-parser');
   connect
     .server({
