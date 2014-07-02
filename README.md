@@ -18,7 +18,7 @@ npm install
 
 The `/examples` directory contains a working mini application that demonstrates
 algernon-trap's core functions.  After installing development dependencies, the
-project defines several gulp tasks for for your convenience:
+project defines several gulp tasks for your convenience:
 
 - You may (re)bundle the mini-app with algernon-trap's code with:
 
