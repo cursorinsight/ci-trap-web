@@ -22,8 +22,9 @@
     "gulp-concat": "*",
     "body-parser": "*",
     "multiparty": "*",
-    "gulp-connect": "*",
+    "connect": "*",
     "gulp-rename": "*",
-    "gulp-uglify": "*"
+    "gulp-uglify": "*",
+    "gulp-util": "*"
   }
 }
