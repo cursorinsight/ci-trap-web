@@ -21,12 +21,14 @@ gulp.task('scripts', function() {
 
 // server task
 var connect = require('connect');
+var bodyParser = require('body-parser');
+var serveStatic = require('serve-static');
 var http = require('http');
 var util = require('gulp-util');
 
 gulp.task('serve', ['scripts'], function () {
   var app = connect()
-              .use(connect.urlencoded())
+              .use(bodyParser.urlencoded({'extended': false}))
               .use(function (req, res, next) {
                 if (req.method == 'POST') { // && req.body['motion-data']() {}
                   util.log('Motion data received (' + req.body['motion-data'].length + ' bytes):\n'
@@ -38,7 +40,7 @@ gulp.task('serve', ['scripts'], function () {
                   next();
                 }
               })
-              .use(connect.static('./examples'));
+              .use(serveStatic('./examples'));
 
   var server = http.createServer(app);
   util.log(util.colors.green('Server started on http://localhost:'+port+'/'));
