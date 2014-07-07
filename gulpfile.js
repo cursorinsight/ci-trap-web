@@ -47,3 +47,20 @@ gulp.task('serve', ['scripts'], function () {
   server.listen(port);
 });
 
+// test task
+
+var mocha = require('gulp-mocha');
+var cover = require('gulp-coverage');
+
+gulp.task('test', function () {
+  gulp.src(['test/**/test_*.js'], { read: false })
+    .pipe(cover.instrument({
+      pattern: ['algernon-trap.js']
+    }))
+    .pipe(mocha({
+      reporter: 'spec'
+    }))
+    .pipe(cover.report({
+      outFile: 'coverage/index.html'
+    }));
+});
