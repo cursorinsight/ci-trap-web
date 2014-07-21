@@ -37,15 +37,15 @@
  * - add captureStart / captureEnd events -- or similar
  */
 
-;(function (global) { function moduleDefinition(/*dependency*/) {
+;(function(global){ function moduleDefinition(/*dependency*/){
 
 // ---------------------------------------------------------------------------
 
-'use strict';
+"use strict";
 
 // -- CONSTANTS -------------------------------------
-var _map  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-var _head = 'BA'; // v1
+var _map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var _head = "BA"; // v1
 
 // -- FNS / HELPERS ---------------------------------
 var abs = Math.abs;
@@ -58,15 +58,18 @@ var abs = Math.abs;
 function algernonTrap(element) {
 
   // Is this OK?
-  if (element === undefined) { element = document; }
+  if(element === undefined) {
+    element = document;
+  }
 
-  var
-    algernonTrap = function() { return algernonTrap; },
+  var algernonTrapInstance = function() {
+    return algernonTrapInstance;
+  },
 
     // -- DATA ------------------------------------------
     buffer  = _head,
     running = false,
-    state   = { t: 0, x: 0, y: 0 },
+    state   = {t: 0, x: 0, y: 0},
 
     // DEBUG-ONLY
     rawBuffer = [],
@@ -84,73 +87,85 @@ function algernonTrap(element) {
       // DEBUG-ONLY
       rawBuffer.push([values]);
 
-      var idx, len=values.length, bc=0, av=0, as=0, size; // bc==bit counter, av=actual value
-      for (idx=0; idx<len; idx++) {
+      var idx,
+        len = values.length,
+        bc=0,
+        av=0,
+        size; // bc==bit counter, av=actual value
+      for (idx=0; idx < len; idx++) {
         size = sizes[idx];
-        if (av>0) { av = av << size; }
-        av |= values[idx] & ((1<<size)-1);
+        if (av>0) {
+          av = av << size;
+        }
+        av |= values[idx] & ((1 << size) - 1);
         bc += size;
-        while (bc>6) {
+        while (bc > 6) {
           bc -= 6;
           buffer += _map[av >>> bc];
-          av &= (1<<bc)-1;
+          av &= (1 << bc) - 1;
         }
       }
-      buffer += _map[av << (6-bc)];
-      return(buffer);
+      buffer += _map[av << (6 - bc)];
+      return buffer;
     },
 
     /**
      * Pushes button down/up event to buffer.
      */
     mouseButtonHandler = function(event) {
-      var result = true, t, dt;
-      if (!event) var event = window.event;
+      var result = true,
+        t, dt,
+        mouseEvent = event ? event : window.event;
 
       // We prepare this for other event types (eg. touch, swipe, ...).
-      switch(event.type) {
+      switch (mouseEvent.type) {
         case "mousedown":
           t = 2; // down
           break;
+
         case "mouseup":
           t = 3; // up
           break;
       }
 
-      dt = event.timeStamp - state.t;
-      state.t = event.timeStamp;
+      dt = mouseEvent.timeStamp - state.t;
+      state.t = mouseEvent.timeStamp;
 
-      push([t, dt>0xffff?0xffff:dt], [2, 16]);
+      push([t, dt > 0xffff ? 0xffff : dt], [2, 16]);
 
-      return(result);
+      return result;
     },
 
     /**
      * Pushes move event into buffer.
      */
     mouseMoveHandler = function(event) {
-      var result = true, dx, absx, dy, absy, dt;
-      if (!event) var event = window.event;
+      var result = true,
+        dx, absx,
+        dy, absy,
+        dt,
+        mouseEvent = event ? event : window.event;
 
-      dx      = event.screenX - state.x,
-      absx    = abs(dx),
-      dy      = event.screenY - state.y,
-      absy    = abs(dy),
-      dt      = event.timeStamp - state.t;
+      dx      = mouseEvent.screenX - state.x;
+      absx    = abs(dx);
+      dy      = mouseEvent.screenY - state.y;
+      absy    = abs(dy);
+      dt      = mouseEvent.timeStamp - state.t;
 
-      state.x = event.screenX;
-      state.y = event.screenY;
-      state.t = event.timeStamp;
+      state.x = mouseEvent.screenX;
+      state.y = mouseEvent.screenY;
+      state.t = mouseEvent.timeStamp;
 
       // Small movements are stored in less space.
-      if ((dt<1024)&&(absx<32)&&(absy<32)) {
-        push([0, dt, dx<0?1:0, absx, dy<0?1:0, absy], [2, 10, 1, 5, 1, 5]);
+      if ((dt < 1024) && (absx < 32) && (absy < 32)) {
+        push([0, dt, (dx < 0) ? 1 : 0, absx, (dy < 0) ? 1 : 0, absy],
+             [2, 10, 1, 5, 1, 5]);
       } else {
-        push([1, dt>0xffff?0xffff:dt, dx<0?1:0, absx>0x7ff?0x7ff:absx, dy<0?1:0, absy>0x7ff?0x7ff:absy ],
-             [2, 16,                  1,        11,                    1,        11                    ]);
+        push([1, (dt > 0xffff) ? 0xffff : dt, (dx < 0) ? 1 : 0, (absx > 0x7ff) ? 0x7ff : absx, (dy < 0) ? 1 : 0, (absy > 0x7ff) ? 0x7ff : absy],
+             [2, 16, 1, 11, 1, 11]);
       }
 
-      return(result);
+      return result;
     },
 
     /**
@@ -158,10 +173,12 @@ function algernonTrap(element) {
      */
     start = function() {
       // Using addEventListener is the way forward.  For backward compatibility, use shims.
-      if (running) { return; }
-      element.addEventListener('mousemove', mouseMoveHandler);
-      element.addEventListener('mousedown', mouseButtonHandler);
-      element.addEventListener('mouseup',   mouseButtonHandler);
+      if (running) {
+        return;
+      }
+      element.addEventListener("mousemove", mouseMoveHandler);
+      element.addEventListener("mousedown", mouseButtonHandler);
+      element.addEventListener("mouseup", mouseButtonHandler);
       running = true;
     },
 
@@ -169,23 +186,29 @@ function algernonTrap(element) {
      *  Stop event processing.
      */
     stop = function() {
-      if (!running) { return; }
-      element.removeEventListener('mousemove', mouseMoveHandler);
-      element.removeEventListener('mousedown', mouseButtonHandler);
-      element.removeEventListener('mouseup',   mouseButtonHandler);
+      if (!running) {
+        return;
+      }
+      element.removeEventListener("mousemove", mouseMoveHandler);
+      element.removeEventListener("mousedown", mouseButtonHandler);
+      element.removeEventListener("mouseup", mouseButtonHandler);
       running = false;
     };
 
-  algernonTrap.start  = start;
-  algernonTrap.stop   = stop;
-  algernonTrap.buffer = function() { return buffer; }
+  algernonTrapInstance.start  = start;
+  algernonTrapInstance.stop   = stop;
+  algernonTrapInstance.buffer = function() {
+    return buffer;
+  };
 
   // DEBUG-ONLY
-  algernonTrap.rawBuffer = function() { return rawBuffer; }
+  algernonTrapInstance.rawBuffer = function() {
+    return rawBuffer;
+  };
 
   // TODO autostart
 
-  return algernonTrap;
+  return algernonTrapInstance;
 }
 
 /**
@@ -196,10 +219,10 @@ return algernonTrap;
 
 // ---------------------------------------------------------------------------
 
-} if (typeof exports === 'object') {
+} if (typeof exports === "object") {
   // node export
   module.exports = moduleDefinition(/*require('dependency')*/);
-} else if (typeof define === 'function' && define.amd) {
+} else if ((typeof define === "function") && define.amd) {
   // amd anonymous module registration
   define([/*'dependency'*/], moduleDefinition);
 } else {
