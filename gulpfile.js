@@ -70,7 +70,7 @@ gulp.task('test', function () {
 var jshint = require( 'gulp-jshint' );
 
 gulp.task( 'check', function() {
-  return gulp.src([ 'algernon-trap.js' ])
+  return gulp.src([ 'algernon-trap.js', ' test/*.js ', ' examples/*.js' ])
     .pipe( jshint() )
     .pipe( jshint.reporter('default') );
 });
