@@ -8,7 +8,7 @@
   "node"      : true,
   "noempty"   : true,
   "plusplus"  : false,
-  "quotmark"  : "single",
+  "quotmark"  : "double",
   "undef"     : true,
   "unused"    : true,
   "trailing"  : true,

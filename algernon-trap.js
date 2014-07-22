@@ -37,15 +37,15 @@
  * - add captureStart / captureEnd events -- or similar
  */
 
-;(function (global) { function moduleDefinition(/*dependency*/) {
+;(function(global){ function moduleDefinition(/*dependency*/){
 
 // ---------------------------------------------------------------------------
 
-'use strict';
+"use strict";
 
 // -- CONSTANTS -------------------------------------
-var _map  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-var _head = 'BA'; // v1
+var _map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var _head = "BA"; // v1
 
 // -- FNS / HELPERS ---------------------------------
 var abs = Math.abs;
@@ -55,10 +55,10 @@ var abs = Math.abs;
  * @return {}
  * @api public
  */
-function algernonTrap( element ) {
+function algernonTrap(element) {
 
   // Is this OK?
-  if ( element === undefined ) {
+  if(element === undefined) {
     element = document;
   }
 
@@ -69,7 +69,7 @@ function algernonTrap( element ) {
     // -- DATA ------------------------------------------
     buffer  = _head,
     running = false,
-    state   = { t: 0, x: 0, y: 0 },
+    state   = {t: 0, x: 0, y: 0},
 
     // DEBUG-ONLY
     rawBuffer = [],
@@ -83,47 +83,47 @@ function algernonTrap( element ) {
      * * sizes: pairwise bit sizes for values.
      *
      */
-    push = function( values, sizes ) {
+    push = function(values, sizes) {
       // DEBUG-ONLY
-      rawBuffer.push([ values ]);
+      rawBuffer.push([values]);
 
       var idx,
         len = values.length,
         bc=0,
         av=0,
         size; // bc==bit counter, av=actual value
-      for ( idx=0; idx < len; idx++ ) {
-        size = sizes[ idx ];
+      for (idx=0; idx < len; idx++) {
+        size = sizes[idx];
         if (av>0) {
           av = av << size;
         }
-        av |= values[ idx ] & ((1 << size) - 1);
+        av |= values[idx] & ((1 << size) - 1);
         bc += size;
-        while ( bc > 6 ) {
+        while (bc > 6) {
           bc -= 6;
-          buffer += _map[ av >>> bc ];
+          buffer += _map[av >>> bc];
           av &= (1 << bc) - 1;
         }
       }
-      buffer += _map[ av << (6 - bc) ];
+      buffer += _map[av << (6 - bc)];
       return buffer;
     },
 
     /**
      * Pushes button down/up event to buffer.
      */
-    mouseButtonHandler = function( event ) {
+    mouseButtonHandler = function(event) {
       var result = true,
         t, dt,
         mouseEvent = event ? event : window.event;
 
       // We prepare this for other event types (eg. touch, swipe, ...).
-      switch( mouseEvent.type ) {
-        case 'mousedown':
+      switch (mouseEvent.type) {
+        case "mousedown":
           t = 2; // down
           break;
 
-        case 'mouseup':
+        case "mouseup":
           t = 3; // up
           break;
       }
@@ -131,7 +131,7 @@ function algernonTrap( element ) {
       dt = mouseEvent.timeStamp - state.t;
       state.t = mouseEvent.timeStamp;
 
-      push( [ t, dt > 0xffff ? 0xffff : dt ], [ 2, 16 ]);
+      push([t, dt > 0xffff ? 0xffff : dt], [2, 16]);
 
       return result;
     },
@@ -139,7 +139,7 @@ function algernonTrap( element ) {
     /**
      * Pushes move event into buffer.
      */
-    mouseMoveHandler = function( event ) {
+    mouseMoveHandler = function(event) {
       var result = true,
         dx, absx,
         dy, absy,
@@ -157,12 +157,12 @@ function algernonTrap( element ) {
       state.t = mouseEvent.timeStamp;
 
       // Small movements are stored in less space.
-      if ( (dt < 1024) && (absx < 32) && (absy < 32) ) {
-        push([ 0, dt, (dx < 0) ? 1 : 0, absx, (dy < 0) ? 1 : 0, absy ],
-             [ 2, 10, 1, 5, 1, 5 ]);
+      if ((dt < 1024) && (absx < 32) && (absy < 32)) {
+        push([0, dt, (dx < 0) ? 1 : 0, absx, (dy < 0) ? 1 : 0, absy],
+             [2, 10, 1, 5, 1, 5]);
       } else {
-        push([ 1, (dt > 0xffff) ? 0xffff : dt, (dx < 0) ? 1 : 0, (absx > 0x7ff) ? 0x7ff : absx, (dy < 0) ? 1 : 0, (absy > 0x7ff) ? 0x7ff : absy ],
-             [ 2, 16, 1, 11, 1, 11 ]);
+        push([1, (dt > 0xffff) ? 0xffff : dt, (dx < 0) ? 1 : 0, (absx > 0x7ff) ? 0x7ff : absx, (dy < 0) ? 1 : 0, (absy > 0x7ff) ? 0x7ff : absy],
+             [2, 16, 1, 11, 1, 11]);
       }
 
       return result;
@@ -173,12 +173,12 @@ function algernonTrap( element ) {
      */
     start = function() {
       // Using addEventListener is the way forward.  For backward compatibility, use shims.
-      if ( running ) {
+      if (running) {
         return;
       }
-      element.addEventListener( 'mousemove', mouseMoveHandler );
-      element.addEventListener( 'mousedown', mouseButtonHandler );
-      element.addEventListener( 'mouseup', mouseButtonHandler );
+      element.addEventListener("mousemove", mouseMoveHandler);
+      element.addEventListener("mousedown", mouseButtonHandler);
+      element.addEventListener("mouseup", mouseButtonHandler);
       running = true;
     },
 
@@ -186,12 +186,12 @@ function algernonTrap( element ) {
      *  Stop event processing.
      */
     stop = function() {
-      if ( !running ) {
+      if (!running) {
         return;
       }
-      element.removeEventListener( 'mousemove', mouseMoveHandler );
-      element.removeEventListener( 'mousedown', mouseButtonHandler );
-      element.removeEventListener( 'mouseup', mouseButtonHandler );
+      element.removeEventListener("mousemove", mouseMoveHandler);
+      element.removeEventListener("mousedown", mouseButtonHandler);
+      element.removeEventListener("mouseup", mouseButtonHandler);
       running = false;
     };
 
@@ -219,13 +219,13 @@ return algernonTrap;
 
 // ---------------------------------------------------------------------------
 
-} if ( typeof exports === 'object' ) {
+} if (typeof exports === "object") {
   // node export
   module.exports = moduleDefinition(/*require('dependency')*/);
-} else if ( (typeof define === 'function') && define.amd ) {
+} else if ((typeof define === "function") && define.amd) {
   // amd anonymous module registration
-  define([/*'dependency'*/], moduleDefinition );
+  define([/*'dependency'*/], moduleDefinition);
 } else {
   // browser global
   global.algernonTrap = moduleDefinition(/*global.dependency*/);
-}}( this ));
+}}(this));
