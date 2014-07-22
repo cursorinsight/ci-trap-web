@@ -64,3 +64,13 @@ gulp.task('test', function () {
       outFile: 'coverage/index.html'
     }));
 });
+
+// check task
+
+var jshint = require( 'gulp-jshint' );
+
+gulp.task( 'check', function() {
+  return gulp.src([ 'algernon-trap.js', ' test/*.js ', ' examples/*.js' ])
+    .pipe( jshint() )
+    .pipe( jshint.reporter('default') );
+});
