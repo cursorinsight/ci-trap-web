@@ -83,6 +83,43 @@ function algernonTrap(element) {
      * * sizes: pairwise bit sizes for values.
      *
      */
+    send = function(parameters, callback) {
+      var req,
+        dataString = "",
+        parametersLength = 0,
+        key;
+      for (key in parameters) {
+        if (parameters.hasOwnProperty(key)) {
+          parametersLength++;
+        }
+      }
+      for (key in parameters) {
+        if (parameters.hasOwnProperty(key)) {
+          dataString += key + "=" + encodeURIComponent(parameters[key].toString());
+          parametersLength--;
+          if (parametersLength > 0) {
+            dataString += "&";
+          }
+        }
+      }
+
+      if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
+        req = new XMLHttpRequest();
+      } else { // code for IE6, IE5
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      req.onreadystatechange = function() {
+        if (callback){
+          if ((req.readyState == 4) && (req.status == 200)) {
+            callback(req);
+          }
+        }
+      }
+      req.open("POST", "/", true);
+      req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      req.send(dataString);
+    },
+
     push = function(values, sizes) {
       // DEBUG-ONLY
       rawBuffer.push([values]);
@@ -200,7 +237,11 @@ function algernonTrap(element) {
   algernonTrapInstance.buffer = function() {
     return buffer;
   };
-
+  algernonTrapInstance.send   = send;
+  algernonTrapInstance.sendAndReset = function(buf, callback) {
+    algernonTrapInstance.send(buf, callback);
+    buffer = _head;
+  };
   // DEBUG-ONLY
   algernonTrapInstance.rawBuffer = function() {
     return rawBuffer;
