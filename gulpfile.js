@@ -8,7 +8,14 @@ var gulp = require("gulp"),
   mocha = require("gulp-mocha"),
   cover = require("gulp-coverage"),
   concat = require("gulp-concat"),
-  karma = require("gulp-karma");
+  karma = require("gulp-karma"),
+  eslint = require("gulp-eslint");
+
+gulp.task("lint", function() {
+  return gulp.src(["algernon-trap.js"])
+    .pipe(eslint())
+    .pipe(eslint.format());
+});
 
 gulp.task("test", function () {
   return gulp.src(["test/test_api.js"], { read: false })

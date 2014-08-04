@@ -29,45 +29,53 @@
  *   . absolute of Y-difference: 0..2047 (11 bits)
  * - button: (onclick)
  *   . event-type, constant: 2->mouse down, 3->mouse up (2 bits)
- *
  * TODO:
  * - fix function and other head-comments to be compatible with a/some doc gen.
  * - autostart
  * - periodically emit a bufferChanged event
  * - add captureStart / captureEnd events -- or similar
+ *
+ * JsDoc keyword:
+ * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
+ *
+ * @link ClassName#algernonTrap
  */
 
-;(function(global){ function moduleDefinition(/*dependency*/){
+(function(global) {function moduleDefinition() {
 
 // ---------------------------------------------------------------------------
 
 "use strict";
 
-// -- CONSTANTS -------------------------------------
-var _map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-var _head = "BA"; // v1
+
+// @constant
+var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+  head = "BA"; // v1
 
 // -- FNS / HELPERS ---------------------------------
 var abs = Math.abs;
 
 /**
- * @param {}
- * @return {}
- * @api public
+ * @constructor algernonTrap
+ * @param {String} element Html element which will be watched
+ * @return {Function} Return algernonTrap, it will be the module
  */
 function algernonTrap(element) {
 
-  // Is this OK?
   if(element === undefined) {
     element = document;
   }
-
+/**
+ * @memberOf algernonTrap
+ * @constructor algernonTrapInstance
+ * @return {function}
+ */
   var algernonTrapInstance = function() {
     return algernonTrapInstance;
   },
 
     // -- DATA ------------------------------------------
-    buffer  = _head,
+    buffer  = head,
     running = false,
     state   = {t: 0, x: 0, y: 0},
 
@@ -110,11 +118,11 @@ function algernonTrap(element) {
       }
       req.onreadystatechange = function() {
         if (callback){
-          if ((req.readyState == 4) && (req.status == 200)) {
+          if ((req.readyState === 4) && (req.status === 200)) {
             callback(req);
           }
         }
-      }
+      };
       req.open("POST", "/", true);
       req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       req.send(dataString);
@@ -126,23 +134,23 @@ function algernonTrap(element) {
 
       var idx,
         len = values.length,
-        bc=0,
-        av=0,
+        bc = 0,
+        av = 0,
         size; // bc==bit counter, av=actual value
-      for (idx=0; idx < len; idx++) {
+      for (idx = 0; idx < len; idx++) {
         size = sizes[idx];
-        if (av>0) {
+        if (av > 0) {
           av = av << size;
         }
         av |= values[idx] & ((1 << size) - 1);
         bc += size;
         while (bc > 6) {
           bc -= 6;
-          buffer += _map[av >>> bc];
+          buffer += map[av >>> bc];
           av &= (1 << bc) - 1;
         }
       }
-      buffer += _map[av << (6 - bc)];
+      buffer += map[av << (6 - bc)];
       return buffer;
     },
 
@@ -240,7 +248,7 @@ function algernonTrap(element) {
   algernonTrapInstance.send   = send;
   algernonTrapInstance.sendAndReset = function(buf, callback) {
     algernonTrapInstance.send(buf, callback);
-    buffer = _head;
+    buffer = head;
   };
   // DEBUG-ONLY
   algernonTrapInstance.rawBuffer = function() {
