@@ -1,7 +1,3 @@
-
-// default server port.
-var port = 8100;
-
 var gulp = require("gulp"),
   browserify = require("gulp-browserify"),
   uglify = require("gulp-uglify"),
@@ -9,12 +5,23 @@ var gulp = require("gulp"),
   cover = require("gulp-coverage"),
   concat = require("gulp-concat"),
   karma = require("gulp-karma"),
-  eslint = require("gulp-eslint");
+  port = 8100,
+  eslint = require("gulp-eslint"),
+  jsdoc = require("gulp-jsdoc");
 
 gulp.task("lint", function() {
   return gulp.src(["algernon-trap.js"])
     .pipe(eslint())
     .pipe(eslint.format());
+});
+
+gulp.task("doc", function() {
+  return gulp.src(["algernon-trap.js"])
+    .pipe(jsdoc.parser())
+    .pipe(jsdoc.generator("./doc", {
+      path: "ink-docstrap",
+      theme: "amelia"
+    }));
 });
 
 gulp.task("test", function () {
@@ -87,9 +94,9 @@ gulp.task("serve", ["compress"], function () {
               next();
           }
         })
-        .use(serveStatic("./examples"));
+        .use(serveStatic("./examples")),
+    server = http.createServer(app);
 
-  var server = http.createServer(app);
   util.log(util.colors.green("Server started on http://localhost:"+port+"/"));
   server.listen(port);
 });
