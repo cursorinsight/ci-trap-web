@@ -11,7 +11,8 @@ var gulp = require("gulp"),
   cover = require("gulp-coverage"),
   concat = require("gulp-concat"),
   karma = require("gulp-karma"),
-  eslint = require("gulp-eslint");
+  eslint = require("gulp-eslint"),
+  jsdoc = require("gulp-jsdoc");
 
 gulp.task("default", ["compress", "karma"]);
 
@@ -19,6 +20,12 @@ gulp.task("lint", function() {
   return gulp.src(["gulpfile.js", "algernon-trap.js"])
     .pipe(eslint())
     .pipe(eslint.format());
+});
+
+gulp.task("doc", function() {
+  return gulp.src(["algernon-trap.js", "README.md"])
+    .pipe(jsdoc.parser())
+    .pipe(jsdoc.generator("doc"));
 });
 
 gulp.task("test", function () {
@@ -36,7 +43,9 @@ gulp.task("test", function () {
 
 gulp.task("compress", function() {
   return gulp.src(["algernon-trap.js", "examples/app.js"])
-    .pipe(browserify({ insertGlobals : true }))
+    .pipe(browserify({
+      insertGlobals : true
+    }))
     .pipe(uglify())
     .pipe(concat("bundle.min.js"))
     .pipe(gulp.dest("./examples"));
@@ -44,7 +53,9 @@ gulp.task("compress", function() {
 
 gulp.task("compress-tests", function() {
   return gulp.src(["test/test_ajax.js"])
-    .pipe(browserify({ insertGlobals : true }))
+    .pipe(browserify({
+      insertGlobals : true
+    }))
     .pipe(uglify())
     .pipe(concat("test.min.js"))
     .pipe(gulp.dest("./test"));
@@ -70,22 +81,22 @@ var connect = require("connect"),
 
 gulp.task("serve", ["compress"], function () {
   var app = connect()
-        .use(bodyParser.urlencoded({"extended": false}))
-        .use(function (req, res, next) {
-          if (req.method === "POST") { // && req.body["motion-data"]() {}
-            util.log("Motion data received ("
-              + req.body["motion-data"].length + " bytes):\n"
-              + "-----BEGIN MOTION DATA-----\n"
-              + req.body["motion-data"] + "\n"
-              + "-----END MOTION DATA-----");
-            res.end("ok");
-          } else {
-              next();
-          }
-        })
-        .use(serveStatic("./examples"));
+              .use(bodyParser.urlencoded({"extended": false}))
+              .use(function (req, res, next) {
+                if (req.method === "POST") { // && req.body["motion-data"]() {}
+                  util.log("Motion data received ("
+                    + req.body["motion-data"].length + " bytes):\n"
+                    + "-----BEGIN MOTION DATA-----\n"
+                    + req.body["motion-data"] + "\n"
+                    + "-----END MOTION DATA-----");
+                  res.end("ok");
+                } else {
+                    next();
+                }
+              })
+              .use(serveStatic("./examples")),
+    server = http.createServer(app);
 
-  var server = http.createServer(app);
   util.log(util.colors.green("Server started on http://localhost:" + port + "/"));
   server.listen(port);
 });
