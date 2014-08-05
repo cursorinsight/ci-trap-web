@@ -1,8 +1,19 @@
 /* global require */
 
-// default server port.
-var port = 8100;
+// defaults and loadable configurations.
+var
+  project = require("./package.json"),
 
+  port = 8100,                // server port
+
+  distDir = "./dist",         // output directory
+  entryFile = ["./src/algernon-trap/index.js"],
+  sourceFiles = ["./src/**/*.js"],
+  supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
+  unitTests = ["./test/test_api.js", "./test/test_suite.js"],
+  browserTests = ["./test/test_ajax.js"];
+
+// (pre)loading libs.
 var gulp = require("gulp"),
   util = require("gulp-util"),
   browserify = require("gulp-browserify"),
@@ -14,69 +25,72 @@ var gulp = require("gulp"),
   eslint = require("gulp-eslint"),
   jsdoc = require("gulp-jsdoc");
 
-gulp.task("default", ["compress", "karma"]);
+// default task
+
+gulp.task("default", ["check", "test"]);
+
+// compile
 
 gulp.task("dist", function() {
-  var version = require("./package.json").version;
-
-  return gulp.src(["algernon-trap.js"])
+  return gulp.src(entryFile)
     .pipe(browserify({
       insertGlobals : true
     }))
     .pipe(uglify())
-    .pipe(concat("algernon-trap-" + version + ".min.js"))
-    .pipe(gulp.dest("./dist"));
+    .pipe(concat(project.name + "-" + project.version + ".min.js"))
+    .pipe(gulp.dest(distDir));
 });
 
-gulp.task("lint", function() {
-  return gulp.src(["gulpfile.js", "algernon-trap.js"])
-    .pipe(eslint())
-    .pipe(eslint.format());
+gulp.task("compile:example-app", function() {
+  return gulp.src(["examples/app.js"])
+    .pipe(browserify({ insertGlobals : true }))
+    .pipe(concat("bundle.js"))
+    .pipe(gulp.dest("./examples"));
 });
+
+// TODO separated tests!
+gulp.task("compile:tests", function() {
+  return gulp.src(browserTests)
+    .pipe(browserify({ insertGlobals : true }))
+    //.pipe(uglify())
+    .pipe(concat("browserified-tests.js"))
+    .pipe(gulp.dest("./test"));
+});
+
+// documentation
 
 gulp.task("doc", function() {
-  return gulp.src(["algernon-trap.js", "README.md"])
+  return gulp.src(sourceFiles.concat(["./README.md"]))
     .pipe(jsdoc.parser())
     .pipe(jsdoc.generator("./doc"));
 });
 
-gulp.task("test", function () {
-  return gulp.src(["test/test_api.js"], { read: false })
-    .pipe(cover.instrument({
-      pattern: ["algernon-trap.js"]
-    }))
-    .pipe(mocha({
-      reporter: "nyan"
-    }))
+// run tests
+
+gulp.task("check", ["check:eslint"]);
+
+gulp.task("check:eslint", function() {
+  return gulp.src(sourceFiles.concat(supportingFiles))
+    .pipe(eslint())
+    .pipe(eslint.format());
+});
+
+//gulp.task("test", ["test:unit", "test:browser"]);
+gulp.task("test", ["test:browser"]);
+
+gulp.task("test:unit", function () {
+  return gulp.src(unitTests, { read: false })
+    .pipe(cover.instrument({ pattern: sourceFiles }))
+    .pipe(mocha({ reporter: "nyan" }))
     .pipe(cover.report({
       outFile: "./coverage/index.html"
     }));
 });
 
-gulp.task("compress", function() {
-  return gulp.src(["algernon-trap.js", "examples/app.js"])
-    .pipe(browserify({
-      insertGlobals : true
-    }))
-    .pipe(uglify())
-    .pipe(concat("bundle.min.js"))
-    .pipe(gulp.dest("./examples"));
-});
-
-gulp.task("compress-tests", function() {
-  return gulp.src(["test/test_ajax.js"])
-    .pipe(browserify({
-      insertGlobals : true
-    }))
-    .pipe(uglify())
-    .pipe(concat("test.min.js"))
-    .pipe(gulp.dest("./test"));
-});
-
-gulp.task("karma", ["compress-tests"], function() {
-  return gulp.src("test/test.min.js")
+gulp.task("test:browser", ["compile:tests"], function() {
+  return gulp.src("./test/browserified-tests.js")
     .pipe(karma({
-      configFile: "karma.conf.js",
+      configFile: "./karma.conf.js",
       action: "run"
     }))
     .on("error", function(err) {
@@ -91,7 +105,7 @@ var connect = require("connect"),
   serveStatic = require("serve-static"),
   http = require("http");
 
-gulp.task("serve", ["compress"], function () {
+gulp.task("serve", ["compile:example-app"], function () {
   var app = connect()
               .use(bodyParser.urlencoded({"extended": false}))
               .use(function (req, res, next) {

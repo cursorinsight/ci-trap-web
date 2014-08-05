@@ -3,9 +3,11 @@
 /bower_components
 /node_modules
 /examples/bundle.min.js
+/examples/bundle.js
 /coverage
 /doc
 /.coverdata
 /.coverrun
-/test/test.min.js
+/test/browserified-tests.min.js
+/test/browserified-tests.js
 /dist/*

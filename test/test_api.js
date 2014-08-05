@@ -1,5 +1,5 @@
 var assert = require("chai").assert,
-  algernonTrap = require("../algernon-trap"),
+  algernonTrap = require("../src/algernon-trap"),
   doc = require("jsdom")
           .jsdom("<html><body><div id='algernon-trap'></div></body></html>"),
   window = doc.createWindow();
