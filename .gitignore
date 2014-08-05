@@ -8,4 +8,4 @@
 /.coverdata
 /.coverrun
 /test/test.min.js
-/example/budle.min.js
+/dist/*

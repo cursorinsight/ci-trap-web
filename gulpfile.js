@@ -16,6 +16,18 @@ var gulp = require("gulp"),
 
 gulp.task("default", ["compress", "karma"]);
 
+gulp.task("dist", function() {
+  var version = require("./package.json").version;
+
+  return gulp.src(["algernon-trap.js"])
+    .pipe(browserify({
+      insertGlobals : true
+    }))
+    .pipe(uglify())
+    .pipe(concat("algernon-trap-" + version + ".min.js"))
+    .pipe(gulp.dest("./dist"));
+});
+
 gulp.task("lint", function() {
   return gulp.src(["gulpfile.js", "algernon-trap.js"])
     .pipe(eslint())
@@ -25,7 +37,7 @@ gulp.task("lint", function() {
 gulp.task("doc", function() {
   return gulp.src(["algernon-trap.js", "README.md"])
     .pipe(jsdoc.parser())
-    .pipe(jsdoc.generator("doc"));
+    .pipe(jsdoc.generator("./doc"));
 });
 
 gulp.task("test", function () {
@@ -37,7 +49,7 @@ gulp.task("test", function () {
       reporter: "nyan"
     }))
     .pipe(cover.report({
-      outFile: "coverage/index.html"
+      outFile: "./coverage/index.html"
     }));
 });
 
