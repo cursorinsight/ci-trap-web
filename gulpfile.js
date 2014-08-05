@@ -1,8 +1,10 @@
+/* global require */
 
 // default server port.
 var port = 8100;
 
 var gulp = require("gulp"),
+  util = require("gulp-util"),
   browserify = require("gulp-browserify"),
   uglify = require("gulp-uglify"),
   mocha = require("gulp-mocha"),
@@ -11,8 +13,10 @@ var gulp = require("gulp"),
   karma = require("gulp-karma"),
   eslint = require("gulp-eslint");
 
+gulp.task("default", ["compress", "karma"]);
+
 gulp.task("lint", function() {
-  return gulp.src(["algernon-trap.js"])
+  return gulp.src(["gulpfile.js", "algernon-trap.js"])
     .pipe(eslint())
     .pipe(eslint.format());
 });
@@ -32,22 +36,18 @@ gulp.task("test", function () {
 
 gulp.task("compress", function() {
   return gulp.src(["algernon-trap.js", "examples/app.js"])
-    .pipe(browserify({
-      insertGlobals : true,
-    }))
+    .pipe(browserify({ insertGlobals : true }))
     .pipe(uglify())
-    .pipe(concat('bundle.min.js'))
-    .pipe(gulp.dest('./examples'));
+    .pipe(concat("bundle.min.js"))
+    .pipe(gulp.dest("./examples"));
 });
 
 gulp.task("compress-tests", function() {
   return gulp.src(["test/test_ajax.js"])
-    .pipe(browserify({
-      insertGlobals : true,
-    }))
+    .pipe(browserify({ insertGlobals : true }))
     .pipe(uglify())
-    .pipe(concat('test.min.js'))
-    .pipe(gulp.dest('./test'));
+    .pipe(concat("test.min.js"))
+    .pipe(gulp.dest("./test"));
 });
 
 gulp.task("karma", ["compress-tests"], function() {
@@ -57,26 +57,22 @@ gulp.task("karma", ["compress-tests"], function() {
       action: "run"
     }))
     .on("error", function(err) {
-      console.log(err);
+      util.log(util.colors.red(err));
     });
 });
 
-gulp.task("default", function(callback) {
-  return gulp.start("compress", "karma");
-});
-
 // server task
+
 var connect = require("connect"),
   bodyParser = require("body-parser"),
   serveStatic = require("serve-static"),
-  http = require("http"),
-  util = require("gulp-util");
+  http = require("http");
 
 gulp.task("serve", ["compress"], function () {
   var app = connect()
         .use(bodyParser.urlencoded({"extended": false}))
         .use(function (req, res, next) {
-          if (req.method == "POST") { // && req.body['motion-data']() {}
+          if (req.method === "POST") { // && req.body["motion-data"]() {}
             util.log("Motion data received ("
               + req.body["motion-data"].length + " bytes):\n"
               + "-----BEGIN MOTION DATA-----\n"
@@ -90,6 +86,6 @@ gulp.task("serve", ["compress"], function () {
         .use(serveStatic("./examples"));
 
   var server = http.createServer(app);
-  util.log(util.colors.green("Server started on http://localhost:"+port+"/"));
+  util.log(util.colors.green("Server started on http://localhost:" + port + "/"));
   server.listen(port);
 });

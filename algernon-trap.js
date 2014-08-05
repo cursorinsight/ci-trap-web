@@ -1,4 +1,5 @@
 /*! algernon-trap v0.1.0 - MIT license */
+/* global document window exports module define */
 
 /*
  * Motion event (mouse movement) catcher for browsers emitting data compatible
@@ -41,7 +42,7 @@
  * @link ClassName#algernonTrap
  */
 
-(function(global) {function moduleDefinition() {
+(function(global) {function moduleDefinition() { // dependency1, dependency2...
 
 // ---------------------------------------------------------------------------
 
@@ -65,14 +66,17 @@ function algernonTrap(element) {
   if(element === undefined) {
     element = document;
   }
-/**
- * @memberOf algernonTrap
- * @constructor algernonTrapInstance
- * @return {function}
- */
-  var algernonTrapInstance = function() {
-    return algernonTrapInstance;
-  },
+
+  var
+  
+    /**
+     * @memberOf algernonTrap
+     * @constructor algernonTrapInstance
+     * @return {function}
+     */
+    algernonTrapInstance = function() {
+      return algernonTrapInstance;
+    },
 
     // -- DATA ------------------------------------------
     buffer  = head,
@@ -112,9 +116,9 @@ function algernonTrap(element) {
       }
 
       if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
-        req = new XMLHttpRequest();
+        req = new window.XMLHttpRequest();
       } else { // code for IE6, IE5
-        req = new ActiveXObject("Microsoft.XMLHTTP");
+        req = new window.ActiveXObject("Microsoft.XMLHTTP");
       }
       req.onreadystatechange = function() {
         if (callback){
@@ -242,18 +246,15 @@ function algernonTrap(element) {
 
   algernonTrapInstance.start  = start;
   algernonTrapInstance.stop   = stop;
-  algernonTrapInstance.buffer = function() {
-    return buffer;
-  };
+  algernonTrapInstance.buffer = function() { return buffer; };
   algernonTrapInstance.send   = send;
   algernonTrapInstance.sendAndReset = function(buf, callback) {
     algernonTrapInstance.send(buf, callback);
     buffer = head;
   };
+
   // DEBUG-ONLY
-  algernonTrapInstance.rawBuffer = function() {
-    return rawBuffer;
-  };
+  algernonTrapInstance.rawBuffer = function() { return rawBuffer; };
 
   // TODO autostart
 

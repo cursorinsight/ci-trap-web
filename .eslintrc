@@ -1,13 +1,6 @@
 {
-  "globals": {
-    "window": true,
-    "document": true,
-    "XMLHttpRequest": true,
-    "ActiveXObject": true,
-    "module": true,
-    "exports": true,
-    "define": true
-  },
+
+  "globals-were-intentionally-removed": ["by", "bence"],
 
   "no-empty": 1,
   "no-unreachable": 2,
