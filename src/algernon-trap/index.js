@@ -92,16 +92,25 @@ function algernonTrap(element) {
     Transport = require("./transport.js"),
     transport = new Transport(window, "/s", buffer),
 
+    // Automagic buffer flush
+    autoSendOnUnloadHandler = function() {
+      algernonTrapInstance.send();
+      return null;
+    },
+
     /**
      *  Starts event processing.
      */
-    start = function() {
+    start = function(autoSend) {
       // Using addEventListener is the way forward.  For backward compatibility, use shims.
       if (running) {
         return;
       }
       for (var i in handlers) {
         handlers[i].start();
+      }
+      if (autoSend) {
+        window.addEventListener("beforeunload", autoSendOnUnloadHandler);
       }
       running = true;
     },
@@ -116,6 +125,7 @@ function algernonTrap(element) {
       for (var i in handlers) {
         handlers[i].stop();
       }
+      element.removeEventListener("beforeunload", autoSendOnUnloadHandler);
       running = false;
     };
 

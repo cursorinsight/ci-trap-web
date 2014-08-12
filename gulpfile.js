@@ -10,6 +10,7 @@ var
   entryFile = ["./src/algernon-trap/index.js"],
   sourceFiles = ["./src/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
+  appFiles = ["./examples/app.js", "./examples/tracker.js"],
   unitTests = ["./test/test_api.js", "./test/test_suite.js"],
   browserTests = ["./test/test_ajax.js"];
 
@@ -34,7 +35,8 @@ gulp.task("default", ["check", "test"]);
 gulp.task("dist", function() {
   return gulp.src(entryFile)
     .pipe(browserify({
-      insertGlobals : true
+      // insertGlobals : true,
+      // debug: !gulp.env.production
     }))
     .pipe(uglify())
     .pipe(concat(project.name + "-" + project.version + ".min.js"))
@@ -43,15 +45,32 @@ gulp.task("dist", function() {
 
 gulp.task("compile:example-app", function() {
   return gulp.src(["examples/app.js"])
-    .pipe(browserify({ insertGlobals : true }))
+    .pipe(browserify({
+      // insertGlobals : true,
+      // debug: !gulp.env.production
+    }))
     .pipe(concat("bundle.js"))
+    .pipe(gulp.dest("./examples"));
+});
+
+gulp.task("compile:example-tracker", function() {
+  return gulp.src(["examples/tracker.js"])
+    .pipe(browserify({
+      // insertGlobals : true,
+      // debug: !gulp.env.production
+    }))
+    .pipe(uglify())
+    .pipe(concat("tracker.min.js"))
     .pipe(gulp.dest("./examples"));
 });
 
 // TODO separated tests!
 gulp.task("compile:tests", function() {
   return gulp.src(browserTests)
-    .pipe(browserify({ insertGlobals : true }))
+    .pipe(browserify({
+      // insertGlobals : true,
+      // debug: !gulp.env.production
+    }))
     //.pipe(uglify())
     .pipe(concat("browserified-tests.js"))
     .pipe(gulp.dest("./test"));
@@ -70,7 +89,9 @@ gulp.task("doc", function() {
 gulp.task("check", ["check:eslint"]);
 
 gulp.task("check:eslint", function() {
-  return gulp.src(sourceFiles.concat(supportingFiles))
+  return gulp.src(sourceFiles
+      .concat(supportingFiles)
+      .concat(appFiles))
     .pipe(eslint())
     .pipe(eslint.format());
 });
@@ -105,7 +126,7 @@ var connect = require("connect"),
   serveStatic = require("serve-static"),
   http = require("http");
 
-gulp.task("serve", ["compile:example-app"], function () {
+gulp.task("serve", ["compile:example-app", "compile:example-tracker"], function () {
   var app = connect()
               .use(bodyParser.urlencoded({"extended": false}))
               .use(function (req, res, next) {

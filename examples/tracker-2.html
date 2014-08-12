@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AlgernonTrap -- Tracker (Subpage)</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="/app.css" />
+  </head>
+  <body>
+    <div>
+      <!--<h1>Tracker subpage</h1>-->
+      <a href="/tracker.html">Back</a>
+    </div>
+    <div class="overlay">
+      <h2>State (@<code>window</code>)</h2>
+      <dl>
+        <dt>State:</dt>
+        <dd><span id="body-state">running</span></dd>
+      </dl>
+    </div>
+    <script>
+(function(d){
+  //var u=((("https:" == document.location.protocol) ? "https:" : "http:")+"//{$ALGERNON_TRAP_URL}/");
+  // temp +++
+  u = "http://localhost:8100/";
+  // temp ---
+  var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'tracker.min.js';
+  s.parentNode.insertBefore(g,s); })(document);
+    </script>
+  </body>
+</html>
+

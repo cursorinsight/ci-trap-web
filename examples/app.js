@@ -1,3 +1,9 @@
+/* global window document require */
+
+(function(global, window, document, require) {
+"use strict";
+// ---------------------------------------------------------------------------
+
 // Mini-apps demonstrating AlgernonTrap's functions.
 
 var algernonTrap = require("../src/algernon-trap");
@@ -42,10 +48,10 @@ ex1ShowRawBufferButton.addEventListener("click", function(event) {
   var pre  = document.getElementById("window-buffer"),
     buffer = windowAT.rawBuffer(),
     length = buffer.length,
-    result = '',
+    result = "",
     i = 0;
   for ( ; i < length; i++ ) {
-    result += "["+buffer[i]+"] ";
+    result += "[" + buffer[i] + "] ";
   }
   pre.innerHTML = result;
 });
@@ -56,6 +62,9 @@ ex1SendButton.addEventListener("click", function(event) {
 });
 
 // end of Example 1
+
+// ---------------------------------------------------------------------------
+})(this, window, document, require);
 
 // var timer;
 // startSender = function() {
@@ -72,4 +81,3 @@ ex1SendButton.addEventListener("click", function(event) {
 //   windowAT.stop();
 //   windowAT.sendAndReset({"motion-data": windowAT.buffer()});
 // };
-

@@ -4,6 +4,7 @@
 /node_modules
 /examples/bundle.min.js
 /examples/bundle.js
+/examples/tracker.min.js
 /coverage
 /doc
 /.coverdata
