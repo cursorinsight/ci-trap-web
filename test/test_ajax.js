@@ -13,7 +13,7 @@ var assert = require("chai").assert,
 
   pretender = require("./support/pretender.js"),
   server = new pretender(function() {
-    this.post("/s", function(request) {
+    this.post("/v1", function(request) {
       return [200, {"Content-type": "appliction/json"}, "['ok']"];
     });
   }),

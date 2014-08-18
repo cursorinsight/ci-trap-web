@@ -1,8 +1,13 @@
 /* global module */
 
-var Transport = function(window, url, buffer) {
+var Transport = function(window, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
+
+// Locals.
+var
+  url = "/v1",
+  headers = {};
 
 function serialize(data) {
   var 
@@ -32,7 +37,7 @@ function serialize(data) {
   return dataString;
 }
 
-this.send = function(callback) {
+this.send = function(callback, sync) {
   var req;
 
   if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -48,11 +53,25 @@ this.send = function(callback) {
       }
     }
   };
-  req.open("POST", url, true);
+
+  req.open("POST", url, !sync);
+  for (var key in headers) {
+    if (headers.hasOwnProperty(key)) {
+      req.setRequestHeader(key, headers[key]);
+    }
+  }
   req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   req.send(serialize(buffer.shift()));
 
   return true;
+};
+
+this.setUrl = function(u) {
+  url = u;
+};
+
+this.setHeader = function(key, value) {
+  headers[key] = value;
 };
 
 // ---------------------------------------------------------------------------

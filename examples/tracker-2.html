@@ -19,14 +19,13 @@
       </dl>
     </div>
     <script>
-(function(d){
-  //var u=((("https:" == document.location.protocol) ? "https:" : "http:")+"//{$ALGERNON_TRAP_URL}/");
-  // temp +++
-  u = "http://localhost:8100/";
-  // temp ---
+var _att = _att || [];
+_att.push(['setAccount', 'UA-12345-2']);
+(function(d,u){
+  var u=((("https:"==document.location.protocol)?"https:":"http:")+"//"+u+"/");
   var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
   g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'tracker.min.js';
-  s.parentNode.insertBefore(g,s); })(document);
+  s.parentNode.insertBefore(g,s);})(document,"localhost:8100");
     </script>
   </body>
 </html>

@@ -41,7 +41,7 @@
  * @link ClassName#algernonTrap
  */
 
-(function(global) {function moduleDefinition() { // dependency1, dependency2...
+(function(global){function moduleDefinition() { // dependency1, dependency2...
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@
  * @param {String} element Html element which will be watched
  * @return {Function} Return algernonTrap, it will be the module
  */
-function algernonTrap(element) {
+function AlgernonTrap(element) {
 
   // Set up defaults.
   if (element === undefined) {
@@ -58,15 +58,6 @@ function algernonTrap(element) {
   }
 
   var
-
-    /**
-     * @memberOf algernonTrap
-     * @constructor algernonTrapInstance
-     * @return {function}
-     */
-    algernonTrapInstance = function() {
-      return algernonTrapInstance;
-    },
 
     // State
     running = false,
@@ -90,27 +81,22 @@ function algernonTrap(element) {
 
     // Transport
     Transport = require("./transport.js"),
-    transport = new Transport(window, "/s", buffer),
+    transport = new Transport(window, buffer);
 
-    // Automagic buffer flush
-    autoSendOnUnloadHandler = function() {
-      algernonTrapInstance.send();
-      return null;
-    },
+  /*
+   * Public methods
+   */
+  return {
 
     /**
      *  Starts event processing.
      */
-    start = function(autoSend) {
-      // Using addEventListener is the way forward.  For backward compatibility, use shims.
+    start: function() {
       if (running) {
         return;
       }
       for (var i in handlers) {
         handlers[i].start();
-      }
-      if (autoSend) {
-        window.addEventListener("beforeunload", autoSendOnUnloadHandler);
       }
       running = true;
     },
@@ -118,35 +104,41 @@ function algernonTrap(element) {
     /**
      *  Stops event processing.
      */
-    stop = function() {
+    stop: function() {
       if (!running) {
         return;
       }
       for (var i in handlers) {
         handlers[i].stop();
       }
-      element.removeEventListener("beforeunload", autoSendOnUnloadHandler);
       running = false;
-    };
+    },
 
-  algernonTrapInstance.start  = start;
-  algernonTrapInstance.stop   = stop;
-  algernonTrapInstance.buffer = function() { return buffer.buffer; };
-  algernonTrapInstance.send   = function() { return transport.send.apply(this, arguments); };
+    buffer: function() {
+      return buffer.buffer;
+    },
 
-  // DEBUG-ONLY
-  algernonTrapInstance.rawBuffer = function() { return buffer.rawBuffer; };
+    send: function() {
+      return transport.send.apply(this, arguments);
+    },
 
-  // TODO autostart
+    setHeader: function() {
+      return transport.setHeader.apply(this, arguments);
+    },
 
-  return algernonTrapInstance;
+    // DEBUG-ONLY
+    rawBuffer: function() {
+      return buffer.rawBuffer;
+    }
+
+  };
 }
 
 /**
- * Expose algernonTrap
+ * Expose AlgernonTrap
  */
 
-return algernonTrap;
+return AlgernonTrap;
 
 // ---------------------------------------------------------------------------
 }
