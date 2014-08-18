@@ -47,7 +47,7 @@ describe("algernon-trap after two mouse moves", function() {
   });
 
   it("should have motion-data in its buffer", function() {
-    assert.equal(algernonTrapInstance.buffer(), "BAf//AKAK");
+    assert.equal(algernonTrapInstance.buffer(), "BAf//AKAU");
   });
 
   it("should send data to server in a POST", function() {

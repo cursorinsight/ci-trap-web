@@ -14,7 +14,7 @@ var handler = function(event) {
     dX    = event.screenX - state.x,
     absdX = abs(dX),
     dY    = event.screenY - state.y,
-    absdY = abs(dX),
+    absdY = abs(dY),
     dT    = event.timeStamp - state.t;
 
   state.x = event.screenX;
