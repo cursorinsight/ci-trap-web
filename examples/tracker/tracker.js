@@ -11,7 +11,7 @@ if (typeof _att !== "object") {
 
 var
   // Maximum delay to wait for sending data upon unload event
-  delay = 2500,
+  delay = 300,
 
   // Local tracker object
   tracker,
@@ -27,7 +27,20 @@ var
  * "slow unload", i.e., calling getTime() > 1000 times
  */
 function beforeUnloadHandler() {
-  tracker.send(undefined, true); // that's a synchronuous call
+  var now = new Date(),
+    expireDateTime = now.getTime() + delay;
+
+  tracker.send();
+
+  /*
+   * Delay/pause (blocks UI)
+   */
+  // the things we do for backwards compatibility...
+  // in ECMA-262 5th ed., we could simply use:
+  // while (Date.now() < expireDateTime) { }
+  do {
+    now = new Date();
+  } while (now.getTime() < expireDateTime);
 }
 
 /*
@@ -52,10 +65,9 @@ function apply() {
       } else {
         tracker[f].apply(tracker, parameterArray);
       }
+    } else {
+     f.apply(tracker, parameterArray);
     }
-    // else {
-    //  f.apply(tracker, parameterArray);
-    // }
   }
 }
 
