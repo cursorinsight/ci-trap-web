@@ -6,7 +6,7 @@
 
 // Mini-apps demonstrating AlgernonTrap's functions.
 
-var algernonTrap = require("../src/algernon-trap");
+var algernonTrap = require("../../src/algernon-trap");
 
 // Example 0 -- export AlgernonTrap to play around.
 window.AT = algernonTrap;
@@ -76,7 +76,7 @@ ex1SendButton.addEventListener("click", function(event) {
 // stopSender = function() {
 //   clearTimeout(timer);
 // }
-// 
+//
 // window.onunload = function() {
 //   windowAT.stop();
 //   windowAT.sendAndReset({"motion-data": windowAT.buffer()});

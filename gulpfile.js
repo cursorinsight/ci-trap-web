@@ -1,16 +1,18 @@
 /* global require */
 
+// TODO better task naming!
+
 // defaults and loadable configurations.
 var
   project = require("./package.json"),
 
   port = 8100,                // server port
 
-  distDir = "./dist",         // output directory
-  entryFile = ["./src/algernon-trap/index.js"],
+  buildDir = "./.build",      // output directory (for intermediate processes and serving results)
+  distDir = "./dist",         // distribution directory
   sourceFiles = ["./src/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
-  appFiles = ["./examples/app.js", "./examples/tracker.js"],
+  appFiles = ["./examples/**/*.js"],
   unitTests = ["./test/test_api.js", "./test/test_suite.js"],
   browserTests = ["./test/test_ajax.js"];
 
@@ -33,7 +35,7 @@ gulp.task("default", ["check", "test"]);
 // compile
 
 gulp.task("dist", function() {
-  return gulp.src(entryFile)
+  return gulp.src("./src/algernon-trap/index.js")
     .pipe(browserify({
       // insertGlobals : true,
       // debug: !gulp.env.production
@@ -44,24 +46,39 @@ gulp.task("dist", function() {
 });
 
 gulp.task("compile:example-app", function() {
-  return gulp.src(["examples/app.js"])
+  return gulp.src(["examples/app/app.js"])
     .pipe(browserify({
       // insertGlobals : true,
       // debug: !gulp.env.production
     }))
-    .pipe(concat("bundle.js"))
-    .pipe(gulp.dest("./examples"));
+    .pipe(concat("app.js"))
+    .pipe(gulp.dest(buildDir));
+});
+
+gulp.task("copy-css:example-app", function() {
+  return gulp.src("examples/app/app.css")
+    .pipe(gulp.dest(buildDir));
+});
+
+gulp.task("copy-html:example-app", function() {
+  return gulp.src("examples/app/index.html")
+    .pipe(gulp.dest(buildDir));
 });
 
 gulp.task("compile:example-tracker", function() {
-  return gulp.src(["examples/tracker.js"])
+  return gulp.src(["examples/tracker/tracker.js"])
     .pipe(browserify({
       // insertGlobals : true,
       // debug: !gulp.env.production
     }))
     .pipe(uglify())
     .pipe(concat("tracker.min.js"))
-    .pipe(gulp.dest("./examples"));
+    .pipe(gulp.dest(buildDir));
+});
+
+gulp.task("copy-html:example-tracker", function() {
+  return gulp.src(["examples/tracker/page-*.html"])
+    .pipe(gulp.dest(buildDir));
 });
 
 // TODO separated tests!
@@ -73,7 +90,7 @@ gulp.task("compile:tests", function() {
     }))
     //.pipe(uglify())
     .pipe(concat("browserified-tests.js"))
-    .pipe(gulp.dest("./test"));
+    .pipe(gulp.dest(buildDir + "/test"));
 });
 
 // documentation
@@ -109,7 +126,7 @@ gulp.task("test:unit", function () {
 });
 
 gulp.task("test:browser", ["compile:tests"], function() {
-  return gulp.src("./test/browserified-tests.js")
+  return gulp.src(buildDir + "/test/browserified-tests.js")
     .pipe(karma({
       configFile: "./karma.conf.js",
       action: "run"
@@ -126,7 +143,10 @@ var connect = require("connect"),
   serveStatic = require("serve-static"),
   http = require("http");
 
-gulp.task("serve", ["compile:example-app", "compile:example-tracker"], function () {
+gulp.task("serve", [
+      "compile:example-app", "copy-html:example-app", "copy-css:example-app",
+      "compile:example-tracker", "copy-html:example-tracker"
+    ], function () {
   var app = connect()
               .use(bodyParser.urlencoded({"extended": false}))
               .use(function (req, res, next) {
@@ -141,7 +161,7 @@ gulp.task("serve", ["compile:example-app", "compile:example-tracker"], function 
                     next();
                 }
               })
-              .use(serveStatic("./examples")),
+              .use(serveStatic(buildDir)),
     server = http.createServer(app);
 
   util.log(util.colors.green("Server started on http://localhost:" + port + "/"));

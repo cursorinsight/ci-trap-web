@@ -17,7 +17,7 @@ var
   tracker,
 
   // AlgernonTrap "class"
-  AlgernonTrap = require("../src/algernon-trap");
+  AlgernonTrap = require("../../src/algernon-trap");
 
 /*
  * Handle beforeunload event

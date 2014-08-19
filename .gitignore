@@ -2,13 +2,9 @@
 *~
 /bower_components
 /node_modules
-/examples/bundle.min.js
-/examples/bundle.js
-/examples/tracker.min.js
 /coverage
 /doc
+/.build
 /.coverdata
 /.coverrun
-/test/browserified-tests.min.js
-/test/browserified-tests.js
 /dist/*
