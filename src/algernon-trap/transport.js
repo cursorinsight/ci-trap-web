@@ -1,43 +1,41 @@
 /* global module */
 
-var Transport = function(window, buffer) {
+var Transport = function(window) {
 "use strict";
 // ---------------------------------------------------------------------------
 
+// @constant
+var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+// @constant
+var head = "BA"; // v1.1 :)
+
+//
+this.buffer = head;
+
 // Locals.
 var
+  transport = this,
+
   url = "/v1",
-  headers = {};
+  headers = {},
+  counter = 1;
 
-function serialize(data) {
-  var 
-    // It's a fixed hash with only 1 key (and value).
-    parameters = {"motion-data": data},
-
-    dataString = "",
-    parametersLength = 0,
-    key;
-
-  for (key in parameters) {
-    if (parameters.hasOwnProperty(key)) {
-      parametersLength++;
-    }
-  }
-
-  for (key in parameters) {
-    if (parameters.hasOwnProperty(key)) {
-      dataString += key + "=" + encodeURIComponent(parameters[key].toString());
-      parametersLength--;
-      if (parametersLength > 0) {
-        dataString += "&";
-      }
-    }
-  }
-
-  return dataString;
+/*
+ * @private
+ * Shifts available data.  That means resetting to its defaults and returning
+ * already collected events.
+ */
+function shift() {
+  var contents = transport.buffer;
+  transport.reset();
+  return contents;
 }
 
-this.send = function(callback, sync) {
+/**
+ * Sends data to destination.
+ */
+this.send = function(sessionID, sync, callback) {
   var req;
 
   if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -60,18 +58,62 @@ this.send = function(callback, sync) {
       req.setRequestHeader(key, headers[key]);
     }
   }
-  req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  req.send(serialize(buffer.shift()));
+
+  // TODO make it configurable (enable/disable) w//o
+  req.setRequestHeader("X-CI-Stream-ID", (sessionID ? sessionID : "") + "." + (counter++));
+  req.setRequestHeader("Content-type", "application/octet-stream");
+  req.send(shift());
 
   return true;
 };
 
+/**
+ * Sets destination URL.
+ */
 this.setUrl = function(u) {
   url = u;
 };
 
+/**
+ * Sets request header k/v pair.
+ */
 this.setHeader = function(key, value) {
   headers[key] = value;
+};
+
+/**
+ * Encodes and pushes values sampled by its given size into buffer.
+ */
+this.push = function(values, sizes) {
+
+  var idx,
+    len = values.length,
+    bc = 0,
+    av = 0,
+    size; // bc==bit counter, av=actual value
+
+  for (idx = 0; idx < len; idx++) {
+    size = sizes[idx];
+    if (av > 0) {
+      av = av << size;
+    }
+    av |= values[idx] & ((1 << size) - 1);
+    bc += size;
+    while (bc > 6) {
+      bc -= 6;
+      this.buffer += map[av >>> bc];
+      av &= (1 << bc) - 1;
+    }
+  }
+
+  this.buffer += map[av << (6 - bc)];
+
+  return this.buffer;
+};
+
+this.reset = function() {
+  this.buffer = head;
+  return true;
 };
 
 // ---------------------------------------------------------------------------

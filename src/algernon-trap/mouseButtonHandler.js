@@ -7,9 +7,7 @@ var MouseButtonHandler = function(element, state, buffer) {
 var handler = function(event) {
   var
     type,
-    dT = event.timeStamp - state.t;
-
-  state.t = event.timeStamp;
+    dT = state.getDT(event, 20);
 
   // We prepare this for other event types (eg. touch, swipe, ...).
   switch (event.type) {
@@ -23,7 +21,7 @@ var handler = function(event) {
   }
 
 
-  buffer.push([type, dT > 0xffff ? 0xffff : dT], [2, 16]);
+  buffer.push([type, dT], [4, 20]);
 
   return true;
 };

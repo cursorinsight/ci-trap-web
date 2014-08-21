@@ -10,7 +10,7 @@ var
 
   buildDir = "./.build",      // output directory (for intermediate processes and serving results)
   distDir = "./dist",         // distribution directory
-  sourceFiles = ["./src/**/*.js"],
+  sourceFiles = ["./src/algernon-trap/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
   appFiles = ["./examples/**/*.js"],
   unitTests = ["./test/test_api.js", "./test/test_suite.js"],
@@ -141,20 +141,33 @@ gulp.task("test:browser", ["compile:tests"], function() {
 var connect = require("connect"),
   bodyParser = require("body-parser"),
   serveStatic = require("serve-static"),
-  http = require("http");
+  http = require("http"),
+  inspectHeaders = function(headers) {
+    var blackList = new RegExp("^(host|accept|content-length|connection|pragma|cache-control)");
+    var str = "";
+    for (var key in headers) {
+      if (!key.match(blackList)) {
+        str += key + ": ";
+        str += headers[key] + "\n";
+      }
+    }
+    return str;
+  };
 
 gulp.task("serve", [
+      "check",
       "compile:example-app", "copy-html:example-app", "copy-css:example-app",
       "compile:example-tracker", "copy-html:example-tracker"
     ], function () {
   var app = connect()
-              .use(bodyParser.urlencoded({"extended": false}))
+              .use(bodyParser.raw({"inflate": true}))
               .use(function (req, res, next) {
                 if (req.method === "POST") { // && req.body["motion-data"]() {}
                   util.log("Motion data received ("
-                    + req.body["motion-data"].length + " bytes):\n"
+                    + req.body.length + " bytes):\n"
+                    + inspectHeaders(req.headers)
                     + "-----BEGIN MOTION DATA-----\n"
-                    + req.body["motion-data"] + "\n"
+                    + req.body + "\n"
                     + "-----END MOTION DATA-----");
                   res.end("ok");
                 } else {

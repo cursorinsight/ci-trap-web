@@ -12,22 +12,21 @@ state.y = 0;
 var handler = function(event) {
   var
     dX    = event.screenX - state.x,
-    absdX = abs(dX),
+    absDX = abs(dX),
     dY    = event.screenY - state.y,
-    absdY = abs(dY),
-    dT    = event.timeStamp - state.t;
+    absDY = abs(dY),
+    dT    = state.getDT(event, 20);
 
   state.x = event.screenX;
   state.y = event.screenY;
-  state.t = event.timeStamp;
 
   // Small movements are stored in less space.
-  if ((dT < 1024) && (absdX < 32) && (absdY < 32)) {
-    buffer.push([0, dT, (dX < 0) ? 1 : 0, absdX, (dY < 0) ? 1 : 0, absdY],
-                [2, 10,                1,     5,                1,     5]);
+  if ((dT < 1024) && (absDX < 128) && (absDY < 128)) {
+    buffer.push([0, dT, (dX < 0) ? 1 : 0, absDX, (dY < 0) ? 1 : 0, absDY],
+                [4, 10,                1,     7,                1,     7]);
   } else {
-    buffer.push([1, (dT > 0xffff) ? 0xffff : dT, (dX < 0) ? 1 : 0, (absdX > 0x7ff) ? 0x7ff : absdX, (dY < 0) ? 1 : 0, (absdY > 0x7ff) ? 0x7ff : absdY],
-                [2,                          16,                1,                              11,                1,                              11]);
+    buffer.push([1, dT, (dX < 0) ? 1 : 0, (absDX > 0x7ff) ? 0x7ff : absDX, (dY < 0) ? 1 : 0, (absDY > 0x7ff) ? 0x7ff : absDY],
+                [4, 20,                1,                              11,                1,                              11]);
   }
 
   return true;
