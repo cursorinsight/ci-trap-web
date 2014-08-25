@@ -10,21 +10,29 @@ var
 /*
  * Returns a stable time difference (between events, even if event does not
  * support event.timeStamp).
+ *
+ * `event` may contain 3 types of `timeStamps`:
+ * 1. milliseconds from epoch (eg. uptime), --> Ets
+ * 2. milliseconds from epoch (eg. 1970-01-01), --> Ts
+ * 3. microseconds from epoch (eg. 1970-01-01), --> Ts
+ * 4. null
  */
 this.getDT = function(event, bits) {
 
-  var dT;
+  var
+    currentTs = event && typeof event.timeStamp === "number" && event.timeStamp,
+    dT;
 
-  if (event && typeof event.timeStamp === "number" && event.timeStamp > 100) {
+  if (currentTs < 2000000000) {
 
     // Initialization
     if (!lastEts) {
       startTs = (new Date()).getTime();
-      lastEts = startEts = event.timeStamp;
+      lastEts = startEts = currentTs;
     }
 
-    dT = event.timeStamp - lastEts;
-    lastEts = event.timeStamp;
+    dT = currentTs - lastEts;
+    lastEts = currentTs;
 
   } else {
 
@@ -38,12 +46,25 @@ this.getDT = function(event, bits) {
 
   }
 
+  if (dT === undefined) {
+    return 0;
+  }
+
   if (bits) {
     var max = (1 << bits) - 1;
     dT = dT > max ? max : dT;
   }
 
+  if (dT < 0) { // we can correct sync
+    startTs = startTs - dT;
+    dT = 0;
+  }
+
   return dT;
+};
+
+this.lastTs = function() {
+  return lastEts - startEts + startTs;
 };
 
 this.start = function() {

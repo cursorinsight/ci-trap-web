@@ -4,36 +4,28 @@ var MouseButtonHandler = function(element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
-var handler = function(event) {
-  var
-    type,
-    dT = state.getDT(event, 20);
+var
+  downEventName = "mousedown",
+  upEventName = "mouseup",
 
-  // We prepare this for other event types (eg. touch, swipe, ...).
-  switch (event.type) {
-    case "mousedown":
-      type = 2; // down
-      break;
+  downHandler = function(event) {
+    var dT = state.getDT(event, 20);
+    buffer.push([2, dT], [4, 20]);
+  },
 
-    case "mouseup":
-      type = 3; // up
-      break;
-  }
-
-
-  buffer.push([type, dT], [4, 20]);
-
-  return true;
-};
+  upHandler = function(event) {
+    var dT = state.getDT(event, 20);
+    buffer.push([3, dT], [4, 20]);
+  };
 
 this.start = function() {
-  element.addEventListener("mousedown", handler);
-  element.addEventListener("mouseup", handler);
+  element.addEventListener(downEventName, downHandler);
+  element.addEventListener(upEventName, upHandler);
 };
 
 this.stop = function() {
-  element.removeEventListener("mousedown", handler);
-  element.removeEventListener("mouseup", handler);
+  element.removeEventListener(downEventName, downHandler);
+  element.removeEventListener(upEventName, upHandler);
 };
 
 // ---------------------------------------------------------------------------

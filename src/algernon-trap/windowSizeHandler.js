@@ -4,32 +4,34 @@ var windowSizeHandler = function(window, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
-var delay = 1000 / 15; // 15fps
+var
+  delay = 1000 / 15, // 15fps
+  timeout,
 
-var timeout;
+  handler = function(event) {
+    var
+      w  = window.innerWidth,
+      h  = window.innerHeight,
+      dT = state.getDT(event, 20);
 
-function handler(event) {
-  var
-    w  = event.target.innerWidth,
-    h  = event.target.innerHeight,
-    dT = state.getDT(event, 20);
+    buffer.push([8, dT,  w,  h],
+                [4, 20, 15, 15]);
+  },
 
-  buffer.push([8, dT,  w,  h],
-              [4, 20, 15, 15]);
-}
+  throttler = function(event) {
+    if (timeout) {
+      window.clearTimeout(timeout);
+    }
 
-var throttler = function(event) {
-  if (timeout) {
-    window.clearTimeout(timeout);
-  }
-
-  timeout = window.setTimeout(function() {
-    timeout = null;
-    handler(event);
-  }, delay);
-};
+    timeout = window.setTimeout(function() {
+      timeout = null;
+      handler(event);
+    }, delay);
+  };
 
 this.start = function() {
+  state.wW = window.innerWidth;
+  state.wH = window.innerHeight;
   window.addEventListener("resize", throttler, false);
 };
 

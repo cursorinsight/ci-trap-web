@@ -11,8 +11,9 @@ if (typeof _att !== "object") {
 
 var
   // Constants
-  cookieName = "CI-Browser-ID",
-  headerName = "X-CI-Browser-ID",
+  cookieName = "AT-Browser-ID",
+  browserHeaderName = "X-AT-Browser-ID",
+  referrerHeaderName = "X-AT-URL",
 
   // Maximum delay to wait for sending data upon unload event
   delay = 300,
@@ -59,7 +60,7 @@ function apply() {
 
     if (typeof f === "string" || f instanceof String) {
       if (f === "setAccount") {
-        parameterArray.unshift("X-CI-Account-ID");
+        parameterArray.unshift("X-AT-Account-ID");
         tracker.setHeader.apply(tracker, parameterArray);
       } else {
         tracker[f].apply(tracker, parameterArray);
@@ -86,8 +87,11 @@ for (var i2 = 0; i2 < _att.length; i2++) {
   }
 }
 
+// Set current URL (referrer is not mandatory)
+tracker.setHeader(referrerHeaderName, window.location.href);
+
 // Set browser ID into tracker
-tracker.setHeader(headerName, browserID);
+tracker.setHeader(browserHeaderName, browserID);
 
 // Set cookie accordingly
 cookies.setCookie(cookieName, browserID);

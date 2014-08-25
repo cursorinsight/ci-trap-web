@@ -13,7 +13,7 @@ var
   sourceFiles = ["./src/algernon-trap/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
   appFiles = ["./examples/**/*.js"],
-  unitTests = ["./test/test_api.js", "./test/test_suite.js"],
+  unitTests = ["./test/test_api.js", "./test/test_suite.js", "./test/test_transport.js"],
   browserTests = ["./test/test_ajax.js"];
 
 // (pre)loading libs.
@@ -113,8 +113,7 @@ gulp.task("check:eslint", function() {
     .pipe(eslint.format());
 });
 
-//gulp.task("test", ["test:unit", "test:browser"]);
-gulp.task("test", ["test:browser"]);
+gulp.task("test", ["test:unit", "test:browser"]);
 
 gulp.task("test:unit", function () {
   return gulp.src(unitTests, { read: false })

@@ -60,7 +60,7 @@ this.send = function(sessionID, sync, callback) {
   }
 
   // TODO make it configurable (enable/disable) w//o
-  req.setRequestHeader("X-CI-Stream-ID", (sessionID ? sessionID : "") + "." + (counter++));
+  req.setRequestHeader("X-AT-Stream-ID", (sessionID ? sessionID : "") + "." + (counter++));
   req.setRequestHeader("Content-type", "application/octet-stream");
   req.send(shift());
 

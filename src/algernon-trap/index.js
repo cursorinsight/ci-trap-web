@@ -18,7 +18,7 @@
  *             | <scroll-change-short> | <scroll-change-long>
  *             | <mouse-wheel-x> | <mouse-wheel-y>
  *             | <window-size-change>
- * // TODO:           | <marker>
+ *             | <marker>
  *
  * // this is (and will be) always a constant and a version id
  * <version>        ::= "B" <version-letter>
@@ -69,12 +69,12 @@
  *                          <window-size-x:15b> <window-size-y:15b>
  *
  * // TODO
- * <current-timestamp-marker> ::= 0b1111 ??
- *
- * TODO:
- * - fix function and other head-comments to be compatible with a/some doc gen.
- * - periodically emit a bufferChanged event
- * - add captureStart / captureEnd events -- or similar
+ * <marker> ::= 0b1111 <time-difference:20b>
+ *              <current-time-stamp:>
+ *              <current-mouse-screen-x:> <current-mouse-screen-y:>
+ *              <current-mouse-page-x:> <current-mouse-page-y:>
+ *              <current-scroll-top:> <current-scroll-left:>
+ *              <current-window-width:> <current-window-height:>
  *
  * JsDoc keyword:
  * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
@@ -105,7 +105,7 @@ function AlgernonTrap(element) {
 
     // State
     State = require("./state.js"),
-    state = new State(),
+    state = new State(element),
 
     // Buffer + transport
     Transport = require("./transport.js"),
@@ -114,10 +114,13 @@ function AlgernonTrap(element) {
     // Handlers
     handlers = new Array(state),
 
+    MarkerHandler = require("./markerHandler.js"),
     MouseMoveHandler = require("./mouseMoveHandler.js"),
     MouseButtonHandler = require("./mouseButtonHandler.js"),
     PageScrollHandler = require("./pageScrollHandler.js");
     //MouseWheelHandler = require("./mouseWheelHandler.js");
+
+  handlers.push(new MarkerHandler(window, element, state, transport));
 
   handlers.push(new MouseMoveHandler(element, state, transport));
 
@@ -168,6 +171,9 @@ function AlgernonTrap(element) {
     buffer: function() {
       return transport.buffer;
     },
+
+    // TODO make this "readonly"
+    element: element,
 
     send: function() {
       return transport.send.apply(this, arguments);
