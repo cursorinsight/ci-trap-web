@@ -14,6 +14,7 @@ var
       h  = window.innerHeight,
       dT = state.getDT(event, 20);
 
+    // type = 0b1000
     buffer.push([8, dT,  w,  h],
                 [4, 20, 15, 15]);
   },

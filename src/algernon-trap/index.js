@@ -24,27 +24,21 @@
  * <version>        ::= "B" <version-letter>
  * <version-letter> ::= "A" | "B" | "C" | "D" ...
  *
- * // triggered when:
- * //   event-type == "mousemove" && |dt| < 1024 && |dx| < 128 && |dy| < 128
- * // time-difference: integer in milliseconds; range: 0..1023 (~1s)
- * // sign-of-*: 1 <- negative, 0 <- positive
- * // abs-* range: 0..127
+ * <mouse-move-simple> ::= 0b0000 <time-difference:20b>
+ *                         <mouse-screen-x:18b> <mouse-screen-y:18b>
+ *                         <mouse-client-x:18b> <mouse-client-y:18b>
+ *
+ * <mouse-move-extended> ::= 0b0001 <time-difference:20b>
+ *                           <mouse-screen-x:18b> <mouse-screen-y:18b>
+ *                           <mouse-client-x:18b> <mouse-client-y:18b>
+ *                           <sign-of-dx:1b> <abs-dx:11b>
+ *                           <sign-of-dy:1b> <abs-dy:11b>
+ *
  * // sum: 30b
- * <mouse-move-short> ::= 0b0000 <time-difference:10b>
- *                        <sign-of-dx:1b> <abs-dx:7b>
- *                        <sign-of-dy:1b> <abs-dy:7b>
- *
- * // triggered when: event-type == "mousemove" and not short-mouse-move
- * // time-difference range: 1024..65535 (<~65s)
- * // abs-* range: 0..2047
- * // sum: 48b
- * <mouse-move-long> ::= 0b0001 <time-difference:20b>
- *                       <sign-of-dx:1b> <abs-dx:11b>
- *                       <sign-of-dy:1b> <abs-dy:11b>
- *
- * // sum: 24b
  * <mouse-button-down> ::= 0b0010 <time-difference:20b>
+ *                         <button-definition:6b>
  *   <mouse-button-up> ::= 0b0011 <time-difference:20b>
+ *                         <button-definition:6b>
  *
  * // sum: 30b
  * <scroll-change-short> ::= 0b0100 <time-difference:10b>
@@ -70,11 +64,11 @@
  *
  * // TODO
  * <marker> ::= 0b1111 <time-difference:20b>
- *              <current-time-stamp:>
- *              <current-mouse-screen-x:> <current-mouse-screen-y:>
- *              <current-mouse-page-x:> <current-mouse-page-y:>
- *              <current-scroll-top:> <current-scroll-left:>
- *              <current-window-width:> <current-window-height:>
+ *              <current-time-stamp:42b>
+ *              <current-mouse-screen-x:18b> <current-mouse-screen-y:18b>
+ *              <current-mouse-page-x:18b> <current-mouse-page-y:18b>
+ *              <current-scroll-top:18b> <current-scroll-left:18b>
+ *              <current-window-width:18b> <current-window-height:18b>
  *
  * JsDoc keyword:
  * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
@@ -181,6 +175,10 @@ function AlgernonTrap(element) {
 
     setHeader: function() {
       return transport.setHeader.apply(this, arguments);
+    },
+
+    setUrl: function() {
+      return transport.setUrl.apply(this, arguments);
     }
 
   };

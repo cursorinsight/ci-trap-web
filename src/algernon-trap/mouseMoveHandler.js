@@ -1,5 +1,7 @@
 /* global module */
 
+// TODO: http://www.jacklmoore.com/notes/mouse-position/
+
 var MouseMoveHandler = function(element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
@@ -10,11 +12,12 @@ var
 
   handler = function(event) {
     var
-      dX    = event.screenX - state.sX,
-      absDX = abs(dX),
-      dY    = event.screenY - state.sY,
-      absDY = abs(dY),
-      dT    = state.getDT(event, 20);
+      dT    = state.getDT(event, 20),
+      vX    = event.movementX || event.mozMovementX || event.webkitMovementX || null,
+      absVX = vX ? abs(vX) : null,
+      vY    = event.movementY || event.mozMovementY || event.webkitMovementY || null,
+      absVY = vY ? abs(vY) : null,
+      vSupport = typeof vX === "number";
 
     // Saving for next check
     state.sX = event.screenX;
@@ -24,13 +27,12 @@ var
     state.cX = event.clientX;
     state.cY = event.clientY;
 
-    // Small movements are stored in less space.
-    if ((dT < 1024) && (absDX < 128) && (absDY < 128)) {
-      buffer.push([0, dT, (dX < 0) ? 1 : 0, absDX, (dY < 0) ? 1 : 0, absDY],
-                  [4, 10,                1,     7,                1,     7]);
+    if (!vSupport) { // no browser-supported velocity
+      buffer.push([0, dT, event.screenX, event.screenY, event.clientX, event.clientY],
+                  [4, 20,            18,            18,            18,            18]);
     } else {
-      buffer.push([1, dT, (dX < 0) ? 1 : 0, (absDX > 0x7ff) ? 0x7ff : absDX, (dY < 0) ? 1 : 0, (absDY > 0x7ff) ? 0x7ff : absDY],
-                  [4, 20,                1,                              11,                1,                              11]);
+      buffer.push([1, dT, event.screenX, event.screenY, event.clientX, event.clientY, absVX, vX, absVY, vY],
+                  [4, 20,            18,            18,            18,            18,     1, 11,     1, 11]);
     }
 
     return true;
