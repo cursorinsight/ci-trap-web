@@ -11,11 +11,12 @@ var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var head = "BA"; // v1.1 :)
 
 //
-this.buffer = head;
+this.buffer = "";
 
 // Locals.
 var
   transport = this,
+  encodeWrapper = window.encodeURIComponent,
 
   url = "/v1",
   headers = {},
@@ -36,12 +37,20 @@ function shift() {
  * Sends data to destination.
  */
 this.send = function(sessionID, sync, callback) {
-  var req;
+  var
+    req = new window.XMLHttpRequest(),
+    headerString = "";
 
-  if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
-    req = new window.XMLHttpRequest();
-  } else { // code for IE6, IE5
-    req = new window.ActiveXObject("Microsoft.XMLHTTP");
+  if (!("withCredentials" in req)) { // Is it a real XMLHttpRequest2 object
+    if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
+      req = new window.XDomainRequest();
+    } else if (typeof window.ActiveXObject !== "undefined") { // Is it OK? :)
+      req = new window.ActiveXObject("Microsoft.XMLHTTP");
+    } else {
+      // TODO on Firefox tests this one is run
+      //req = null;
+      //throw new Error('CORS not supported'); // TODO
+    }
   }
 
   req.onreadystatechange = function() {
@@ -52,17 +61,20 @@ this.send = function(sessionID, sync, callback) {
     }
   };
 
-  req.open("POST", url, !sync);
+  // TODO make it configurable (enable/disable) w//o
+  headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
   for (var key in headers) {
     if (headers.hasOwnProperty(key)) {
-      req.setRequestHeader(key, headers[key]);
+      // req.setRequestHeader(key, headers[key]);
+      headerString = headerString
+                     + encodeWrapper(key) + "="
+                     + encodeWrapper(headers[key]) + ",";
     }
   }
 
-  // TODO make it configurable (enable/disable) w//o
-  req.setRequestHeader("X-AT-Stream-ID", (sessionID ? sessionID : "") + "." + (counter++));
-  req.setRequestHeader("Content-type", "application/octet-stream");
-  req.send(shift());
+  req.open("POST", url, !sync);
+  req.setRequestHeader("Content-type", "text/plain");
+  req.send(head + "," + headerString + shift());
 
   return true;
 };
@@ -112,7 +124,7 @@ this.push = function(values, sizes) {
 };
 
 this.reset = function() {
-  this.buffer = head;
+  this.buffer = "";
   return true;
 };
 

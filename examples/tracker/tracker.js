@@ -12,8 +12,9 @@ if (typeof _att !== "object") {
 var
   // Constants
   cookieName = "AT-Browser-ID",
-  browserHeaderName = "X-AT-Browser-ID",
-  referrerHeaderName = "X-AT-URL",
+  accountHeaderName = "account-id",
+  browserHeaderName = "browser-id",
+  referrerHeaderName = "url",
 
   // Maximum delay to wait for sending data upon unload event
   delay = 300,
@@ -60,7 +61,7 @@ function apply() {
 
     if (typeof f === "string" || f instanceof String) {
       if (f === "setAccount") {
-        parameterArray.unshift("X-AT-Account-ID");
+        parameterArray.unshift(accountHeaderName);
         tracker.setHeader.apply(tracker, parameterArray);
       } else {
         tracker[f].apply(tracker, parameterArray);

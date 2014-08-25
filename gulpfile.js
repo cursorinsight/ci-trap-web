@@ -77,7 +77,8 @@ gulp.task("compile:example-tracker", function() {
 });
 
 gulp.task("copy-html:example-tracker", function() {
-  return gulp.src(["examples/tracker/page-*.html"])
+  return gulp.src(["examples/tracker/page-*.html",
+                   "examples/tracker/cors.html"])
     .pipe(gulp.dest(buildDir));
 });
 
@@ -159,13 +160,14 @@ gulp.task("serve", [
       "compile:example-tracker", "copy-html:example-tracker"
     ], function () {
   var app = connect()
-              .use(bodyParser.raw({"inflate": true}))
+              .use(bodyParser.text({"inflate": true}))
               .use(function (req, res, next) {
                 if (req.method === "POST") { // && req.body["motion-data"]() {}
                   util.log("Motion data received ("
                     + req.body.length + " bytes):\n"
                     + inspectHeaders(req.headers)
                     + "-----BEGIN MOTION DATA-----\n"
+                    // TODO parse motion header
                     + req.body + "\n"
                     + "-----END MOTION DATA-----");
                   res.end("ok");

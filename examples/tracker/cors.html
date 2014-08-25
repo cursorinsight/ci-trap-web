@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AlgernonTrap -- Tracker (Subpage)</title>
+    <title>AlgernonTrap -- Tracker (CORS)</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="stylesheet" type="text/css" href="/app.css" />
   </head>
   <body>
     <div>
-      <h1>Tracker (page 2)</h1>
-      <a href="/page-1.html">Back</a>
+      <h1>Tracker (CORS example)</h1>
+      <a href="/cors.html">Return here</a>
     </div>
     <div class="overlay">
       <h2>State (@<code>window</code>)</h2>
@@ -21,11 +21,12 @@
     <script>
 var _att = _att || [];
 _att.push(['setAccount', 'UA-12345-2']);
+_att.push(['setUrl', 'http://ci-example.com:8100/v1']);
 (function(d,u){
   u=((("https:"==document.location.protocol)?"https:":"http:")+"//"+u+"/");
   var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
   g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'tracker.min.js';
-  s.parentNode.insertBefore(g,s);})(document,"localhost:8100");
+  s.parentNode.insertBefore(g,s);})(document,"ci-example.com:8100");
     </script>
   </body>
 </html>
