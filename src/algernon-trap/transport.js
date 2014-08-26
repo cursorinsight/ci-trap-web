@@ -18,7 +18,7 @@ var
   transport = this,
   encodeWrapper = window.encodeURIComponent,
 
-  url = "/v1",
+  url = "/s",
   headers = {},
   counter = 1,
   sessionID;
