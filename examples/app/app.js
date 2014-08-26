@@ -55,26 +55,10 @@ ex1MarkButton.addEventListener("click", function(event) {
 
 ex1SendButton.addEventListener("click", function(event) {
   if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  algernonTrap.send("app", false, function() {stateSpan.innerHTML = "sent";});
+  algernonTrap.send(false, function() {stateSpan.innerHTML = "sent";});
 });
 
 // end of Example 1
 
 // ---------------------------------------------------------------------------
 })(this, window, document, require);
-
-// var timer;
-// startSender = function() {
-//   timer = setTimeout(function () {
-//             algernonTrap.sendAndReset({"motion-data": algernonTrap.buffer()});
-//             startSender();
-//           } ,1000);
-// };
-// stopSender = function() {
-//   clearTimeout(timer);
-// }
-//
-// window.onunload = function() {
-//   algernonTrap.stop();
-//   algernonTrap.sendAndReset({"motion-data": algernonTrap.buffer()});
-// };

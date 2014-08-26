@@ -162,12 +162,13 @@ gulp.task("serve", [
   var app = connect()
               .use(bodyParser.text({"inflate": true}))
               .use(function (req, res, next) {
-                if (req.method === "POST") { // && req.body["motion-data"]() {}
+                if (req.method === "POST") {
                   util.log("Motion data received ("
                     + req.body.length + " bytes):\n"
                     + inspectHeaders(req.headers)
                     + "-----BEGIN MOTION DATA-----\n"
                     // TODO parse motion header
+                    // IE9 output will be f*cked up here
                     + req.body + "\n"
                     + "-----END MOTION DATA-----");
                   res.end("ok");

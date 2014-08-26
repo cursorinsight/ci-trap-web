@@ -40,27 +40,14 @@ function shift() {
 this.send = function(sync, callback) {
   var
     req = new window.XMLHttpRequest(),
-    headerString = "";
-
-  if (!("withCredentials" in req)) { // Is it a real XMLHttpRequest2 object
-    if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
-      req = new window.XDomainRequest();
-    } else if (typeof window.ActiveXObject !== "undefined") { // Is it OK? :)
-      req = new window.ActiveXObject("Microsoft.XMLHTTP");
-    } else {
-      // TODO on Firefox tests this one is run
-      //req = null;
-      //throw new Error('CORS not supported'); // TODO
-    }
-  }
-
-  req.onreadystatechange = function() {
-    if (callback){
-      if ((req.readyState === 4) && (req.status === 200)) {
-        callback(req);
+    headerString = "",
+    onSuccess = function() {
+      if (callback){
+        if ((req.readyState === 4) && (req.status === 200)) {
+          callback(req);
+        }
       }
-    }
-  };
+    };
 
   // TODO make it configurable (enable/disable) w//o
   headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
@@ -73,8 +60,28 @@ this.send = function(sync, callback) {
     }
   }
 
-  req.open("POST", url, !sync);
-  req.setRequestHeader("Content-type", "text/plain");
+  if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
+    req.open("POST", url, !sync);
+    req.onreadystatechange = onSuccess;
+    req.setRequestHeader("Content-type", "text/plain");
+    // req.withCredentials = true;
+  } else if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
+    req = new window.XDomainRequest();
+    req.onload = onSuccess;
+    req.contentType = "text/plain";
+    req.open("POST", url);
+  } else if (typeof window.ActiveXObject !== "undefined") { // Is it OK? :)
+    req = new window.ActiveXObject("Microsoft.XMLHTTP");
+    req.open("POST", url);
+  } else {
+    // TODO Firefox in test mode get to this branch
+    req.open("POST", url, !sync);
+    req.onload = onSuccess;
+    req.setRequestHeader("Content-type", "text/plain");
+    //req = null;
+    //throw new Error('CORS not supported'); // TODO
+  }
+
   req.send(head + "," + headerString + shift());
 
   return true;
