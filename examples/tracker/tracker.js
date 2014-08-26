@@ -23,7 +23,7 @@ var
   AlgernonTrap = require("../../src/algernon-trap"),
 
   // Local tracker object
-  tracker = new AlgernonTrap(document),
+  tracker = new AlgernonTrap(document, 1000),
 
   // Cookies handler
   Cookies = require("./cookies.js"),
@@ -81,7 +81,9 @@ function Proxy() {
   };
 }
 
-// apply the queue
+// We have to do this _before_ applying our own attributes / methods.
+//
+// Apply the queue
 for (var i2 = 0; i2 < _att.length; i2++) {
   if (_att[i2]) {
     apply(_att[i2]);
@@ -93,6 +95,9 @@ tracker.setHeader(referrerHeaderName, window.location.href);
 
 // Set browser ID into tracker
 tracker.setHeader(browserHeaderName, browserID);
+
+// Set session ID
+tracker.setSessionID(sessionID);
 
 // Set cookie accordingly
 cookies.setCookie(cookieName, browserID);
@@ -111,7 +116,7 @@ function beforeUnloadHandler() {
   var now = new Date(),
     expireDateTime = now.getTime() + delay;
 
-  tracker.send(sessionID);
+  tracker.send();
 
   /*
    * Delay/pause (blocks UI)

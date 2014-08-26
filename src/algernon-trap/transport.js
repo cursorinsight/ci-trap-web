@@ -20,7 +20,8 @@ var
 
   url = "/v1",
   headers = {},
-  counter = 1;
+  counter = 1,
+  sessionID;
 
 /*
  * @private
@@ -36,7 +37,7 @@ function shift() {
 /**
  * Sends data to destination.
  */
-this.send = function(sessionID, sync, callback) {
+this.send = function(sync, callback) {
   var
     req = new window.XMLHttpRequest(),
     headerString = "";
@@ -91,6 +92,13 @@ this.setUrl = function(u) {
  */
 this.setHeader = function(key, value) {
   headers[key] = value;
+};
+
+/**
+ * Sets session ID for this session.
+ */
+this.setSessionID = function(s) {
+  sessionID = s;
 };
 
 /**

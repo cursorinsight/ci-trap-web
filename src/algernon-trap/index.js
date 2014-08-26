@@ -85,7 +85,7 @@
  * @param {String} element Html element which will be watched
  * @return {Function} Return algernonTrap, it will be the module
  */
-function AlgernonTrap(element) {
+function AlgernonTrap(element, idleTimeout) {
 
   // Set up defaults.
   if (element === undefined) {
@@ -94,16 +94,19 @@ function AlgernonTrap(element) {
 
   var
 
+    // self
+    algernonTrap = this,
+
     // master loop
     running = false,
-
-    // State
-    State = require("./state.js"),
-    state = new State(element),
 
     // Buffer + transport
     Transport = require("./transport.js"),
     transport = new Transport(window),
+
+    // State
+    State = require("./state.js"),
+    state = new State(window, transport, idleTimeout),
 
     // Handlers
     handlers = new Array(state),
@@ -179,6 +182,10 @@ function AlgernonTrap(element) {
 
     setUrl: function() {
       return transport.setUrl.apply(this, arguments);
+    },
+
+    setSessionID: function() {
+      return transport.setSessionID.apply(this, arguments);
     }
 
   };

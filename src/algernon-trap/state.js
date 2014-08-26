@@ -1,11 +1,19 @@
 /* global module */
 
-var State = function() {
+var State = function(window, transport, idleTimeout) {
 "use strict";
 // ---------------------------------------------------------------------------
 
 var
+  idleHandler, idleTimer,
   startTs, startEts, lastEts;
+
+if (typeof idleTimeout === "number") {
+  idleHandler = function() {
+    transport.send();
+    idleTimer = null;
+  };
+}
 
 /*
  * Returns a stable time difference (between events, even if event does not
@@ -22,6 +30,11 @@ this.getDT = function(event, bits) {
   var
     currentTs = event && typeof event.timeStamp === "number" && event.timeStamp,
     dT;
+
+  if (idleTimer) {
+    window.clearTimeout(idleTimer);
+    idleTimer = null;
+  }
 
   if (currentTs < 2000000000) {
 
@@ -44,6 +57,10 @@ this.getDT = function(event, bits) {
       lastEts = nowEts;
     }
 
+  }
+
+  if (typeof idleTimeout === "number") {
+    idleTimer = window.setTimeout(idleHandler, idleTimeout);
   }
 
   if (dT === undefined) {
