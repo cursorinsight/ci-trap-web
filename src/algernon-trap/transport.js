@@ -116,15 +116,19 @@ this.push = function(values, sizes) {
   var idx,
     len = values.length,
     bc = 0,
+    cv, // current value
     av = 0,
     size; // bc==bit counter, av=actual value
 
   for (idx = 0; idx < len; idx++) {
+    cv = values[idx];
     size = sizes[idx];
+    if (cv < 0) { cv = 0; }
+    if (cv > ((2 << size) - 1)) { cv = ((2 << size) - 1); }
     if (av > 0) {
       av = av << size;
     }
-    av |= values[idx] & ((1 << size) - 1);
+    av |= cv & ((1 << size) - 1);
     bc += size;
     while (bc > 6) {
       bc -= 6;

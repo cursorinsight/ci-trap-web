@@ -1,5 +1,7 @@
 /* global module */
 
+// TODO simplify/check this handler
+
 var PageScrollHandler = function(element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
@@ -9,23 +11,38 @@ var
   eventName = "scroll",
 
   handler = function(event) {
-    var
-      dX    = event.pageX - state.pX,
-      absDX = abs(dX),
-      dY    = event.pageY - state.pY,
-      absDY = abs(dY),
-      dT    = state.getDT(event, 20);
 
-    state.pX = event.pageX;
-    state.pY = event.pageY;
+    var pX, pY, dX, dY, signDX, signDY, absDX, absDY,
+
+      dT = state.getDT(event, 20);
+
+    // Scroll X/Y on current page
+    if ("pageXOffset" in element && element.document) { // it's a window, or looks like a window
+      var doc = element.document.documentElement;
+      pX = (element.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+      pY = (element.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+    } else { // fallback
+      pX = event.pageX;
+      pY = event.pageY;
+    }
+
+    dX     = pX - state.pX;
+    signDX = dX < 0 ? 1 : 0;
+    absDX  = abs(dX);
+    dY     = pY - state.pY;
+    signDY = dY < 0 ? 1 : 0;
+    absDY  = abs(dY);
+
+    state.pX = pX;
+    state.pY = pY;
 
     // Small movements are stored in less space.
     if ((dT < 1024) && (absDX < 128) && (absDY < 128)) {
-      buffer.push([4, dT, (dX < 0) ? 1 : 0, absDX, (dY < 0) ? 1 : 0, absDY],
-                  [4, 10,                1,     7,                1,     7]);
+      buffer.push([4, dT, signDX, absDX, signDY, absDY],
+                  [4, 10,      1,     7,      1,     7]);
     } else {
-      buffer.push([5, dT, (dX < 0) ? 1 : 0, (absDX > 0x7ff) ? 0x7ff : absDX, (dY < 0) ? 1 : 0, (absDY > 0x7ff) ? 0x7ff : absDY],
-                  [4, 20,                1,                              11,                1,                              11]);
+      buffer.push([5, dT, signDX, absDX, signDY, absDY],
+                  [4, 20,      1,    11,      1,    11]);
     }
 
     return true;

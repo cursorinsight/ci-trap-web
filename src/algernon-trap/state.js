@@ -6,7 +6,7 @@ var State = function(window, transport, idleTimeout) {
 
 var
   idleHandler, idleTimer,
-  startTs, startEts, lastEts;
+  epochTs, lastTs;
 
 if (typeof idleTimeout === "number") {
   idleHandler = function() {
@@ -19,16 +19,21 @@ if (typeof idleTimeout === "number") {
  * Returns a stable time difference (between events, even if event does not
  * support event.timeStamp).
  *
- * `event` may contain 3 types of `timeStamps`:
- * 1. milliseconds from epoch (eg. uptime), --> Ets
- * 2. milliseconds from epoch (eg. 1970-01-01), --> Ts
- * 3. microseconds from epoch (eg. 1970-01-01), --> Ts
- * 4. null
+ * Examples:
+ *                  0 -- firefox window resize / scroll
+ *          161262400 -- firefox mouse move
+ *         1409096136 -- timestamp sec
+ *         2000000000 -- timestamp sec boundary
+ *      1409095770713 -- chrome all
+ *      1409096838717 -- firefox (new Date()).getTime()
+ *   1000000000000000 -- timestamp micro boundary
+ *   1409096424364149 -- firefox custom event
  */
 this.getDT = function(event, bits) {
 
   var
-    currentTs = event && typeof event.timeStamp === "number" && event.timeStamp,
+    round = Math.round,
+    currentTs = event && typeof event.timeStamp === "number" && event.timeStamp || (new Date()).getTime(),
     dT;
 
   if (idleTimer) {
@@ -36,35 +41,33 @@ this.getDT = function(event, bits) {
     idleTimer = null;
   }
 
-  if (currentTs < 2000000000) {
+  if (currentTs > 1000000000000000) { // (microseconds) in Firefox, special events
+    currentTs = round(currentTs / 1000);
+  }
 
-    // Initialization
-    if (!lastEts) {
-      startTs = (new Date()).getTime();
-      lastEts = startEts = currentTs;
+  if (currentTs < 2000000000) { // (milliseconds) it's Firefox; take care
+    if (!epochTs) {
+      epochTs = (new Date()).getTime() - currentTs; 
     }
-
-    dT = currentTs - lastEts;
-    lastEts = currentTs;
-
-  } else {
-
-    // Can not do initialization if event.timeStamp is null || 0 ==> dT will
-    // remain undefined (TODO)
-    if (startEts && lastEts) {
-      var nowEts = (new Date()).getTime() - startTs + startEts;
-      dT = nowEts - lastEts;
-      lastEts = nowEts;
+    if (lastTs) {
+      dT = (currentTs + epochTs) - lastTs;
     }
+    lastTs = (currentTs + epochTs);
+  } else {                      // (milliseconds) everything else
+    if (lastTs) {
+      dT = currentTs - lastTs;
+    }
+    lastTs = currentTs;
+  }
 
+  // var dT1 = dT;
+
+  if (dT === undefined) {
+    return 0;
   }
 
   if (typeof idleTimeout === "number") {
     idleTimer = window.setTimeout(idleHandler, idleTimeout);
-  }
-
-  if (dT === undefined) {
-    return 0;
   }
 
   if (bits) {
@@ -72,16 +75,19 @@ this.getDT = function(event, bits) {
     dT = dT > max ? max : dT;
   }
 
-  if (dT < 0) { // we can correct sync
-    startTs = startTs - dT;
-    dT = 0;
-  }
+  // TODO we should correct sync (when dT < 0)
+  // if (dT < 0) { // we can correct sync
+  //   epochTs = epochTs + dT;
+  //   lastTs  = lastTs + dT;
+  //   dT = 0;
+  // }
+  // console.log(dT1, dT, dT1 !== dT && "-----------------------------------------");
 
   return dT;
 };
 
 this.lastTs = function() {
-  return lastEts - startEts + startTs;
+  return lastTs;
 };
 
 this.start = function() {
@@ -89,7 +95,7 @@ this.start = function() {
 };
 
 this.stop = function() {
-  startTs = startEts = lastEts = null;
+  lastTs = null;
 };
 
 // ---------------------------------------------------------------------------

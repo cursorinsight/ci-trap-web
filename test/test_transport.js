@@ -40,6 +40,16 @@ describe("AlgernonTrap::Transport", function() {
       assert.equal(transport.buffer, "Ag");
     });
 
+    it("should serialize underflow values to 0", function() {
+      transport.push([-1, -100], [6, 12]);
+      assert.equal(transport.buffer, "AAA");
+    });
+
+    it("should serialize overflow values to MAX_BITS", function() {
+      transport.push([1000000, 1000000], [6, 9]);
+      assert.equal(transport.buffer, "//4");
+    });
+
   });
 
 });
