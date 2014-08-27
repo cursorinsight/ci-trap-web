@@ -41,13 +41,15 @@ this.send = function(sync, callback) {
   var
     req = new window.XMLHttpRequest(),
     headerString = "",
-    onSuccess = function() {
+    onResponse = function() {
       if (callback){
         if ((req.readyState === 4) && (req.status === 200)) {
           callback(req);
         }
       }
-    };
+    },
+    onSuccess = function() {}, // TODO
+    onFailure = function() {}; // TODO
 
   // TODO make it configurable (enable/disable) w//o
   headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
@@ -62,12 +64,13 @@ this.send = function(sync, callback) {
 
   if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
     req.open("POST", url, !sync);
-    req.onreadystatechange = onSuccess;
+    req.onreadystatechange = onResponse; // TODO XMLHttpRequest2 has onload and co...
     req.setRequestHeader("Content-type", "text/plain");
     // req.withCredentials = true;
   } else if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
     req = new window.XDomainRequest();
     req.onload = onSuccess;
+    req.onerror = onFailure;
     req.contentType = "text/plain";
     req.open("POST", url);
   } else if (typeof window.ActiveXObject !== "undefined") { // Is it OK? :)
@@ -76,7 +79,7 @@ this.send = function(sync, callback) {
   } else {
     // TODO Firefox in test mode get to this branch
     req.open("POST", url, !sync);
-    req.onload = onSuccess;
+    req.onload = onResponse;
     req.setRequestHeader("Content-type", "text/plain");
     //req = null;
     //throw new Error('CORS not supported'); // TODO

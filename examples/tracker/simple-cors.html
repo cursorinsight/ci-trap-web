@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AlgernonTrap -- Simple CORS Example</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  </head>
+  <body>
+    <script>
+      var req = new window.XMLHttpRequest(),
+        url = "http://ci-target.com:8100/s";
+      if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
+        req.open("POST", url, true);
+        req.setRequestHeader("Content-type", "text/plain");
+        req.withCredentials = true;
+      } else if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
+        req = new window.XDomainRequest();
+        req.contentType = "text/plain";
+        req.open("POST", url);
+      }
+      req.send("ok, this one goes through");
+    </script>
+  </body>
+</html>
+
+

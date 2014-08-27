@@ -21,12 +21,12 @@
     <script>
 var _att = _att || [];
 _att.push(['setAccount', 'UA-12345-2']);
-_att.push(['setUrl', 'http://ci-example.com:8100/s']);
+_att.push(['setUrl', (("https:"==document.location.protocol)?"https:":"http:")+'//ci-target.com:8100/s']);
 (function(d,u){
   u=((("https:"==document.location.protocol)?"https:":"http:")+"//"+u+"/");
   var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
   g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'tracker.min.js';
-  s.parentNode.insertBefore(g,s);})(document,"ci-example.com:8100");
+  s.parentNode.insertBefore(g,s);})(document,"ci-source.com:8100");
     </script>
   </body>
 </html>

@@ -78,7 +78,7 @@ gulp.task("compile:example-tracker", function() {
 
 gulp.task("copy-html:example-tracker", function() {
   return gulp.src(["examples/tracker/page-*.html",
-                   "examples/tracker/cors.html"])
+                   "examples/tracker/*cors.html"])
     .pipe(gulp.dest(buildDir));
 });
 
@@ -171,6 +171,8 @@ gulp.task("serve", [
                     // IE9 output will be f*cked up here
                     + req.body + "\n"
                     + "-----END MOTION DATA-----");
+                  res.setHeader("Access-Control-Allow-Origin", "*");
+                  res.setHeader("Access-Control-Allow-Credentials", "true");
                   res.end("ok");
                 } else {
                     next();
