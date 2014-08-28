@@ -22,6 +22,7 @@
 var _att = _att || [];
 _att.push(['setAccount', 'UA-12345-2']);
 _att.push(['setVisitor', '1234%+$#@5']);
+setTimeout(function(){ _att.push(['mark', 'Hello, world!']); }, 2000);
 (function(d,u){
   u=((("https:"==document.location.protocol)?"https:":"http:")+"//"+u+"/");
   var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];

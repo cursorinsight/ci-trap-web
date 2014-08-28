@@ -112,6 +112,13 @@ this.setSessionID = function(s) {
 };
 
 /**
+ * Appends raw bytes to buffer.
+ */
+this.pushRaw = function(bytes) {
+  this.buffer += bytes;
+};
+
+/**
  * Encodes and pushes values sampled by its given size into buffer.
  */
 this.push = function(values, sizes) {

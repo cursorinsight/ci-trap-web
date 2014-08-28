@@ -18,7 +18,7 @@
  *             | <scroll-change-short> | <scroll-change-long>
  *             | <mouse-wheel-x> | <mouse-wheel-y>
  *             | <window-size-change>
- *             | <marker>
+ *             | <marker> | <state>
  *
  * // this is (and will be) always a constant and a version id
  * <version>        ::= "B" <version-letter>
@@ -62,13 +62,17 @@
  * <window-size-change> ::= 0b1000 <time-difference:20b>
  *                          <window-size-x:15b> <window-size-y:15b>
  *
- * // TODO
- * <marker> ::= 0b1111 <time-difference:20b>
- *              <current-time-stamp:42b>
- *              <current-mouse-screen-x:18b> <current-mouse-screen-y:18b>
- *              <current-mouse-page-x:18b> <current-mouse-page-y:18b>
- *              <current-scroll-top:18b> <current-scroll-left:18b>
- *              <current-window-width:18b> <current-window-height:18b>
+ * // sum: variable
+ * <marker> ::= 0b1110 <time-difference:20b>
+ *              <size:12b> <url-encoded-string:<size>B>
+ *
+ * // sum: 4+20+42+(8*18) = 210b
+ * <debug-state> ::= 0b1111 <time-difference:20b>
+ *                   <current-time-stamp:42b>
+ *                   <current-mouse-screen-x:18b> <current-mouse-screen-y:18b>
+ *                   <current-mouse-page-x:18b> <current-mouse-page-y:18b>
+ *                   <current-scroll-top:18b> <current-scroll-left:18b>
+ *                   <current-window-width:18b> <current-window-height:18b>
  *
  * JsDoc keyword:
  * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
@@ -111,11 +115,15 @@ function AlgernonTrap(element, idleTimeout) {
     // Handlers
     handlers = new Array(state),
 
+    DebugStateHandler = require("./debugStateHandler.js"),
+
     MarkerHandler = require("./markerHandler.js"),
     MouseMoveHandler = require("./mouseMoveHandler.js"),
     MouseButtonHandler = require("./mouseButtonHandler.js"),
     PageScrollHandler = require("./pageScrollHandler.js");
     //MouseWheelHandler = require("./mouseWheelHandler.js");
+
+  handlers.push(new DebugStateHandler(window, element, state, transport));
 
   handlers.push(new MarkerHandler(window, element, state, transport));
 
@@ -186,6 +194,12 @@ function AlgernonTrap(element, idleTimeout) {
 
     setSessionID: function() {
       return transport.setSessionID.apply(this, arguments);
+    },
+
+    mark: function(text) {
+      var markEvent = new window.Event("at:mark");
+      markEvent.text = text || "mark";
+      element.dispatchEvent(markEvent);
     }
 
   };

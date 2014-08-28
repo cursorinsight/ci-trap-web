@@ -20,6 +20,7 @@ var ex1StartButton        = document.getElementById("ex1-start"),
   ex1StopButton           = document.getElementById("ex1-stop"),
   ex1ShowBufferButton     = document.getElementById("ex1-show-buffer"),
   ex1MarkButton           = document.getElementById("ex1-mark"),
+  ex1DebugButton          = document.getElementById("ex1-debug"),
   ex1SendButton           = document.getElementById("ex1-send"),
 
   stateSpan               = document.getElementById("window-state");
@@ -46,9 +47,21 @@ ex1ShowBufferButton.addEventListener("click", function(event) {
 
 ex1MarkButton.addEventListener("click", function(event) {
   if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  var markEvent = new window.Event("at:mark");
+  var markEvent = new window.Event("at:mark"),
+    markInput = document.getElementById("ex1-mark-input"),
+    text = markInput.value;
+  if (text) { markEvent.text = text; }
   if (algernonTrap.element) {
     algernonTrap.element.dispatchEvent(markEvent);
+  }
+  stateSpan.innerHTML = "sent";
+});
+
+ex1DebugButton.addEventListener("click", function(event) {
+  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
+  var debugEvent = new window.Event("at:debug");
+  if (algernonTrap.element) {
+    algernonTrap.element.dispatchEvent(debugEvent);
   }
   stateSpan.innerHTML = "sent";
 });
