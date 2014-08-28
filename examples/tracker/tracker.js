@@ -24,7 +24,7 @@ var
   AlgernonTrap = require("../../src/algernon-trap"),
 
   // Local tracker object
-  tracker = new AlgernonTrap(document, 1000),
+  tracker = new AlgernonTrap(document, 2000),
 
   // Cookies handler
   Cookies = require("./cookies.js"),
