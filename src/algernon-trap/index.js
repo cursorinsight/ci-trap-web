@@ -154,8 +154,11 @@ function AlgernonTrap(element, idleTimeout) {
       if (running) {
         return;
       }
-      for (var i in handlers) {
-        handlers[i].start();
+      var length = handlers.length, i = 0;
+      for (;i < length; i++) {
+        if((handlers[i] !== undefined) && (typeof handlers[i].start === "function")) {
+          handlers[i].start();
+        }
       }
       running = true;
     },
@@ -167,8 +170,11 @@ function AlgernonTrap(element, idleTimeout) {
       if (!running) {
         return;
       }
-      for (var i in handlers) {
-        handlers[i].stop();
+      var length = handlers.length, i = 0;
+      for (;i < length; i++) {
+        if((handlers[i] !== undefined) && (typeof handlers[i].stop === "function")) {
+          handlers[i].stop();
+        }
       }
       running = false;
     },
