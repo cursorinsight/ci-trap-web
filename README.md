@@ -37,7 +37,7 @@ project defines several gulp tasks for your convenience:
 
 ## License
 
-algernon-trap is released under the [MIT license](https://github.com/gbence/algernon-trap/blob/master/LICENSE.md).
+algernon-trap is released under the [MIT license](https://github.com/cursorinsight/algernon-trap/blob/master/LICENSE.md).
 
 <!---
 [![Build Status](https://secure.travis-ci.org/user/algernon-trap.png?branch=master)](http://travis-ci.org/user/algernon-trap)

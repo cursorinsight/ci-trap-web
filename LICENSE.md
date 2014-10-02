@@ -1,4 +1,6 @@
 Copyright (c) 2012--2014, GOLDA Bence <gbence@algernon.hu>
+              2014--      Bence GOLDA <bence@cursorinsight.com>
+              2014--      Olivér TÖRTELI <oliver@cursorinsight.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

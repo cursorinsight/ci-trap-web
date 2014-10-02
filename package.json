@@ -1,7 +1,7 @@
 {
   "name": "algernon-trap",
   "description": "Lightweight mouse movement motion tracker",
-  "homepage": "http://github.com/gbence/algernon-trap",
+  "homepage": "http://github.com/cursorinsight/algernon-trap",
   "version": "0.1.0",
   "author": {
     "name": "Golda Bence",
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gbence/algernon-trap.git"
+    "url": "git://github.com/cursorinsight/algernon-trap.git"
   },
   "bugs": {
-    "url": "https://github.com/gbence/algernon-trap/issues"
+    "url": "https://github.com/cursorinsight/algernon-trap/issues"
   },
   "license": "MIT",
   "dependencies": {},
