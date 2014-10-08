@@ -7,33 +7,27 @@ var MouseMoveHandler = function(element, state, buffer) {
 // ---------------------------------------------------------------------------
 
 var
-  abs = Math.abs,
+  // abs = Math.abs,
   eventName = "mousemove",
 
   handler = function(event) {
     var
-      dT       = state.getDT(event, 20),
-      vX       = event.movementX || event.mozMovementX || event.webkitMovementX || 0,
-      signVX   = vX < 0 ? 1 : 0,
-      vY       = event.movementY || event.mozMovementY || event.webkitMovementY || 0,
-      signVY   = vY < 0 ? 1 : 0,
-      vSupport = "movementX" in event || "mozMovementX" in event || "webkitMovementX" in event;
+      dT = state.getDT(event, 20),
+      sX = event.screenX,
+      sY = event.screenY;
 
     // Saving for next check
-    state.sX = event.screenX;
-    state.sY = event.screenY;
+    state.mouseScreenX = sX;
+    state.mouseScreenY = sY;
 
-    // Saving for markers
-    state.cX = event.clientX;
-    state.cY = event.clientY;
+    buffer.push([0, dT, sX, sY],
+                [4, 20, 18, 18]);
 
-    if (!vSupport) { // no browser-supported velocity
-      buffer.push([0, dT, event.screenX, event.screenY, event.clientX, event.clientY],
-                  [4, 20,            18,            18,            18,            18]);
-    } else {
-      buffer.push([1, dT, event.screenX, event.screenY, event.clientX, event.clientY, signVX, abs(vX), signVY, abs(vY)],
-                  [4, 20,            18,            18,            18,            18,      1,      11,      1,      11]);
-    }
+    // Saving for markers -- temporarily disabled
+    // state.cX = event.clientX;
+    // state.cY = event.clientY;
+    // buffer.push([0, dT, sX, sY, event.clientX, event.clientY],
+    //             [4, 20, 18, 18,            18,            18]);
 
     return true;
   };
@@ -41,8 +35,8 @@ var
 this.start = function() {
 
   // TODO: Something more accurate is needed.
-  state.sX = 0;
-  state.sY = 0;
+  state.mouseScreenX = state.mouseScreenX || 0;
+  state.mouseScreenY = state.mouseScreenY || 0;
 
   element.addEventListener(eventName, handler);
 };

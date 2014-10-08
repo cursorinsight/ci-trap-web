@@ -136,7 +136,7 @@ function beforeUnloadHandler() {
 window.addEventListener("beforeunload", beforeUnloadHandler, false);
 
 // last but not least, start it...
-tracker.start();
+tracker.start({ initialState: true });
 
 // ---------------------------------------------------------------------------
 })(this, require, window, document);

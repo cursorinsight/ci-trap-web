@@ -8,7 +8,7 @@ var Transport = function(window) {
 var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 // @constant
-var head = "BA"; // v1.1 :)
+var head = "BB"; // v2 :)
 
 //
 this.buffer = "";

@@ -20,12 +20,12 @@ var
 
   downHandler = function(event) {
     var dT = state.getDT(event, 20);
-    buffer.push([2, dT, button(event)], [4, 20, 6]);
+    buffer.push([2, dT, 1, button(event)], [4, 20, 1, 5]);
   },
 
   upHandler = function(event) {
     var dT = state.getDT(event, 20);
-    buffer.push([3, dT, button(event)], [4, 20, 6]);
+    buffer.push([2, dT, 0, button(event)], [4, 20, 1, 5]);
   };
 
 this.start = function() {

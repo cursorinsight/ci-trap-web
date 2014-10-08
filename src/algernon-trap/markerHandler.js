@@ -22,6 +22,12 @@ var
     buffer.pushRaw(encoded);
   };
 
+this.trigger = function(text) {
+  var markEvent = new window.Event(eventName);
+  markEvent.text = text || "mark";
+  element.dispatchEvent(markEvent);
+};
+
 this.start = function() {
   element.addEventListener(eventName, handler, false);
 };

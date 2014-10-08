@@ -13,42 +13,33 @@
  *
  *    <data> ::= <version> <events>
  *  <events> ::= <event> <events> | EOS
- *   <event> ::= <mouse-move-short> | <mouse-move-long>
- *             | <mouse-button-down> | <mouse-button-up>
- *             | <scroll-change-short> | <scroll-change-long>
+ *   <event> ::= <mouse-move> | <mouse-button>
+ *             | <scroll-change>
  *             | <mouse-wheel-x> | <mouse-wheel-y>
- *             | <window-size-change>
+ *             | <window-size-change> | <window-position-change>
+ *             | <visibility-change> | <unload>
  *             | <marker> | <state>
  *
  * // this is (and will be) always a constant and a version id
  * <version>        ::= "B" <version-letter>
  * <version-letter> ::= "A" | "B" | "C" | "D" ...
  *
- * <mouse-move-simple> ::= 0b0000 <time-difference:20b>
- *                         <mouse-screen-x:18b> <mouse-screen-y:18b>
- *                         <mouse-client-x:18b> <mouse-client-y:18b>
+ * // sum: 60b
+ * <mouse-move> ::= 0b0000 <time-difference:20b>
+ *                  <mouse-screen-x:18b> <mouse-screen-y:18b>
  *
- * <mouse-move-extended> ::= 0b0001 <time-difference:20b>
- *                           <mouse-screen-x:18b> <mouse-screen-y:18b>
- *                           <mouse-client-x:18b> <mouse-client-y:18b>
- *                           <sign-of-dx:1b> <abs-dx:11b>
- *                           <sign-of-dy:1b> <abs-dy:11b>
+ * TODO: return only the differences and put "markers" (as full frames in
+ * video) into the stream
  *
- * // sum: 30b
- * <mouse-button-down> ::= 0b0010 <time-difference:20b>
- *                         <button-definition:6b>
- *   <mouse-button-up> ::= 0b0011 <time-difference:20b>
- *                         <button-definition:6b>
- *
- * // sum: 30b
- * <scroll-change-short> ::= 0b0100 <time-difference:10b>
- *                           <sign-of-dx:1b> <abs-dx:7b>
- *                           <sign-of-dy:1b> <abs-dy:7b>
+ * // sum: 66b
+ * <mouse-button> ::= 0b0010 <time-difference:20b>
+ *                    <button-state:1b> <button-definition:5b> // button-state == 1 for "down", == 0 for "up"
+ *                    <mouse-screen-x:18b> <mouse-screen-y:18b>
  *
  * // sum: 48b
- * <scroll-change-long> ::= 0b0101 <time-difference:20b>
- *                          <sign-of-dx:1b> <abs-dx:11b>
- *                          <sign-of-dy:1b> <abs-dy:11b>
+ * <scroll-change> ::= 0b0100 <time-difference:20b>
+ *                     <sign-of-dx:1b> <abs-dx:11b>
+ *                     <sign-of-dy:1b> <abs-dy:11b>
  *
  * // sum: 36b
  * <mouse-wheel-x> ::= 0b0110 <time-difference:20b>
@@ -60,19 +51,33 @@
  *
  * // sum: 54b
  * <window-size-change> ::= 0b1000 <time-difference:20b>
- *                          <window-size-x:15b> <window-size-y:15b>
+ *                          <inner-window-width:15b> <inner-window-height:15b>
+ *
+ * // sum: 54b
+ * <window-position-change> ::= 0b1001 <time-difference:20b>
+ *                              <window-position-left:15b> <window-position-top:15b>
+ *
+ * // sum: 24b
+ * <visibility-change> ::= 0b1010 <time-difference:20b> // (visible/focused)
+ * <visibility-change> ::= 0b1011 <time-difference:20b> // (hidden/idle)
+ *
+ * // sum: 24b
+ * <unload> ::= 0b1100 <time-difference:20b>
  *
  * // sum: variable
  * <marker> ::= 0b1110 <time-difference:20b>
- *              <size:12b> <url-encoded-string:<size>B>
+ *              <size:12b> <url-encoded-string:<size in bytes>>
  *
- * // sum: 4+20+42+(8*18) = 210b
- * <debug-state> ::= 0b1111 <time-difference:20b>
- *                   <current-time-stamp:42b>
- *                   <current-mouse-screen-x:18b> <current-mouse-screen-y:18b>
- *                   <current-mouse-page-x:18b> <current-mouse-page-y:18b>
- *                   <current-scroll-top:18b> <current-scroll-left:18b>
- *                   <current-window-width:18b> <current-window-height:18b>
+ * // sum: 4+20+42+(12*18) = 282b
+ * <state> ::= 0b1111 <time-difference:20b>
+ *             <current-time-stamp:42b>
+ *             <mouse-screen-x:18b> <mouse-screen-y:18b>
+ *             // <mouse-client-x:18b> <mouse-client-y:18b> // temporarily disabled
+ *             <page-scroll-x(left):18b> <page-scroll-top-y(top):18b>
+ *             <inner-window-width:18b> <inner-window-height:18b>
+ *             <outer-window-width:18b> <outer-window-height:18b>
+ *             <window-position-left:18b> <window-position-top:18b>
+ *             <screen-width:18b> <screen-height:18b>
  *
  * JsDoc keyword:
  * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
@@ -98,9 +103,6 @@ function AlgernonTrap(element, idleTimeout) {
 
   var
 
-    // self
-    algernonTrap = this,
-
     // master loop
     running = false,
 
@@ -115,20 +117,16 @@ function AlgernonTrap(element, idleTimeout) {
     // Handlers
     handlers = new Array(state),
 
-    DebugStateHandler = require("./debugStateHandler.js"),
-
+    StateHandler = require("./stateHandler.js"),
     MarkerHandler = require("./markerHandler.js"),
     MouseMoveHandler = require("./mouseMoveHandler.js"),
     MouseButtonHandler = require("./mouseButtonHandler.js"),
     PageScrollHandler = require("./pageScrollHandler.js");
     //MouseWheelHandler = require("./mouseWheelHandler.js");
 
-  handlers.push(new DebugStateHandler(window, element, state, transport));
-
+  handlers.push(new StateHandler(window, element, state, transport));
   handlers.push(new MarkerHandler(window, element, state, transport));
-
   handlers.push(new MouseMoveHandler(element, state, transport));
-
   handlers.push(new MouseButtonHandler(element, state, transport));
 
   // IE 6, 7, 8 does not support scroll event on document
@@ -138,8 +136,15 @@ function AlgernonTrap(element, idleTimeout) {
   // handlers.push(new MouseWheelHandler(element, state, transport));
 
   if (element === window || element === window.document) {
-    var WindowSizeHandler = require("./windowSizeHandler.js");
+    var
+      WindowSizeHandler = require("./windowSizeHandler.js"),
+      WindowPositionHandler = require("./windowPositionHandler.js"),
+      WindowUnloadHandler = require("./windowUnloadHandler.js"),
+      VisibilityChangeHandler = require("./visibilityChangeHandler.js");
     handlers.push(new WindowSizeHandler(window, state, transport));
+    handlers.push(new WindowPositionHandler(window, state, transport));
+    handlers.push(new WindowUnloadHandler(window, state, transport));
+    handlers.push(new VisibilityChangeHandler(window, state, transport));
   }
 
   /*
@@ -150,14 +155,15 @@ function AlgernonTrap(element, idleTimeout) {
     /**
      *  Starts event processing.
      */
-    start: function() {
+    start: function(options) {
       if (running) {
         return;
       }
+      options = options || {};
       var length = handlers.length, i = 0;
       for (;i < length; i++) {
         if((handlers[i] !== undefined) && (typeof handlers[i].start === "function")) {
-          handlers[i].start();
+          handlers[i].start(options);
         }
       }
       running = true;
@@ -203,9 +209,7 @@ function AlgernonTrap(element, idleTimeout) {
     },
 
     mark: function(text) {
-      var markEvent = new window.Event("at:mark");
-      markEvent.text = text || "mark";
-      element.dispatchEvent(markEvent);
+      return element.trigger(text);
     }
 
   };
