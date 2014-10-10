@@ -1,6 +1,6 @@
 /* global module */
 
-var windowUnloadHandler = function(window, state, buffer) {
+var WindowUnloadHandler = function(window, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -26,4 +26,4 @@ this.stop = function() {
 // ---------------------------------------------------------------------------
 };
 
-module.exports = windowUnloadHandler;
+module.exports = WindowUnloadHandler;

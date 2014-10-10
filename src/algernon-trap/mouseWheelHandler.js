@@ -1,6 +1,6 @@
 /* global module */
 
-var mouseWheelHandler = function(element, state, buffer) {
+var MouseWheelHandler = function(element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -25,4 +25,4 @@ this.stop = function() {
 // ---------------------------------------------------------------------------
 };
 
-module.exports = mouseWheelHandler;
+module.exports = MouseWheelHandler;

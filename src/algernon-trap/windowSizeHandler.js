@@ -1,6 +1,6 @@
 /* global module */
 
-var windowSizeHandler = function(window, state, buffer) {
+var WindowSizeHandler = function(window, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -43,4 +43,4 @@ this.stop = function() {
 // ---------------------------------------------------------------------------
 };
 
-module.exports = windowSizeHandler;
+module.exports = WindowSizeHandler;

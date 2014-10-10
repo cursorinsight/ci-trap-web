@@ -1,6 +1,6 @@
 /* global module */
 
-var tabFocusHandler = function(window, state, buffer) {
+var VisibilityChangeHandler = function(window, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -46,4 +46,4 @@ this.stop = function() {
 // ---------------------------------------------------------------------------
 };
 
-module.exports = tabFocusHandler;
+module.exports = VisibilityChangeHandler;
