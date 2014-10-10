@@ -121,11 +121,13 @@ function AlgernonTrap(element, idleTimeout) {
     MarkerHandler = require("./markerHandler.js"),
     MouseMoveHandler = require("./mouseMoveHandler.js"),
     MouseButtonHandler = require("./mouseButtonHandler.js"),
-    PageScrollHandler = require("./pageScrollHandler.js");
+    PageScrollHandler = require("./pageScrollHandler.js"),
     //MouseWheelHandler = require("./mouseWheelHandler.js");
 
+    markerHandler = new MarkerHandler(window, element, state, transport);
+
   handlers.push(new StateHandler(window, element, state, transport));
-  handlers.push(new MarkerHandler(window, element, state, transport));
+  handlers.push(markerHandler);
   handlers.push(new MouseMoveHandler(element, state, transport));
   handlers.push(new MouseButtonHandler(element, state, transport));
 
@@ -209,7 +211,9 @@ function AlgernonTrap(element, idleTimeout) {
     },
 
     mark: function(text) {
-      return element.trigger(text);
+      if (markerHandler) {
+        markerHandler.trigger(text);
+      }
     }
 
   };

@@ -32,13 +32,14 @@ var
                   18, 18, 18, 18,
                   18, 18, 18, 18,
                   18, 18]);
+  },
+
+  trigger = function() {
+    var stateEvent = new window.Event(eventName);
+    element.dispatchEvent(stateEvent);
   };
 
-
-var trigger = this.trigger = function() {
-  var stateEvent = new window.Event(eventName);
-  element.dispatchEvent(stateEvent);
-};
+this.trigger = trigger;
 
 this.start = function(options) {
   element.addEventListener(eventName, handler, false);
