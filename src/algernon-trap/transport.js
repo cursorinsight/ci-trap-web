@@ -10,18 +10,71 @@ var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 // @constant
 var head = "BB"; // v2 :)
 
-//
-this.buffer = "";
+// buffer
+var buffer = "";
 
 // Locals.
 var
-  transport = this,
   encodeWrapper = window.encodeURIComponent,
 
   url = "/s",
   headers = {},
   counter = 1,
-  sessionID;
+  sessionID,
+
+  encodeValues = function(values, sizes) {
+    var idx,
+        len = values.length,
+        bc = 0, // bit counter
+        cv, // current value
+        av = 0, // actual value
+        size,
+        results = "";
+
+    for (idx = 0; idx < len; idx++) {
+      cv = values[idx];
+      size = sizes[idx];
+      if (cv < 0) { cv = 0; }
+      if (cv > ((2 << size) - 1)) { cv = ((2 << size) - 1); }
+      if (av > 0) {
+        av = av << size;
+      }
+      av |= cv & ((1 << size) - 1);
+      bc += size;
+      while (bc > 6) {
+        bc -= 6;
+        results += map[av >>> bc];
+        av &= (1 << bc) - 1;
+      }
+    }
+
+    results += map[av << (6 - bc)];
+
+    return results;
+  },
+
+  encodeHeaders = function(headers) {
+    var headerString = "";
+
+    for (var key in headers) {
+      if (headers.hasOwnProperty(key)) {
+        headerString = headerString
+          + encodeWrapper(key) + "="
+          + encodeWrapper(headers[key]) + ",";
+      }
+    }
+
+    return encodeValues([headerString.length], [12]) + headerString;
+  };
+
+/*
+ * @private
+ * Resets buffer.
+ */
+function reset() {
+  buffer = "";
+  return true;
+}
 
 /*
  * @private
@@ -29,9 +82,19 @@ var
  * already collected events.
  */
 function shift() {
-  var contents = transport.buffer;
-  transport.reset();
+  var contents = buffer;
+  reset();
   return contents;
+}
+
+/*
+ * @private
+ * Encodes raw bytes into stream format (length + URI encoded string
+ * representation).
+ */
+function encodeRawBytes(bytes) {
+  var encoded = encodeWrapper(bytes);
+  return encodeValues([encoded.length], [12]) + encoded;
 }
 
 /**
@@ -40,7 +103,6 @@ function shift() {
 this.send = function(sync, callback) {
   var
     req = new window.XMLHttpRequest(),
-    headerString = "",
     onResponse = function() {
       if (callback){
         if ((req.readyState === 4) && (req.status === 200)) {
@@ -53,14 +115,6 @@ this.send = function(sync, callback) {
 
   // TODO make it configurable (enable/disable) w//o
   headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
-  for (var key in headers) {
-    if (headers.hasOwnProperty(key)) {
-      // req.setRequestHeader(key, headers[key]);
-      headerString = headerString
-                     + encodeWrapper(key) + "="
-                     + encodeWrapper(headers[key]) + ",";
-    }
-  }
 
   if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
     req.open("POST", url, !sync);
@@ -85,7 +139,7 @@ this.send = function(sync, callback) {
     //throw new Error('CORS not supported'); // TODO
   }
 
-  req.send(head + "," + headerString + shift());
+  req.send(head + encodeHeaders(headers) + shift());
 
   return true;
 };
@@ -112,50 +166,38 @@ this.setSessionID = function(s) {
 };
 
 /**
- * Appends raw bytes to buffer.
+ * Returns current buffer contents (without version magic and headers).
  */
-this.pushRaw = function(bytes) {
-  this.buffer += bytes;
+this.buffer = function() {
+  return buffer;
 };
 
 /**
  * Encodes and pushes values sampled by its given size into buffer.
  */
 this.push = function(values, sizes) {
-
-  var idx,
-    len = values.length,
-    bc = 0,
-    cv, // current value
-    av = 0,
-    size; // bc==bit counter, av=actual value
-
-  for (idx = 0; idx < len; idx++) {
-    cv = values[idx];
-    size = sizes[idx];
-    if (cv < 0) { cv = 0; }
-    if (cv > ((2 << size) - 1)) { cv = ((2 << size) - 1); }
-    if (av > 0) {
-      av = av << size;
-    }
-    av |= cv & ((1 << size) - 1);
-    bc += size;
-    while (bc > 6) {
-      bc -= 6;
-      this.buffer += map[av >>> bc];
-      av &= (1 << bc) - 1;
-    }
-  }
-
-  this.buffer += map[av << (6 - bc)];
-
-  return this.buffer;
+  buffer += encodeValues(values, sizes);
+  return buffer;
 };
 
-this.reset = function() {
-  this.buffer = "";
-  return true;
+/**
+ * Encodes raw bytes into stream format (length + URI encoded string
+ * representation).
+ */
+this.encodeRawBytes = encodeRawBytes;
+
+/**
+ * Appends raw (encoded) bytes to buffer.
+ */
+this.pushRawBytes = function(bytes) {
+  buffer += encodeRawBytes(bytes);
+  return buffer;
 };
+
+/**
+ * Resets buffer.
+ */
+this.reset = reset;
 
 // ---------------------------------------------------------------------------
 };

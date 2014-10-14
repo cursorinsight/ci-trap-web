@@ -9,9 +9,10 @@
  *                     2014, GOLDA Bence <bence@cursorinsight.com>
  *                     2014, TÖRTELI Olivér <oliver@cursorinsight.com>
  *
- * # Data format (in BNF) ###########################################
+ * # Data format (in ~BNF) ##########################################
  *
- *    <data> ::= <version> <events>
+ *    <data> ::= <version> <headers> <events>
+ * <headers> ::= <header-size:12b> <url-encoded-string:<header-size in bytes>>
  *  <events> ::= <event> <events> | EOS
  *   <event> ::= <mouse-move> | <mouse-button>
  *             | <scroll-change>
@@ -188,7 +189,7 @@ function AlgernonTrap(element, idleTimeout) {
     },
 
     buffer: function() {
-      return transport.buffer;
+      return transport.buffer();
     },
 
     // TODO make this "readonly"

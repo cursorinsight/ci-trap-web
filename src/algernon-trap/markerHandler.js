@@ -14,12 +14,11 @@ var
   handler = function(event) {
     var
       dT   = state.getDT(event, 20),
-      text = event && event.text || defaultText,
-      encoded = window.encodeURIComponent(text);
+      text = event && event.text || defaultText;
 
-    buffer.push([14, dT, encoded.length],
-                [ 4, 20,             12]);
-    buffer.pushRaw(encoded);
+    buffer.push([14, dT],
+                [ 4, 20]);
+    buffer.pushRawBytes(text);
   };
 
 this.trigger = function(text) {
