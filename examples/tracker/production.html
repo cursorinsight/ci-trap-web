@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AlgernonTrap -- Tracker</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="/app.css" />
+  </head>
+  <body>
+    <div>
+      <h1>Tracker test</h1>
+      <p>On this page you can test that whether the local tracker code can push data to production (esink) sites or not.<p>
+    </div>
+    <script>
+var _att = _att || [];
+_att.push(['setAccount', 'UA-12345-1']);
+_att.push(['setUrl', (("https:"==document.location.protocol)?"https:":"http:")+'//collect.cursorinsight.com/s']);
+(function(d,u){
+  u=((("https:"==document.location.protocol)?"https:":"http:")+"//"+u+"/");
+  var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'tracker.min.js';
+  s.parentNode.insertBefore(g,s);})(document,"localhost:8100");
+    </script>
+  </body>
+</html>
