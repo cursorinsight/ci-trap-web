@@ -15,6 +15,7 @@
  * <headers> ::= <header-size:12b> <url-encoded-string:<header-size in bytes>>
  *  <events> ::= <event> <events> | EOS
  *   <event> ::= <mouse-move> | <mouse-button>
+ *             | <touch-move> | <touch-change>
  *             | <scroll-change>
  *             | <mouse-wheel-x> | <mouse-wheel-y>
  *             | <window-size-change> | <window-position-change>
@@ -29,6 +30,10 @@
  * <mouse-move> ::= 0b0000 <time-difference:20b>
  *                  <mouse-screen-x:18b> <mouse-screen-y:18b>
  *
+ * <touch-move> ::= 0b0001 <time-difference:20b>
+ *                  <empty:1b> <touch-id:5b>
+ *                  <touch-screen-x:18b> <touch-screen-y:18b>
+ *
  * TODO: return only the differences and put "markers" (as full frames in
  * video) into the stream
  *
@@ -36,6 +41,10 @@
  * <mouse-button> ::= 0b0010 <time-difference:20b>
  *                    <button-state:1b> <button-definition:5b> // button-state == 1 for "down", == 0 for "up"
  *                    <mouse-screen-x:18b> <mouse-screen-y:18b>
+ *
+ * <touch-change> ::= 0b0011 <time-difference:20b>
+ *                    <touch-state:1b> <touch-id:5b> // touch-state == 1 for "down"/"start", == 0 for "up"/"end"
+ *                    <touch-screen-x:18b> <touch-screen-y:18b>
  *
  * // sum: 48b
  * <scroll-change> ::= 0b0100 <time-difference:20b>
@@ -97,23 +106,32 @@
  */
 function AlgernonTrap(element, idleTimeout) {
 
+  var
+    windowAlias = window,
+    documentAlias = window.document,
+    undefinedAlias;
+
   // Set up defaults.
-  if (element === undefined) {
-    element = window.document;
+  if (element === undefinedAlias) {
+    element = documentAlias;
   }
 
   var
+
+    windowSupport = (element === windowAlias || element === documentAlias),
+    touchSupport = "ontouchstart" in windowAlias ||    // works on most browsers
+                   "onmsgesturechange" in windowAlias, // works on ie10
 
     // master loop
     running = false,
 
     // Buffer + transport
     Transport = require("./transport.js"),
-    transport = new Transport(window),
+    transport = new Transport(windowAlias),
 
     // State
     State = require("./state.js"),
-    state = new State(window, transport, idleTimeout),
+    state = new State(windowAlias, transport, idleTimeout),
 
     // Handlers
     handlers = new Array(state),
@@ -125,29 +143,34 @@ function AlgernonTrap(element, idleTimeout) {
     PageScrollHandler = require("./pageScrollHandler.js"),
     //MouseWheelHandler = require("./mouseWheelHandler.js");
 
-    markerHandler = new MarkerHandler(window, element, state, transport);
+    markerHandler = new MarkerHandler(windowAlias, element, state, transport);
 
-  handlers.push(new StateHandler(window, element, state, transport));
+  handlers.push(new StateHandler(windowAlias, element, state, transport));
   handlers.push(markerHandler);
   handlers.push(new MouseMoveHandler(element, state, transport));
   handlers.push(new MouseButtonHandler(element, state, transport));
 
   // IE 6, 7, 8 does not support scroll event on document
   // http://www.quirksmode.org/dom/events/scroll.html
-  handlers.push(new PageScrollHandler(element === window.document ? window : element, state, transport));
+  handlers.push(new PageScrollHandler(element === documentAlias ? windowAlias : element, state, transport));
 
   // handlers.push(new MouseWheelHandler(element, state, transport));
 
-  if (element === window || element === window.document) {
+  if (windowSupport) {
     var
       WindowSizeHandler = require("./windowSizeHandler.js"),
       WindowPositionHandler = require("./windowPositionHandler.js"),
       WindowUnloadHandler = require("./windowUnloadHandler.js"),
       VisibilityChangeHandler = require("./visibilityChangeHandler.js");
-    handlers.push(new WindowSizeHandler(window, state, transport));
-    handlers.push(new WindowPositionHandler(window, state, transport));
-    handlers.push(new WindowUnloadHandler(window, state, transport));
-    handlers.push(new VisibilityChangeHandler(window, state, transport));
+    handlers.push(new WindowSizeHandler(windowAlias, state, transport));
+    handlers.push(new WindowPositionHandler(windowAlias, state, transport));
+    handlers.push(new WindowUnloadHandler(windowAlias, state, transport));
+    handlers.push(new VisibilityChangeHandler(windowAlias, state, transport));
+  }
+
+  if (touchSupport) {
+    var TouchHandler = require("./touchHandler.js");
+    handlers.push(new TouchHandler(element, state, transport));
   }
 
   /*
@@ -165,7 +188,7 @@ function AlgernonTrap(element, idleTimeout) {
       options = options || {};
       var length = handlers.length, i = 0;
       for (;i < length; i++) {
-        if((handlers[i] !== undefined) && (typeof handlers[i].start === "function")) {
+        if((handlers[i] !== undefinedAlias) && (typeof handlers[i].start === "function")) {
           handlers[i].start(options);
         }
       }
@@ -181,7 +204,7 @@ function AlgernonTrap(element, idleTimeout) {
       }
       var length = handlers.length, i = 0;
       for (;i < length; i++) {
-        if((handlers[i] !== undefined) && (typeof handlers[i].stop === "function")) {
+        if((handlers[i] !== undefinedAlias) && (typeof handlers[i].stop === "function")) {
           handlers[i].stop();
         }
       }
