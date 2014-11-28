@@ -40,7 +40,7 @@
  * // sum: 66b
  * <mouse-button> ::= 0b0010 <time-difference:20b>
  *                    <button-state:1b> <button-definition:5b> // button-state == 1 for "down", == 0 for "up"
- *                    <mouse-screen-x:18b> <mouse-screen-y:18b>
+ *                    // <mouse-screen-x:18b> <mouse-screen-y:18b>
  *
  * <touch-change> ::= 0b0011 <time-difference:20b>
  *                    <touch-state:1b> <touch-id:5b> // touch-state == 1 for "down"/"start", == 0 for "up"/"end"
