@@ -2,9 +2,10 @@
   "name": "algernon-trap",
   "description": "Lightweight mouse movement motion tracker",
   "homepage": "http://github.com/cursorinsight/algernon-trap",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
-    "name": "Golda Bence",
+    "name": "Bence Golda",
+    "email": "b@blorb.io",
     "url": "https://github.com/gbence"
   },
   "repository": {
