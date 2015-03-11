@@ -51,6 +51,13 @@
  *                     <sign-of-dx:1b> <abs-dx:11b>
  *                     <sign-of-dy:1b> <abs-dy:11b>
  *
+ * // sum: 104b
+ * <touch-move-paa> ::= 0b0101 <time-difference:20b>
+ *                  <empty:1b> <touch-id:5b>
+ *                  <touch-screen-x:18b> <touch-screen-y:18b>
+ *                  <touch-screen-p:18b> <touch-screen-a1:18b>
+ *                  <touch-screen-a2:18b>
+ *
  * // sum: 36b
  * <mouse-wheel-x> ::= 0b0110 <time-difference:20b>
  *                     <sign-of-d:1b> <abs-d:11b>
