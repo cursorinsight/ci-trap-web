@@ -35,7 +35,8 @@ var
   },
 
   trigger = function() {
-    var stateEvent = new window.Event(eventName);
+    var stateEvent = document.createEvent("CustomEvent");
+    stateEvent.initEvent(eventName, true, false);
     element.dispatchEvent(stateEvent);
   };
 

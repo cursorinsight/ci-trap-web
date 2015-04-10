@@ -22,7 +22,8 @@ var
   };
 
 this.trigger = function(text) {
-  var markEvent = new window.Event(eventName);
+  var markEvent = document.createEvent("CustomEvent");
+  markEvent.initEvent(eventName, true, false);
   markEvent.text = text || "mark";
   element.dispatchEvent(markEvent);
 };

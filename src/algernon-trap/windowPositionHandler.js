@@ -37,7 +37,8 @@ var
       y = windowPositionY();
 
     if (state.windowPositionX !== x || state.windowPositionY !== y) {
-      var event = new window.Event(eventName);
+      var event = document.createEvent("CustomEvent");
+      event.initEvent(eventName, true, false);
       event.x = x;
       event.y = y;
       window.dispatchEvent(event);
