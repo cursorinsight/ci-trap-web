@@ -79,6 +79,7 @@ gulp.task("compile:example-tracker", function() {
 gulp.task("copy-html:example-tracker", function() {
   return gulp.src(["examples/tracker/page-*.html",
                    "examples/tracker/*cors.html",
+                   "examples/tracker/development.html",
                    "examples/tracker/production.html"])
     .pipe(gulp.dest(buildDir));
 });

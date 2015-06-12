@@ -9,15 +9,14 @@
   <body>
     <div>
       <h1>Tracker test</h1>
-      <p>On this page you can test that whether the local tracker code can push data to production (esink) sites or not.<p>
+      <p>On this page you can test that whether the local tracker code can push data to local (development) service or not.<p>
     </div>
     <script type="text/javascript">
       var _scheme = ("https:"==document.location.protocol)?"https":"http";
       var _host = document.location.host;
-      var _chost = "collect.cursorinsight.com";
       var _att = _att || [];
       _att.push(['setAccount', 'UA-12345-1']);
-      _att.push(['setUrl',_scheme+"://"+_chost+"/s"]);
+      _att.push(['setUrl',_scheme+"://"+_host+"/s"]);
       (function(d,u,scheme){u=scheme+"://"+u+"/";var g=d.createElement('script'),
       s=d.getElementsByTagName('script')[0];g.type='text/javascript';g.defer=true;
       g.async=true;g.src=u+'tracker.min.js';s.parentNode.insertBefore(g,s);})
