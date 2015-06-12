@@ -1,6 +1,6 @@
 /* global module */
 
-var StateHandler = function(window, element, state, buffer) {
+var StateHandler = function(window, document, element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 

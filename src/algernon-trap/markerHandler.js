@@ -1,6 +1,6 @@
 /* global module */
 
-var MarkerHandler = function(window, element, state, buffer) {
+var MarkerHandler = function(window, document, element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 

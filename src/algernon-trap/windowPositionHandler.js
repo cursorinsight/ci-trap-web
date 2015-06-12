@@ -1,6 +1,6 @@
 /* global module */
 
-var WindowPositionHandler = function(window, state, buffer) {
+var WindowPositionHandler = function(window, document, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 

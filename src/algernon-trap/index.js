@@ -95,7 +95,7 @@
  * @link ClassName#algernonTrap
  */
 
-(function(global){function moduleDefinition(/*wheelShim*/) { // dependency1, dependency2...
+(function(/* global */){function moduleDefinition(/*wheelShim*/) { // dependency1, dependency2...
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -143,9 +143,9 @@ function AlgernonTrap(element, idleTimeout) {
     PageScrollHandler = require("./pageScrollHandler.js"),
     //MouseWheelHandler = require("./mouseWheelHandler.js");
 
-    markerHandler = new MarkerHandler(windowAlias, element, state, transport);
+    markerHandler = new MarkerHandler(windowAlias, documentAlias, element, state, transport);
 
-  handlers.push(new StateHandler(windowAlias, element, state, transport));
+  handlers.push(new StateHandler(windowAlias, documentAlias, element, state, transport));
   handlers.push(markerHandler);
   handlers.push(new MouseMoveHandler(element, state, transport));
   handlers.push(new MouseButtonHandler(element, state, transport));
@@ -163,7 +163,7 @@ function AlgernonTrap(element, idleTimeout) {
       WindowUnloadHandler = require("./windowUnloadHandler.js"),
       VisibilityChangeHandler = require("./visibilityChangeHandler.js");
     handlers.push(new WindowSizeHandler(windowAlias, state, transport));
-    handlers.push(new WindowPositionHandler(windowAlias, state, transport));
+    handlers.push(new WindowPositionHandler(windowAlias, documentAlias, state, transport));
     handlers.push(new WindowUnloadHandler(windowAlias, state, transport));
     handlers.push(new VisibilityChangeHandler(windowAlias, state, transport));
   }
