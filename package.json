@@ -1,27 +1,39 @@
 {
-  "name": "algernon-trap",
+  "name": "ci-trap",
   "description": "Lightweight mouse movement motion tracker",
-  "homepage": "http://github.com/cursorinsight/algernon-trap",
+  "homepage": "http://github.com/cursorinsight/ci-trap",
   "version": "0.2.0",
   "author": {
     "name": "Bence Golda",
-    "email": "b@blorb.io",
+    "email": "bence@cursorinsight.com",
     "url": "https://github.com/gbence"
   },
+  "maintrainers": [
+    {
+      "name": "Oliver Mate Torteli",
+      "email": "oliver@cursorisnight.com",
+      "url": "https://github.com/tortelio"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/cursorinsight/algernon-trap.git"
+    "url": "git://github.com/cursorinsight/ci-trap.git"
   },
   "bugs": {
-    "url": "https://github.com/cursorinsight/algernon-trap/issues"
+    "url": "https://github.com/cursorinsight/ci-trap/issues"
   },
   "license": "MIT",
+  "main": "./src/ci-trap/index.js",
+  "scripts": {
+    "dist": "gulp dist",
+    "test": "gulp test"
+  },
   "dependencies": {},
   "devDependencies": {
     "body-parser": "~>1.4.0",
     "chai": "~>1.9.0",
     "connect": "~>3.0.0",
-    "eslint": "^0.7.4",
+    "eslint": "^1.10.3",
     "fake-xml-http-request": "*",
     "gulp": "~>3.8.0",
     "gulp-browserify": "~>0.5.0",

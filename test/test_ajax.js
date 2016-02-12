@@ -7,59 +7,59 @@
 // * exact screen / client -- X / Y handling
 // * it must be moved to a supporting JS file that can be loaded several times from several sources
 
-var assert = require("chai").assert,
-  expect = require("chai").expect,
-  sinon = require("sinon"),
+var assert = require('chai').assert
+var expect = require('chai').expect
+var sinon = require('sinon')
 
-  pretender = require("./support/pretender.js"),
-  server = new pretender(function() {
-    this.post("/s", function(request) {
-      return [200, {"Content-type": "appliction/json"}, "['ok']"];
-    });
-  }),
+var pretender = require('./support/pretender.js')
+var server = new pretender(function () {
+  this.post('/s', function (request) {
+    return [200, {'Content-type': 'appliction/json'}, '["ok"]']
+  })
+})
 
-  algernonTrap = require("../src/algernon-trap");
+var ciTrap = require('../src/ci-trap')
 
-describe("algernon-trap after two mouse moves", function() {
+describe('ci-trap after two mouse moves', function () {
 
-  function simulateMouseMove(sX, sY, cX, cY, t) {
-    var e = document.createEvent("MouseEvents");
+  function simulateMouseMove (sX, sY, cX, cY, t) {
+    var e = document.createEvent('MouseEvents')
     // for details: https://developer.mozilla.org/en-US/docs/Web/API/event.initMouseEvent
-    e.initMouseEvent("mousemove", true, true, window, 0, sX, sY, cX, cY, false, false, false, false, null, null);
+    e.initMouseEvent('mousemove', true, true, window, 0, sX, sY, cX, cY, false, false, false, false, null, null)
     //e.timeStamp = t; // << it's not working.. :/
-    document.body.dispatchEvent(e);
-  };
+    document.body.dispatchEvent(e)
+  }
 
-  var algernonTrapInstance,
-    requests,
-    callback,
-    argument;
-  
-  before(function() {
-    algernonTrapInstance = algernonTrap();
+  var ciTrapInstance
+  var requests
+  var callback
+  var argument
 
-    algernonTrapInstance.start();
-    simulateMouseMove(10, 20, 30, 50, "time placeholder!");
+  before(function () {
+    ciTrapInstance = ciTrap()
+
+    ciTrapInstance.start()
+    simulateMouseMove(10, 20, 30, 50, 'time placeholder!')
     //simulateMouseMove(11, 22, 31, 52);
-    algernonTrapInstance.stop();
+    ciTrapInstance.stop()
 
-    callback = sinon.spy();
-  });
+    callback = sinon.spy()
+  })
 
-  it("should have motion-data in its buffer", function() {
-    assert.equal(algernonTrapInstance.buffer(), "AAAAAAKAAU");
-  });
+  it('should have motion-data in its buffer', function () {
+    assert.equal(ciTrapInstance.buffer(), 'AAAAAAKAAU')
+  })
 
-  it("should send data to server in a POST", function() {
-    algernonTrapInstance.send(false, callback);
-    argument = callback.args[0][0];
-    assert.equal(argument.readyState, 4);
-    assert.equal(argument.responseText, "['ok']");
-    assert.equal(argument.statusText,"OK");
-  });
+  it('should send data to server in a POST', function () {
+    ciTrapInstance.send(false, callback)
+    argument = callback.args[0][0]
+    assert.equal(argument.readyState, 4)
+    assert.equal(argument.responseText, '["ok"]')
+    assert.equal(argument.statusText,'OK')
+  })
 
-  it("should reset buffer after a POST", function() {
-    algernonTrapInstance.send();
-    assert.equal(algernonTrapInstance.buffer(), "");
-  });
-});
+  it('should reset buffer after a POST', function () {
+    ciTrapInstance.send()
+    assert.equal(ciTrapInstance.buffer(), '')
+  })
+})

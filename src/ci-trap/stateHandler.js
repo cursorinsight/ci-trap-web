@@ -1,21 +1,19 @@
 /* global module */
 
-var StateHandler = function(window, document, element, state, buffer) {
-"use strict";
+var StateHandler = function (window, document, element, state, buffer) {
+  'use strict'
 // ---------------------------------------------------------------------------
 
-var
   /*
    * State event name (constant).
    */
-  eventName = "at:state",
+  var eventName = 'at:state'
 
   /*
    * State event handler.
    */
-  handler = function(event) {
-    var
-      dT = state.getDT(event, 20);
+  var handler = function (event) {
+    var dT = state.getDT(event, 20)
 
     buffer.push([15, dT, state.lastTs(),                      // 0b1111 <time-difference:20b> <current-time-stamp:42b>
                  state.mouseScreenX, state.mouseScreenY,      // <mouse-screen-x:18b> <mouse-screen-y:18b>
@@ -31,29 +29,29 @@ var
                   18, 18, // 18, 18,
                   18, 18, 18, 18,
                   18, 18, 18, 18,
-                  18, 18]);
-  },
-
-  trigger = function() {
-    var stateEvent = document.createEvent("CustomEvent");
-    stateEvent.initEvent(eventName, true, false);
-    element.dispatchEvent(stateEvent);
-  };
-
-this.trigger = trigger;
-
-this.start = function(options) {
-  element.addEventListener(eventName, handler, false);
-  if (options.initialState === true) {
-    trigger();
+                  18, 18])
   }
-};
 
-this.stop = function() {
-  element.removeEventListener(eventName, handler);
-};
+  var trigger = function () {
+    var stateEvent = document.createEvent('CustomEvent')
+    stateEvent.initEvent(eventName, true, false)
+    element.dispatchEvent(stateEvent)
+  }
+
+  this.trigger = trigger
+
+  this.start = function (options) {
+    element.addEventListener(eventName, handler, false)
+    if (options.initialState === true) {
+      trigger()
+    }
+  }
+
+  this.stop = function () {
+    element.removeEventListener(eventName, handler)
+  }
 
 // ---------------------------------------------------------------------------
-};
+}
 
-module.exports = StateHandler;
+module.exports = StateHandler

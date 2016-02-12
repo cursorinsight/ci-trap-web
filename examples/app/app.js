@@ -1,77 +1,77 @@
 /* global window document require */
 
-(function(global, window, document, require) {
-"use strict";
-// ---------------------------------------------------------------------------
+(function (global, window, document, require) {
+  'use strict'
+  // ---------------------------------------------------------------------------
 
-// Mini-apps demonstrating AlgernonTrap's functions.
+  // Mini-apps demonstrating CITrap's functions.
 
-var AlgernonTrap = require("../../src/algernon-trap");
+  var CITrap = require('../../src/ci-trap')
 
-// Example 0 -- export AlgernonTrap to play around.
-window.AlgernonTrap = AlgernonTrap;
-// end of Example 0
+  // Example 0 -- export CITrap to play around.
+  window.CITrap = CITrap
+  // end of Example 0
 
-// Example 1 -- start-stop-send buttons
-var algernonTrap = new AlgernonTrap();
-window.algernonTrap = algernonTrap;
+  // Example 1 -- start-stop-send buttons
+  var ciTrap = new CITrap()
+  window.ciTrap = ciTrap
 
-var ex1StartButton        = document.getElementById("ex1-start"),
-  ex1StopButton           = document.getElementById("ex1-stop"),
-  ex1ShowBufferButton     = document.getElementById("ex1-show-buffer"),
-  ex1MarkButton           = document.getElementById("ex1-mark"),
-  ex1DebugButton          = document.getElementById("ex1-debug"),
-  ex1SendButton           = document.getElementById("ex1-send"),
+  var ex1StartButton = document.getElementById('ex1-start')
+  var ex1StopButton = document.getElementById('ex1-stop')
+  var ex1ShowBufferButton = document.getElementById('ex1-show-buffer')
+  var ex1MarkButton = document.getElementById('ex1-mark')
+  var ex1DebugButton = document.getElementById('ex1-debug')
+  var ex1SendButton = document.getElementById('ex1-send')
 
-  stateSpan               = document.getElementById("window-state");
+  var stateSpan = document.getElementById('window-state')
 
-ex1StartButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  algernonTrap.start();
-  // Remove this when DOM-events are available in AlgernonTrap
-  stateSpan.innerHTML = "processing";
-});
+  ex1StartButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    ciTrap.start()
+    // Remove this when DOM-events are available in CITrap
+    stateSpan.innerHTML = 'processing'
+  })
 
-ex1StopButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  algernonTrap.stop();
-  // Remove this when DOM-events are available in AlgernonTrap
-  stateSpan.innerHTML = "stopped";
-});
+  ex1StopButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    ciTrap.stop()
+    // Remove this when DOM-events are available in CITrap
+    stateSpan.innerHTML = 'stopped'
+  })
 
-ex1ShowBufferButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  var pre = document.getElementById("window-buffer");
-  pre.innerHTML = algernonTrap.buffer();
-});
+  ex1ShowBufferButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    var pre = document.getElementById('window-buffer')
+    pre.innerHTML = ciTrap.buffer()
+  })
 
-ex1MarkButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  var markEvent = new window.Event("at:mark"),
-    markInput = document.getElementById("ex1-mark-input"),
-    text = markInput.value;
-  if (text) { markEvent.text = text; }
-  if (algernonTrap.element) {
-    algernonTrap.element.dispatchEvent(markEvent);
-  }
-  stateSpan.innerHTML = "sent";
-});
+  ex1MarkButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    var markEvent = new window.Event('at:mark')
+    var markInput = document.getElementById('ex1-mark-input')
+    var text = markInput.value
+    if (text) { markEvent.text = text }
+    if (ciTrap.element) {
+      ciTrap.element.dispatchEvent(markEvent)
+    }
+    stateSpan.innerHTML = 'sent'
+  })
 
-ex1DebugButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  var debugEvent = new window.Event("at:debug");
-  if (algernonTrap.element) {
-    algernonTrap.element.dispatchEvent(debugEvent);
-  }
-  stateSpan.innerHTML = "sent";
-});
+  ex1DebugButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    var debugEvent = new window.Event('at:debug')
+    if (ciTrap.element) {
+      ciTrap.element.dispatchEvent(debugEvent)
+    }
+    stateSpan.innerHTML = 'sent'
+  })
 
-ex1SendButton.addEventListener("click", function(event) {
-  if (event.preventDefault) { event.preventDefault(); } else { event.returnValue = false; }
-  algernonTrap.send(false, function() {stateSpan.innerHTML = "sent";});
-});
+  ex1SendButton.addEventListener('click', function (event) {
+    if (event.preventDefault) { event.preventDefault() } else { event.returnValue = false }
+    ciTrap.send(false, function () { stateSpan.innerHTML = 'sent' })
+  })
 
-// end of Example 1
+  // end of Example 1
 
-// ---------------------------------------------------------------------------
-})(this, window, document, require);
+  // ---------------------------------------------------------------------------
+}) (this, window, document, require)
