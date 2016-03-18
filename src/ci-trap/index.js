@@ -139,6 +139,7 @@
       // Handlers
       var handlers = new Array(state)
 
+      var TransportHandler = require('./transportHandler.js')
       var StateHandler = require('./stateHandler.js')
       var MarkerHandler = require('./markerHandler.js')
       var MouseMoveHandler = require('./mouseMoveHandler.js')
@@ -148,6 +149,7 @@
 
       var markerHandler = new MarkerHandler(windowAlias, element, state, transport)
 
+      handlers.push(new TransportHandler(element, transport))
       handlers.push(new StateHandler(windowAlias, documentAlias, element, state, transport))
       handlers.push(markerHandler)
       handlers.push(new MouseMoveHandler(element, state, transport))
