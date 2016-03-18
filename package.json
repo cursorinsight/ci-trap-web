@@ -25,8 +25,7 @@
   "license": "MIT",
   "main": "./src/ci-trap/index.js",
   "scripts": {
-    "dist": "gulp dist",
-    "test": "gulp test"
+    "gulp": "gulp"
   },
   "dependencies": {},
   "devDependencies": {

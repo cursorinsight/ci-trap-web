@@ -20,6 +20,8 @@ var Transport = function (window) {
   var headers = {}
   var counter = 1
   var sessionID
+  var targetOrigin = ''
+  var activeSessionID
 
   var encodeValues = function (values, sizes) {
     var idx
@@ -141,6 +143,13 @@ var Transport = function (window) {
   }
 
   /**
+   * Sets origin of iframe parent (if has some).
+   */
+  this.setTargetOrigin = function (o) {
+    targetOrigin = o
+  }
+
+  /**
    * Sets destination URL.
    */
   this.setUrl = function (u) {
@@ -159,6 +168,7 @@ var Transport = function (window) {
    */
   this.setSessionID = function (s) {
     sessionID = s
+    activeSessionID = s
   }
 
   /**
@@ -171,24 +181,87 @@ var Transport = function (window) {
   /**
    * Encodes and pushes values sampled by its given size into buffer.
    */
-  this.push = function (values, sizes) {
+  /**
+   * Appends raw (encoded) bytes to buffer.
+   */
+
+  var push = function (values, sizes) {
     buffer += encodeValues(values, sizes)
     return buffer
   }
+
+  var pushRawBytes = function (bytes) {
+    buffer += encodeRawBytes(bytes)
+    return buffer
+  }
+
+  var sessionStart = function (sessionID, dT) {
+    push([30, dT], [5, 20])
+    pushRawBytes('ci:session-start:' + sessionID)
+  }
+
+  var sessionStop = function (sessionID, dT) {
+    push([30, dT], [5, 20])
+    pushRawBytes('ci:session-stop:' + sessionID)
+  }
+
+  this.setActiveSession = function (newSessionID, dT) {
+    if (activeSessionID !== newSessionID) {
+      if (activeSessionID !== sessionID) { sessionStop(activeSessionID, dT) }
+      activeSessionID = newSessionID
+      if (newSessionID !== sessionID) { sessionStart(activeSessionID, dT) }
+    }
+  }
+
+  var _push
+  var _pushFromIframe
+  var _pushRawBytes
+  var _pushRawBytesFromIframe
+  if (self != top) {
+    _push = function (values, sizes) {
+      window.parent.postMessage({
+        sessionID: sessionID,
+        target: 'push',
+        values: values, sizes: sizes
+      }, targetOrigin)
+    }
+
+    _pushRawBytes = function (bytes) {
+      window.parent.postMessage({
+        sessionID: sessionID,
+        target: 'pushRawBytes',
+        bytes: bytes
+      }, targetOrigin)
+    }
+  } else {
+    _push = function () {
+      this.setActiveSession(sessionID, 0)
+      return push.apply(this, arguments)
+    }
+    _pushFromIframe = function (sessionID, values, sizes) {
+      this.setActiveSession(sessionID, 0)
+      return push.apply(this, [values, sizes])
+    }
+
+    _pushRawBytes = function () {
+      this.setActiveSession(sessionID, 0)
+      return pushRawBytes.apply(this, arguments)
+    }
+    _pushRawBytesFromIframe = function (sessionID, bytes) {
+      this.setActiveSession(sessionID, 0)
+      return pushRawBytes.apply(this, [bytes])
+    }
+  }
+  this.push = _push
+  this.pushRawBytes = _pushRawBytes
+  this.pushFromIframe = _pushFromIframe
+  this.pushRawBytesFromIframe = _pushRawBytesFromIframe
 
   /**
    * Encodes raw bytes into stream format (length + URI encoded string
    * representation).
    */
   this.encodeRawBytes = encodeRawBytes
-
-  /**
-   * Appends raw (encoded) bytes to buffer.
-   */
-  this.pushRawBytes = function (bytes) {
-    buffer += encodeRawBytes(bytes)
-    return buffer
-  }
 
   /**
    * Resets buffer.

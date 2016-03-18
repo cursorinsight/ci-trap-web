@@ -7,7 +7,7 @@ var StateHandler = function (window, document, element, state, buffer) {
   /*
    * State event name (constant).
    */
-  var eventName = 'at:state'
+  var eventName = 'ct:state'
 
   /*
    * State event handler.

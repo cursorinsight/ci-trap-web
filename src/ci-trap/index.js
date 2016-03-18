@@ -127,6 +127,11 @@
       var Transport = require('./transport.js')
       var transport = new Transport(windowAlias)
 
+      // Iframe
+      var iframeSupport = (self !== top)
+      // Does not need timeout in iframe
+      idleTimeout = !iframeSupport ? idleTimeout : undefined
+
       // State
       var State = require('./state.js')
       var state = new State(windowAlias, transport, idleTimeout)
@@ -153,6 +158,10 @@
       handlers.push(new PageScrollHandler(element === documentAlias ? windowAlias : element, state, transport))
 
       // handlers.push(new MouseWheelHandler(element, state, transport))
+
+      // Iframe
+      var IframeEventHandler = require('./iframeEventHandler.js')
+      handlers.push(new IframeEventHandler(windowAlias, transport, markerHandler))
 
       if (windowSupport) {
         var WindowSizeHandler = require('./windowSizeHandler.js')
@@ -219,6 +228,10 @@
 
         send: function () {
           return transport.send.apply(this, arguments)
+        },
+
+        setTargetOrigin: function () {
+          return transport.setTargetOrigin.apply(this, arguments)
         },
 
         setHeader: function () {

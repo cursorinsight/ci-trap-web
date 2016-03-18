@@ -138,8 +138,29 @@ var inspectHeaders = function (headers) {
   }
   return str
 }
+// iframe app
+gulp.task('build:iframe-app', ['compile:iframe-app', 'copy-html:iframe-app', 'copy-css:iframe-app'])
+gulp.task('compile:iframe-app', function () {
+  return gulp.src(['examples/app/iframe/*.js'])
+    .pipe(browserify({
+      // insertGlobals : true,
+      // debug: !gulp.env.production
+    }))
+    //.pipe(concat('app.js'))
+    .pipe(gulp.dest(buildDir + '/iframe'))
+})
 
-gulp.task('serve', ['check', 'build:example-app'], function () {
+gulp.task('copy-css:iframe-app', function () {
+  return gulp.src(['examples/app/iframe/app.css'])
+    .pipe(gulp.dest(buildDir + '/iframe'))
+})
+
+gulp.task('copy-html:iframe-app', function () {
+  return gulp.src(['examples/app/iframe/*.html'])
+    .pipe(gulp.dest(buildDir + '/iframe'))
+})
+
+gulp.task('serve', ['check', 'build:example-app', 'build:iframe-app'], function () {
   var app = connect()
               .use(bodyParser.text({'inflate': true}))
               .use(function (req, res, next) {
