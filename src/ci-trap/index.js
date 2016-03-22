@@ -185,6 +185,9 @@
        * Public methods
        */
       return {
+        sendFinally: function () {
+          return state.sendFinally.apply(this, arguments)
+        },
 
         /**
          *  Starts event processing.

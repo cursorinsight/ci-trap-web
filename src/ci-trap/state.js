@@ -6,6 +6,7 @@ var State = function (window, transport, idleTimeout) {
 
   var idleHandler
   var idleTimer
+  var idleCleaner
 
   var epochTs
   var lastTs
@@ -14,6 +15,16 @@ var State = function (window, transport, idleTimeout) {
     idleHandler = function () {
       transport.send()
       idleTimer = null
+    }
+
+    idleCleaner = function () {
+      window.clearTimeout(idleTimer)
+      idleTimer = null
+    }
+
+    this.sendFinally = function () {
+      idleCleaner()
+      return transport.send.apply(this, arguments)
     }
   }
 
@@ -32,15 +43,11 @@ var State = function (window, transport, idleTimeout) {
    *   1409096424364149 -- firefox custom event
    */
   this.getDT = function (event, bits) {
-
     var round = Math.round
     var currentTs = event && typeof event.timeStamp === 'number' && event.timeStamp || (new Date()).getTime()
     var dT
 
-    if (idleTimer) {
-      window.clearTimeout(idleTimer)
-      idleTimer = null
-    }
+    if (idleTimer) { idleCleaner() }
 
     if (currentTs > 1000000000000000) { // (microseconds) in Firefox, special events
       currentTs = round(currentTs / 1000)
