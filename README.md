@@ -1,6 +1,6 @@
-# algernon-trap
+# ci-trap
 
-`algernon-trap` is a lightweight mouse movement tracker library for browsers.
+`ci-trap` is a lightweight mouse movement tracker library for browsers.
 
 ## Using the module
 
@@ -17,10 +17,10 @@ npm install
 ## Example
 
 The `/examples` directory contains a working mini application that demonstrates
-algernon-trap's core functions.  After installing development dependencies, the
+ci-trap's core functions.  After installing development dependencies, the
 project defines several gulp tasks for your convenience:
 
-- You may (re)bundle the mini-app with algernon-trap's code with:
+- You may (re)bundle the mini-app with ci-trap's code with:
 
   ```
   ./node_modules/.bin/gulp scripts
@@ -38,4 +38,4 @@ If you want to see example tracker, please check [this project](https://github.c
 
 ## License
 
-algernon-trap is released under the [MIT license](https://github.com/cursorinsight/algernon-trap/blob/master/LICENSE.md).
+ci-trap is released under the [MIT license](https://github.com/cursorinsight/ci-trap/blob/master/LICENSE.md).

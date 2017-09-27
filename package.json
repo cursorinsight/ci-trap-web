@@ -1,7 +1,7 @@
 {
-  "name": "algernon-trap",
+  "name": "ci-trap",
   "description": "Lightweight mouse movement motion tracker",
-  "homepage": "http://github.com/cursorinsight/algernon-trap",
+  "homepage": "http://github.com/cursorinsight/ci-trap",
   "version": "0.2.0",
   "author": {
     "name": "Bence Golda",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/cursorinsight/algernon-trap.git"
+    "url": "git://github.com/cursorinsight/ci-trap.git"
   },
   "bugs": {
-    "url": "https://github.com/cursorinsight/algernon-trap/issues"
+    "url": "https://github.com/cursorinsight/ci-trap/issues"
   },
   "license": "MIT",
   "dependencies": {},

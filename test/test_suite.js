@@ -1,10 +1,10 @@
 var assert = require("chai").assert,
-  AlgernonTrap = require("../src/algernon-trap");
+  CITrap = require("../src/ci-trap");
 
-describe("algernon-trap", function() {
+describe("ci-trap", function() {
 
   it("should be loaded", function() {
-    assert.isFunction(AlgernonTrap);
+    assert.isFunction(CITrap);
   });
 
 });

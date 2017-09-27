@@ -8,7 +8,7 @@ var MarkerHandler = function(window, document, element, state, buffer) {
  * Marker event name (constant).
  */
 var
-  eventName = "at:mark",
+  eventName = "ct:mark",
   defaultText = "marker",
 
   handler = function(event) {

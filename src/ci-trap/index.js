@@ -1,9 +1,9 @@
-/*! algernon-trap v0.1.0 - MIT license */
+/*! ci-trap v0.2.0 - MIT license */
 /* global module require window */
 
 /*
  * Motion event (mouse movement) catcher for browsers emitting data compatible
- * with Algernon's motion analyzer engine. (touch, gyro, etc. is WIP)
+ * with Cursor Insight's motion analyzer engine. (touch, gyro, etc. is WIP)
  *
  * Copyright (c) 2012--2014, GOLDA Bence <gbence@algernon.hu>
  *                     2014, GOLDA Bence <bence@cursorinsight.com>
@@ -92,7 +92,7 @@
  * JsDoc keyword:
  * https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
  *
- * @link ClassName#algernonTrap
+ * @link ClassName#CITrap
  */
 
 (function(/* global */){function moduleDefinition(/*wheelShim*/) { // dependency1, dependency2...
@@ -100,11 +100,11 @@
 // ---------------------------------------------------------------------------
 
 /**
- * @constructor algernonTrap
+ * @constructor CITrap
  * @param {String} element Html element which will be watched
- * @return {Function} Return algernonTrap, it will be the module
+ * @return {Function} Return CITrap, it will be the module
  */
-function AlgernonTrap(element, idleTimeout) {
+function CITrap(element, idleTimeout) {
 
   var
     windowAlias = window,
@@ -244,10 +244,10 @@ function AlgernonTrap(element, idleTimeout) {
 }
 
 /**
- * Expose AlgernonTrap
+ * Expose CITrap
  */
 
-return AlgernonTrap;
+return CITrap;
 
 // ---------------------------------------------------------------------------
 }

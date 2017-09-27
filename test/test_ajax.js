@@ -18,9 +18,9 @@ var assert = require("chai").assert,
     });
   }),
 
-  algernonTrap = require("../src/algernon-trap");
+  ciTrap = require("../src/ci-trap");
 
-describe("algernon-trap after two mouse moves", function() {
+describe("ci-trap after two mouse moves", function() {
 
   function simulateMouseMove(sX, sY, cX, cY, t) {
     var e = document.createEvent("MouseEvents");
@@ -30,28 +30,28 @@ describe("algernon-trap after two mouse moves", function() {
     document.body.dispatchEvent(e);
   };
 
-  var algernonTrapInstance,
+  var ciTrapInstance,
     requests,
     callback,
     argument;
-  
-  before(function() {
-    algernonTrapInstance = algernonTrap();
 
-    algernonTrapInstance.start();
+  before(function() {
+    ciTrapInstance = ciTrap();
+
+    ciTrapInstance.start();
     simulateMouseMove(10, 20, 30, 50, "time placeholder!");
     //simulateMouseMove(11, 22, 31, 52);
-    algernonTrapInstance.stop();
+    ciTrapInstance.stop();
 
     callback = sinon.spy();
   });
 
   it("should have motion-data in its buffer", function() {
-    assert.equal(algernonTrapInstance.buffer(), "AAAAAAKAAU");
+    assert.equal(ciTrapInstance.buffer(), "AAAAAAKAAU");
   });
 
   it("should send data to server in a POST", function() {
-    algernonTrapInstance.send(false, callback);
+    ciTrapInstance.send(false, callback);
     argument = callback.args[0][0];
     assert.equal(argument.readyState, 4);
     assert.equal(argument.responseText, "['ok']");
@@ -59,7 +59,7 @@ describe("algernon-trap after two mouse moves", function() {
   });
 
   it("should reset buffer after a POST", function() {
-    algernonTrapInstance.send();
-    assert.equal(algernonTrapInstance.buffer(), "");
+    ciTrapInstance.send();
+    assert.equal(ciTrapInstance.buffer(), "");
   });
 });

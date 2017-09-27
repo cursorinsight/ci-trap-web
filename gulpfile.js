@@ -10,7 +10,7 @@ var
 
   buildDir = "./.build",      // output directory (for intermediate processes and serving results)
   distDir = "./dist",         // distribution directory
-  sourceFiles = ["./src/algernon-trap/**/*.js"],
+  sourceFiles = ["./src/ci-trap/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
   appFiles = ["./examples/**/*.js"],
   unitTests = ["./test/test_api.js", "./test/test_suite.js", "./test/test_transport.js"],
@@ -35,7 +35,7 @@ gulp.task("default", ["check", "test"]);
 // compile
 
 gulp.task("dist", function() {
-  return gulp.src("./src/algernon-trap/index.js")
+  return gulp.src("./src/ci-trap/index.js")
     .pipe(browserify({
       // insertGlobals : true,
       // debug: !gulp.env.production

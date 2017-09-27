@@ -8,7 +8,7 @@ var
   /*
    * State event name (constant).
    */
-  eventName = "at:state",
+  eventName = "ct:state",
 
   /*
    * State event handler.

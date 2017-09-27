@@ -1,12 +1,12 @@
 document = require("jsdom")
-             .jsdom("<html><body><div id='algernon-trap'></div></body></html>");
+             .jsdom("<html><body><div id='ci-trap'></div></body></html>");
 window = document.createWindow();
 
 var
   assert = require("chai").assert,
-  Transport = require("../src/algernon-trap/transport.js");
+  Transport = require("../src/ci-trap/transport.js");
 
-describe("AlgernonTrap::Transport", function() {
+describe("CITrap::Transport", function() {
 
   var transport = new Transport(window);
 
