@@ -34,6 +34,7 @@ project defines several gulp tasks for your convenience:
 
   ...which will be accessible at: [localhost:8100](http://localhost:8100/)
 
+If you want to see example tracker, please check [this project](https://github.com/cursorinsight/ci-tracker).
 
 ## License
 

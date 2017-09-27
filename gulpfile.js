@@ -65,25 +65,6 @@ gulp.task("copy-html:example-app", function() {
     .pipe(gulp.dest(buildDir));
 });
 
-gulp.task("compile:example-tracker", function() {
-  return gulp.src(["examples/tracker/tracker.js"])
-    .pipe(browserify({
-      // insertGlobals : true,
-      // debug: !gulp.env.production
-    }))
-    .pipe(uglify())
-    .pipe(concat("tracker.min.js"))
-    .pipe(gulp.dest(buildDir));
-});
-
-gulp.task("copy-html:example-tracker", function() {
-  return gulp.src(["examples/tracker/page-*.html",
-                   "examples/tracker/*cors.html",
-                   "examples/tracker/development.html",
-                   "examples/tracker/production.html"])
-    .pipe(gulp.dest(buildDir));
-});
-
 // TODO separated tests!
 gulp.task("compile:tests", function() {
   return gulp.src(browserTests)
@@ -158,8 +139,7 @@ var connect = require("connect"),
 
 gulp.task("serve", [
       "check",
-      "compile:example-app", "copy-html:example-app", "copy-css:example-app",
-      "compile:example-tracker", "copy-html:example-tracker"
+      "compile:example-app", "copy-html:example-app", "copy-css:example-app"
     ], function () {
   var app = connect()
               .use(bodyParser.text({"inflate": true}))
