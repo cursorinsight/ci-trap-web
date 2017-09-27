@@ -14,7 +14,7 @@ Install dependencies with [NPM](https://www.npmjs.org):
 npm install
 ```
 
-## Example 
+## Example
 
 The `/examples` directory contains a working mini application that demonstrates
 algernon-trap's core functions.  After installing development dependencies, the
