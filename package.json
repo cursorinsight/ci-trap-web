@@ -21,6 +21,12 @@
     "url": "https://github.com/cursorinsight/ci-trap/issues"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=6.11.3"
+  },
+  "engines": {
+    "npm": ">=3.0.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "body-parser": "~>1.4.0",
