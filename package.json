@@ -28,7 +28,7 @@
     "gulp-concat": "~>2.2.0",
     "gulp-coverage": "~>0.1.24",
     "gulp-eslint": "~>0.1.8",
-    "gulp-jsdoc": "~>0.1.4",
+    "gulp-jsdoc3": "~>1.0.1",
     "gulp-karma": ">=0.0.4",
     "gulp-mocha": "~>0.4.0",
     "gulp-uglify": "~>0.3.1",

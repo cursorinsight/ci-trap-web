@@ -26,7 +26,7 @@ var gulp = require("gulp"),
   concat = require("gulp-concat"),
   karma = require("gulp-karma"),
   eslint = require("gulp-eslint"),
-  jsdoc = require("gulp-jsdoc");
+  jsdoc = require("gulp-jsdoc3");
 
 // default task
 
