@@ -9,7 +9,6 @@ var
   port = 8100,                // server port
 
   buildDir = "./.build",      // output directory (for intermediate processes and serving results)
-  distDir = "./dist",         // distribution directory
   sourceFiles = ["./src/ci-trap/**/*.js"],
   supportingFiles = ["./gulpfile.js", "./karma.conf.js"],
   appFiles = ["./examples/**/*.js"],
@@ -33,17 +32,6 @@ var gulp = require("gulp"),
 gulp.task("default", ["check", "test"]);
 
 // compile
-
-gulp.task("dist", function() {
-  return gulp.src("./src/ci-trap/index.js")
-    .pipe(browserify({
-      // insertGlobals : true,
-      // debug: !gulp.env.production
-    }))
-    .pipe(uglify())
-    .pipe(concat(project.name + "-" + project.version + ".min.js"))
-    .pipe(gulp.dest(distDir));
-});
 
 gulp.task("compile:example-app", function() {
   return gulp.src(["examples/app/app.js"])
