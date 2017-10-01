@@ -27,6 +27,9 @@
   "engines": {
     "npm": ">=3.0.0"
   },
+  "scripts": {
+    "gulp": "gulp"
+  },
   "dependencies": {},
   "devDependencies": {
     "body-parser": "~>1.4.0",
