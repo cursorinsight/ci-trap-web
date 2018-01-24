@@ -1,6 +1,6 @@
 /* global module */
 
-var MarkerHandler = function(window, document, element, state, buffer) {
+export function MarkerHandler(window, document, element, state, buffer) {
 "use strict";
 // ---------------------------------------------------------------------------
 
@@ -38,5 +38,3 @@ this.stop = function() {
 
 // ---------------------------------------------------------------------------
 };
-
-module.exports = MarkerHandler;

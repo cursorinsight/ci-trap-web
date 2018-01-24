@@ -8,11 +8,13 @@
     "email": "b@blorb.io",
     "url": "https://github.com/gbence"
   },
-  "contributors": [{
-    "name": "Oliver Mate Torteli",
-    "email": "oliver@cursorinsight.com",
-    "url": "https://github.com/tortelio"
-  }],
+  "contributors": [
+    {
+      "name": "Oliver Mate Torteli",
+      "email": "oliver@cursorinsight.com",
+      "url": "https://github.com/tortelio"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/cursorinsight/ci-trap.git"
@@ -22,33 +24,17 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=6.11.3"
-  },
-  "engines": {
     "npm": ">=3.0.0"
   },
-  "scripts": {
-    "gulp": "gulp"
-  },
-  "dependencies": {},
   "devDependencies": {
     "body-parser": "~>1.4.0",
     "chai": "~>1.9.0",
     "connect": "~>3.0.0",
-    "eslint": "^0.7.4",
+    "eslint": "^1.0.0",
     "fake-xml-http-request": "*",
-    "gulp": "~>3.8.0",
-    "gulp-browserify": "~>0.5.0",
-    "gulp-concat": "~>2.2.0",
-    "gulp-coverage": "~>0.1.24",
-    "gulp-eslint": "~>0.1.8",
-    "gulp-jsdoc3": "~>1.0.1",
-    "gulp-karma": ">=0.0.4",
-    "gulp-mocha": "~>0.4.0",
-    "gulp-uglify": "~>0.3.1",
-    "gulp-util": "~>2.2.0",
     "iconv-lite": "~>0.4.4",
     "jsdom": "~>0.11.0",
+    "parcel-bundler": "^1.4.1",
     "karma": "~>0.12.16",
     "karma-chai": "~>0.1.0",
     "karma-chrome-launcher": "~>0.1.4",
