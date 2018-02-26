@@ -1,40 +1,50 @@
 /* global module */
-
-export function MarkerHandler(window, document, element, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
-/*
- * Marker event name (constant).
- */
 var
   eventName = "ct:mark",
-  defaultText = "marker",
+  defaultText = "marker";
 
-  handler = function(event) {
+class MarkerHandler {
+  constructor(window, document, element, state, buffer) {
+    this.window = window,
+      this.document = document,
+      this.element = element,
+      this.state = state,
+      this.buffer = buffer;
+
+      this.handler = this.handler.bind(this);
+  }
+  // ---------------------------------------------------------------------------
+
+  /*
+   * Marker event name (constant).
+   */
+
+  handler(event) {
     var
-      dT   = state.getDT(event, 20),
+      dT = this.state.getDT(event, 20),
       text = event && event.text || defaultText;
 
-    buffer.push([14, dT],
-                [ 4, 20]);
-    buffer.pushRawBytes(text);
+    this.buffer.push([14, dT],
+      [4, 20]);
+    this.buffer.pushRawBytes(text);
   };
 
-this.trigger = function(text) {
-  var markEvent = document.createEvent("CustomEvent");
-  markEvent.initEvent(eventName, true, false);
-  markEvent.text = text || "mark";
-  element.dispatchEvent(markEvent);
-};
+  trigger(text) {
+    var markEvent = this.document.createEvent("CustomEvent");
+    markEvent.initEvent(eventName, true, false);
+    markEvent.text = text || "mark";
+    this.element.dispatchEvent(markEvent);
+  };
 
-this.start = function() {
-  element.addEventListener(eventName, handler, false);
-};
+  start() {
+    this.element.addEventListener(eventName, this.handler, false);
+  };
 
-this.stop = function() {
-  element.removeEventListener(eventName, handler);
-};
+  stop() {
+    this.element.removeEventListener(eventName, this.handler);
+  };
 
-// ---------------------------------------------------------------------------
-};
+  // ---------------------------------------------------------------------------
+}
+
+export default MarkerHandler;

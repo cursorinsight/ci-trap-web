@@ -1,82 +1,91 @@
 /* global module */
 
-var WindowPositionHandler = function(window, document, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
 var
   eventName = "positionchanged",
   longDelay = 1000 / 2, // 2fps
   shortDelay = 1000 / 15, // 15fps
   throttleBase = 15, // it's a "constant"
   throttleCount = throttleBase,
-  timeout,
+  timeout;
 
-  windowPositionX = function() {
-    return window.screenX || window.screenLeft || 0;
-  },
+class WindowPositionHandler {
+  constructor(window, document, state, buffer) {
+    this.window = window,
+      this.document = document,
+      this.state = state,
+      this.buffer = buffer;
 
-  windowPositionY = function() {
-    return window.screenY || window.screenTop || 0;
-  },
+      this.handler = this.handler.bind(this);
+      this.poller = this.poller.bind(this);
+  }
+  // ---------------------------------------------------------------------------
 
-  handler = function(event) {
-    var dT = state.getDT(null, 20);
 
-    state.windowPositionX = event.x;
-    state.windowPositionY = event.y;
+  windowPositionX() {
+    return this.window.screenX || this.window.screenLeft || 0;
+  };
+
+  windowPositionY() {
+    return this.window.screenY || this.window.screenTop || 0;
+  };
+
+  handler(event) {
+    var dT = this.state.getDT(null, 20);
+
+    this.state.windowPositionX = event.x;
+    this.state.windowPositionY = event.y;
 
     // type = 0b1001
-    buffer.push([9, dT, event.x, event.y],
-                [4, 20,      15,      15]);
-  },
+    this.buffer.push([9, dT, event.x, event.y],
+      [4, 20, 15, 15]);
+  };
 
-  poller = function() {
+  poller() {
     var
-      x = windowPositionX(),
-      y = windowPositionY();
+      x = this.windowPositionX(),
+      y = this.windowPositionY();
 
-    if (state.windowPositionX !== x || state.windowPositionY !== y) {
-      var event = document.createEvent("CustomEvent");
+    if (this.state.windowPositionX !== x || this.state.windowPositionY !== y) {
+      var event = this.document.createEvent("CustomEvent");
       event.initEvent(eventName, true, false);
       event.x = x;
       event.y = y;
-      window.dispatchEvent(event);
+      this.window.dispatchEvent(event);
 
       throttleCount = throttleBase;
     }
 
     if (throttleCount > 0) {
       throttleCount--;
-      timeout = window.setTimeout(poller, shortDelay);
+      timeout = this.window.setTimeout(this.poller, shortDelay);
     } else {
-      timeout = window.setTimeout(poller, longDelay);
-    }
-  },
-
-  startPoller = function() {
-    window.setTimeout(poller, longDelay);
-  },
-
-  stopPoller = function() {
-    if (timeout) {
-      window.clearTimeout(timeout);
+      timeout = this.window.setTimeout(this.poller, longDelay);
     }
   };
 
-this.start = function() {
-  state.windowPositionX = windowPositionX();
-  state.windowPositionY = windowPositionY();
-  window.addEventListener(eventName, handler, false);
-  startPoller();
+  startPoller() {
+    this.window.setTimeout(this.poller, longDelay);
+  };
+
+  stopPoller() {
+    if (timeout) {
+      this.window.clearTimeout(timeout);
+    }
+  };
+
+  start() {
+    this.state.windowPositionX = this.windowPositionX();
+    this.state.windowPositionY = this.windowPositionY();
+    this.window.addEventListener(eventName, this.handler, false);
+    this.startPoller();
+  };
+
+  stop() {
+    this.stopPoller();
+    this.window.removeEventListener(eventName, this.handler, false);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  stopPoller();
-  window.removeEventListener(eventName, handler, false);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = WindowPositionHandler;
+export default WindowPositionHandler;

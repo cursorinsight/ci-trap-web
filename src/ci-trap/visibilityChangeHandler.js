@@ -1,9 +1,5 @@
 /* global module */
 
-var VisibilityChangeHandler = function(window, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
 var
   stateKey,
   eventKey,
@@ -15,35 +11,45 @@ var
     msHidden: "msvisibilitychange"
   };
 
-for (stateKey in keys) {
-  if (stateKey in window.document) {
-    eventKey = keys[stateKey];
-    break;
+class VisibilityChangeHandler {
+  constructor(window, state, buffer) {
+    this.window = window,
+      this.state = state,
+      this.buffer = buffer;
+
+    for (stateKey in keys) {
+      if (stateKey in window.document) {
+        eventKey = keys[stateKey];
+        break;
+      }
+    }
+
+    this.handler = this.handler.bind(this);
   }
-}
+  // ---------------------------------------------------------------------------
 
-var
-  handler = function(event) {
-    var dT = state.getDT(event, 20);
 
-    if (window.document[stateKey]) { // idle/hidden, 0b1011
-      buffer.push([11, dT],
-                  [ 4, 20]);
+  handler(event) {
+    var dT = this.state.getDT(event, 20);
+
+    if (this.window.document[stateKey]) { // idle/hidden, 0b1011
+      this.buffer.push([11, dT],
+        [4, 20]);
     } else { // focused/visible, 0b1010
-      buffer.push([10, dT],
-                  [ 4, 20]);
+      this.buffer.push([10, dT],
+        [4, 20]);
     }
   };
 
-this.start = function() {
-  window.addEventListener(eventKey, handler, false);
+  start() {
+    window.addEventListener(eventKey, this.handler, false);
+  };
+
+  stop() {
+    window.removeEventListener(eventKey, this.handler, false);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  window.removeEventListener(eventKey, handler, false);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = VisibilityChangeHandler;
+export default VisibilityChangeHandler;

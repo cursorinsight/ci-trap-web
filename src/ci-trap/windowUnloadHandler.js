@@ -1,29 +1,37 @@
 /* global module */
 
-var WindowUnloadHandler = function(window, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
 var
-  eventName = "beforeunload",
+  eventName = "beforeunload";
 
-  handler = function(event) {
-    var dT = state.getDT(event, 20);
+class WindowUnloadHandler {
+  constructor(window, state, buffer) {
+    this.window = window,
+      this.state = state,
+      this.buffer = buffer;
+
+    this.handler = this.handler.bind(this);
+  }
+  // ---------------------------------------------------------------------------
+
+
+
+  handler(event) {
+    var dT = this.state.getDT(event, 20);
 
     // 0b1001
-    buffer.push([12, dT],
-                [ 4, 20]);
+    this.buffer.push([12, dT],
+      [4, 20]);
   };
 
-this.start = function() {
-  window.addEventListener(eventName, handler, false);
+  start() {
+    this.window.addEventListener(eventName, this.handler, false);
+  };
+
+  stop() {
+    this.window.removeEventListener(eventName, this.handler, false);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  window.removeEventListener(eventName, handler, false);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = WindowUnloadHandler;
+export default WindowUnloadHandler;

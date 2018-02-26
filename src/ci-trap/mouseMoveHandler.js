@@ -1,27 +1,31 @@
 /* global module */
+var
+  // abs = Math.abs,
+  eventName = "mousemove";
 
 // TODO: http://www.jacklmoore.com/notes/mouse-position/
 
-var MouseMoveHandler = function(element, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
+class MouseMoveHandler {
+  constructor(element, state, buffer) {
+    this.element = element,
+      this.state = state,
+      this.buffer = buffer;
 
-var
-  // abs = Math.abs,
-  eventName = "mousemove",
+      this.handler = this.handler.bind(this);
+  }
 
-  handler = function(event) {
+  handler(event) {
     var
-      dT = state.getDT(event, 20),
+      dT = this.state.getDT(event, 20),
       sX = event.screenX,
       sY = event.screenY;
 
     // Saving for next check
-    state.mouseScreenX = sX;
-    state.mouseScreenY = sY;
+    this.state.mouseScreenX = sX;
+    this.state.mouseScreenY = sY;
 
-    buffer.push([0, dT, sX, sY],
-                [4, 20, 18, 18]);
+    this.buffer.push([0, dT, sX, sY],
+      [4, 20, 18, 18]);
 
     // Saving for markers -- temporarily disabled
     // state.cX = event.clientX;
@@ -32,20 +36,20 @@ var
     return true;
   };
 
-this.start = function() {
+  start() {
 
-  // TODO: Something more accurate is needed.
-  state.mouseScreenX = state.mouseScreenX || 0;
-  state.mouseScreenY = state.mouseScreenY || 0;
+    // TODO: Something more accurate is needed.
+    this.state.mouseScreenX = this.state.mouseScreenX || 0;
+    this.state.mouseScreenY = this.state.mouseScreenY || 0;
 
-  element.addEventListener(eventName, handler);
+    this.element.addEventListener(eventName, this.handler);
+  };
+
+  stop() {
+    this.element.removeEventListener(eventName, this.handler);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  element.removeEventListener(eventName, handler);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = MouseMoveHandler;
+export default MouseMoveHandler;

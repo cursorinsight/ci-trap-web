@@ -95,6 +95,20 @@
  * @link ClassName#CITrap
  */
 
+import State from "./state.js";
+import StateHandler from "./statehandler.js";
+import TouchHandler from "./touchHandler.js";
+import MarkerHandler from "./markerHandler.js";
+import MouseMoveHandler from "./mouseMoveHandler.js";
+import MouseButtonHandler from"./mouseButtonHandler.js";
+import PageScrollHandler from "./pageScrollHandler.js";
+import WindowSizeHandler from "./windowSizeHandler.js";
+import WindowPositionHandler from "./windowPositionHandler.js";
+import WindowUnloadHandler from "./windowUnloadHandler.js";
+import VisibilityChangeHandler from "./visibilityChangeHandler.js";
+//import  MouseWheelHandler = require("./mouseWheelHandler.js");
+import Transport from "./transport.js";
+
 (function(/* global */){function moduleDefinition(/*wheelShim*/) { // dependency1, dependency2...
 "use strict";
 // ---------------------------------------------------------------------------
@@ -126,25 +140,18 @@ function CITrap(element, idleTimeout) {
     running = false,
 
     // Buffer + transport
-    Transport = require("./transport.js"),
     transport = new Transport(windowAlias),
 
     // State
-    State = require("./state.js"),
     state = new State(windowAlias, transport, idleTimeout),
 
     // Handlers
     handlers = new Array(state),
 
-    StateHandler = require("./stateHandler.js"),
-    MarkerHandler = require("./markerHandler.js"),
-    MouseMoveHandler = require("./mouseMoveHandler.js"),
-    MouseButtonHandler = require("./mouseButtonHandler.js"),
-    PageScrollHandler = require("./pageScrollHandler.js"),
-    //MouseWheelHandler = require("./mouseWheelHandler.js");
+   
 
     markerHandler = new MarkerHandler(windowAlias, documentAlias, element, state, transport);
-
+    
   handlers.push(new StateHandler(windowAlias, documentAlias, element, state, transport));
   handlers.push(markerHandler);
   handlers.push(new MouseMoveHandler(element, state, transport));
@@ -154,14 +161,9 @@ function CITrap(element, idleTimeout) {
   // http://www.quirksmode.org/dom/events/scroll.html
   handlers.push(new PageScrollHandler(element === documentAlias ? windowAlias : element, state, transport));
 
-  // handlers.push(new MouseWheelHandler(element, state, transport));
+  // handlers.push(new MouseWheelHandler.default.prototype.constructor(element, state, transport));
 
   if (windowSupport) {
-    var
-      WindowSizeHandler = require("./windowSizeHandler.js"),
-      WindowPositionHandler = require("./windowPositionHandler.js"),
-      WindowUnloadHandler = require("./windowUnloadHandler.js"),
-      VisibilityChangeHandler = require("./visibilityChangeHandler.js");
     handlers.push(new WindowSizeHandler(windowAlias, state, transport));
     handlers.push(new WindowPositionHandler(windowAlias, documentAlias, state, transport));
     handlers.push(new WindowUnloadHandler(windowAlias, state, transport));
@@ -169,7 +171,6 @@ function CITrap(element, idleTimeout) {
   }
 
   if (touchSupport) {
-    var TouchHandler = require("./touchHandler.js");
     handlers.push(new TouchHandler(element, state, transport));
   }
 

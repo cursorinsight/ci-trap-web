@@ -2,25 +2,34 @@
 
 // TODO: save touchScreenX/Y values into state
 // TODO: simplify / group start/end/move handlers, they are nearly identical
-
-var TouchHandler = function(element, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
 var
   startEventName = "touchstart",
   endEventName = "touchend",
   moveEventName = "touchmove",
 
-  touchIdToId = [],
+  touchIdToId = [];
+
+class TouchHandler {
+  constructor(element, state, buffer) {
+    this.element = element,
+      this.state = state,
+      this.buffer = buffer;
+
+      this.startHandler = this.startHandler.bind(this);
+      this.moveHandler = this.moveHandler.bind(this);
+      this.endHandler = this.endHandler.bind(this);
+  }
+  // ---------------------------------------------------------------------------
+
+
 
   // finds an existing (or free) id for given touchId, starting from 0.
-  resolveId = function(touchId) {
+  resolveId(touchId) {
     var
       firstFree,
       length = touchIdToId.length,
       i = 0;
-    for(; i < length; i++) {
+    for (; i < length; i++) {
       if (touchIdToId[i] === touchId) { return i; }
       if (touchIdToId[i] === undefined) { firstFree = firstFree || i; }
     }
@@ -31,56 +40,56 @@ var
       touchIdToId.push(touchId);
       return length;
     }
-  },
+  };
 
   // removes touchId from list.
-  removeId = function(touchId) {
+  removeId(touchId) {
     var length = touchIdToId.length, i = 0;
-    for(; i < length; i++) {
+    for (; i < length; i++) {
       if (touchIdToId[i] === touchId) { touchIdToId[i] = undefined; }
     }
     i--;
-    for(; i >= 0; i--) {
+    for (; i >= 0; i--) {
       if (touchIdToId[i] === undefined) {
         touchIdToId.pop();
       } else {
         break;
       }
     }
-  },
+  };
 
-  startHandler = function(event) {
+  startHandler(event) {
     var
-      dT = state.getDT(event, 20),
+      dT = this.state.getDT(event, 20),
       changedTouches = event.changedTouches,
       length = changedTouches.length,
       i = 0;
 
-    for(; i < length; i++) {
+    for (; i < length; i++) {
       var
         ev = changedTouches[i],
         id = resolveId(ev.identifier);
-      buffer.push([3, dT, 1, id, ev.screenX, ev.screenY],
-                  [4, 20, 1,  5,         18,         18]);
+        this.buffer.push([3, dT, 1, id, ev.screenX, ev.screenY],
+        [4, 20, 1, 5, 18, 18]);
       dT = 0; // next
     }
 
     return true;
-  },
+  };
 
-  endHandler = function(event) {
+  endHandler(event) {
     var
-      dT = state.getDT(event, 20),
+      dT = this.state.getDT(event, 20),
       changedTouches = event.changedTouches,
       length = changedTouches.length,
       i = 0;
 
-    for(; i < length; i++) {
+    for (; i < length; i++) {
       var
         ev = changedTouches[i],
         id = resolveId(ev.identifier);
-      buffer.push([3, dT, 0, id, ev.screenX, ev.screenY],
-                  [4, 20, 1,  5,         18,         18]);
+        this.buffer.push([3, dT, 0, id, ev.screenX, ev.screenY],
+        [4, 20, 1, 5, 18, 18]);
 
       removeId(ev.identifier);
 
@@ -88,40 +97,40 @@ var
     }
 
     return true;
-  },
+  };
 
-  moveHandler = function(event) {
+  moveHandler(event) {
     var
-      dT = state.getDT(event, 20),
+      dT = this.state.getDT(event, 20),
       changedTouches = event.changedTouches,
       length = changedTouches.length,
       i = 0;
 
-    for(; i < length; i++) {
+    for (; i < length; i++) {
       var
         ev = changedTouches[i],
         id = resolveId(ev.identifier);
-      buffer.push([1, dT, 0, id, ev.screenX, ev.screenY],
-                  [4, 20, 1,  5,         18,         18]);
+        this.buffer.push([1, dT, 0, id, ev.screenX, ev.screenY],
+        [4, 20, 1, 5, 18, 18]);
       dT = 0; // next
     }
 
     return true;
   };
 
-this.start = function() {
-  element.addEventListener(startEventName, startHandler);
-  element.addEventListener(moveEventName, moveHandler);
-  element.addEventListener(endEventName, endHandler);
+  start() {
+    this.element.addEventListener(startEventName, this.startHandler);
+    this.element.addEventListener(moveEventName, this.moveHandler);
+    this.element.addEventListener(endEventName, this.endHandler);
+  };
+
+  stop() {
+    this.element.removeEventListener(startEventName, this.startHandler);
+    this.element.removeEventListener(moveEventName, this.moveHandler);
+    this.element.removeEventListener(endEventName, this.endHandler);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  element.removeEventListener(startEventName, startHandler);
-  element.removeEventListener(moveEventName, moveHandler);
-  element.removeEventListener(endEventName, endHandler);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = TouchHandler;
+export default TouchHandler;

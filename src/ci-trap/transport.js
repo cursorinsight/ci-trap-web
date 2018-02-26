@@ -1,10 +1,5 @@
 /* global module */
 
-var Transport = function(window) {
-"use strict";
-// ---------------------------------------------------------------------------
-
-// @constant
 var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 // @constant
@@ -15,14 +10,24 @@ var buffer = "";
 
 // Locals.
 var
-  encodeWrapper = window.encodeURIComponent,
-
   url = "/s",
   headers = {},
   counter = 1,
-  sessionID,
+  sessionID;
 
-  encodeValues = function(values, sizes) {
+class Transport{
+  constructor(window) {
+    this.window = window,
+    this.encodeWrapper = window.encodeURIComponent;
+
+    this.send = this.send.bind(this);
+  }
+// ---------------------------------------------------------------------------
+
+// @constant
+
+
+  encodeValues (values, sizes) {
     var idx,
         len = values.length,
         bc = 0, // bit counter
@@ -51,27 +56,27 @@ var
     results += map[av << (6 - bc)];
 
     return results;
-  },
+  };
 
-  encodeHeaders = function(headers) {
+  encodeHeaders(headers) {
     var headerString = "";
 
     for (var key in headers) {
       if (headers.hasOwnProperty(key)) {
         headerString = headerString
-          + encodeWrapper(key) + "="
-          + encodeWrapper(headers[key]) + ",";
+          + this.encodeWrapper(key) + "="
+          + this.encodeWrapper(headers[key]) + ",";
       }
     }
 
-    return encodeValues([headerString.length], [12]) + headerString;
+    return this.encodeValues([headerString.length], [12]) + headerString;
   };
 
 /*
  * @private
  * Resets buffer.
  */
-function reset() {
+reset() {
   buffer = "";
   return true;
 }
@@ -81,9 +86,9 @@ function reset() {
  * Shifts available data.  That means resetting to its defaults and returning
  * already collected events.
  */
-function shift() {
+shift() {
   var contents = buffer;
-  reset();
+  this.reset();
   return contents;
 }
 
@@ -92,15 +97,15 @@ function shift() {
  * Encodes raw bytes into stream format (length + URI encoded string
  * representation).
  */
-function encodeRawBytes(bytes) {
-  var encoded = encodeWrapper(bytes);
-  return encodeValues([encoded.length], [12]) + encoded;
+encodeRawBytes(bytes) {
+  var encoded = this.encodeWrapper(bytes);
+  return this.encodeValues([encoded.length], [12]) + encoded;
 }
 
 /**
  * Sends data to destination.
  */
-this.send = function(sync, callback) {
+send(sync, callback) {
   var
     req = new window.XMLHttpRequest(),
     onResponse = function() {
@@ -121,13 +126,13 @@ this.send = function(sync, callback) {
     req.onreadystatechange = onResponse; // TODO XMLHttpRequest2 has onload and co...
     req.setRequestHeader("Content-type", "text/plain");
     // req.withCredentials = true;
-  } else if (typeof window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
+  } else if (typeof this.window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
     req = new window.XDomainRequest();
     req.onload = onSuccess;
     req.onerror = onFailure;
     req.contentType = "text/plain";
     req.open("POST", url);
-  } else if (typeof window.ActiveXObject !== "undefined") { // Is it OK? :)
+  } else if (typeof this.window.ActiveXObject !== "undefined") { // Is it OK? :)
     req = new window.ActiveXObject("Microsoft.XMLHTTP");
     req.open("POST", url);
   } else {
@@ -138,8 +143,8 @@ this.send = function(sync, callback) {
     //req = null;
     //throw new Error('CORS not supported'); // TODO
   }
-
-  req.send(head + encodeHeaders(headers) + shift());
+  console.log(head + this.encodeHeaders(headers) + this.shift());
+  req.send(head + this.encodeHeaders(headers) + this.shift());
 
   return true;
 };
@@ -147,36 +152,36 @@ this.send = function(sync, callback) {
 /**
  * Sets destination URL.
  */
-this.setUrl = function(u) {
+setUrl(u) {
   url = u;
 };
 
 /**
  * Sets request header k/v pair.
  */
-this.setHeader = function(key, value) {
+setHeader(key, value) {
   headers[key] = value;
 };
 
 /**
  * Sets session ID for this session.
  */
-this.setSessionID = function(s) {
+setSessionI(s) {
   sessionID = s;
 };
 
 /**
  * Returns current buffer contents (without version magic and headers).
  */
-this.buffer = function() {
+buffer() {
   return buffer;
 };
 
 /**
  * Encodes and pushes values sampled by its given size into buffer.
  */
-this.push = function(values, sizes) {
-  buffer += encodeValues(values, sizes);
+push (values, sizes) {
+  buffer += this.encodeValues(values, sizes);
   return buffer;
 };
 
@@ -184,22 +189,22 @@ this.push = function(values, sizes) {
  * Encodes raw bytes into stream format (length + URI encoded string
  * representation).
  */
-this.encodeRawBytes = encodeRawBytes;
+// this.encodeRawBytes = encodeRawBytes;
 
 /**
  * Appends raw (encoded) bytes to buffer.
  */
-this.pushRawBytes = function(bytes) {
-  buffer += encodeRawBytes(bytes);
+pushRawBytes(bytes) {
+  buffer += this.encodeRawBytes(bytes);
   return buffer;
 };
 
 /**
  * Resets buffer.
  */
-this.reset = reset;
+// this.reset = reset;
 
 // ---------------------------------------------------------------------------
 };
 
-module.exports = Transport;
+export default Transport;

@@ -1,46 +1,49 @@
 /* global module */
-
-var WindowSizeHandler = function(window, state, buffer) {
-"use strict";
-// ---------------------------------------------------------------------------
-
 var
   delay = 1000 / 15, // 15fps
-  timeout,
+  timeout;
 
-  handler = function(event) {
+class WindowSizeHandler {
+  constructor(window, state, buffer) {
+    this.window = window,
+      this.state = state,
+      this.buffer = buffer;
+  }
+  // ---------------------------------------------------------------------------
+
+  handler(event) {
     var
-      w  = window.innerWidth,
-      h  = window.innerHeight,
-      dT = state.getDT(event, 20);
+      w = this.window.innerWidth,
+      h = this.window.innerHeight,
+      dT = this.state.getDT(event, 20);
 
     // type = 0b1000
-    buffer.push([8, dT,  w,  h],
-                [4, 20, 15, 15]);
-  },
+    this.buffer.push([8, dT, w, h],
+      [4, 20, 15, 15]);
+  };
 
-  throttler = function(event) {
+  throttler(event) {
     if (timeout) {
-      window.clearTimeout(timeout);
+      this.window.clearTimeout(timeout);
     }
 
-    timeout = window.setTimeout(function() {
+    timeout = window.setTimeout(function () {
       timeout = null;
       handler(event);
     }, delay);
   };
 
-this.start = function() {
-  state.wW = window.innerWidth;
-  state.wH = window.innerHeight;
-  window.addEventListener("resize", throttler, false);
+  start() {
+    this.state.wW = this.window.innerWidth;
+    this.state.wH = this.window.innerHeight;
+    this.window.addEventListener("resize", this.throttler, false);
+  };
+
+  stop() {
+    this.window.removeEventListener("resize", this.throttler, false);
+  };
+
+  // ---------------------------------------------------------------------------
 };
 
-this.stop = function() {
-  window.removeEventListener("resize", throttler, false);
-};
-
-// ---------------------------------------------------------------------------
-};
-
-module.exports = WindowSizeHandler;
+export default WindowSizeHandler;
