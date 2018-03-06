@@ -1,7 +1,5 @@
 import { stat } from "fs";
 
-/* global module */
-
 var
   downEventName = "mousedown",
   upEventName = "mouseup";

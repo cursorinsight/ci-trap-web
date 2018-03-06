@@ -1,5 +1,3 @@
-/* global module */
-
 // TODO: save touchScreenX/Y values into state
 // TODO: simplify / group start/end/move handlers, they are nearly identical
 var

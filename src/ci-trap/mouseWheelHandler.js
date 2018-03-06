@@ -1,4 +1,3 @@
-/* global module */
 var
   eventName = "wheel";
 
@@ -10,7 +9,6 @@ class MouseWheelHandler {
 
       this.handler = this.handler.bind(this);
   }
-  "use strict";
   // ---------------------------------------------------------------------------
 
 

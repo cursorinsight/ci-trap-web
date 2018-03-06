@@ -1,4 +1,3 @@
-/* global module */
 
 var
   idleTimer,
@@ -11,16 +10,15 @@ class State {
       this.idleTimeout = idleTimeout;
 
     this.getDT = this.getDT.bind(this);
+    this.idleHandler = this.idleHandler.bind(this);
 
-    if (typeof idleTimeout === "number") {
+    if (idleTimeout !== 0) {
       this.idleHandler();
     }
+
+
   }
-  // ---------------------------------------------------------------------------
-
-
-
-
+  
   idleHandler() {
     this.transport.send();
     idleTimer = null;
@@ -77,7 +75,7 @@ class State {
       return 0;
     }
 
-    if (typeof this.idleTimeout === "number") {
+    if (this.idleTimeout !== 0) {
       idleTimer = this.window.setTimeout(this.idleHandler, this.idleTimeout);
     }
 

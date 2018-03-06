@@ -1,4 +1,3 @@
-/* global module */
 var
   delay = 1000 / 15, // 15fps
   timeout;
@@ -8,6 +7,8 @@ class WindowSizeHandler {
     this.window = window,
       this.state = state,
       this.buffer = buffer;
+
+      this.throttler = this.throttler.bind(this);
   }
   // ---------------------------------------------------------------------------
 
@@ -23,15 +24,18 @@ class WindowSizeHandler {
   };
 
   throttler(event) {
-    if (timeout) {
-      this.window.clearTimeout(timeout);
+    if (this.timeout) {
+      this.window.clearTimeout(this.timeout());
     }
-
-    timeout = window.setTimeout(function () {
-      timeout = null;
-      handler(event);
-    }, delay);
   };
+
+  timeout(){
+    var self = this;
+    window.setTimeout(function () {
+      timeout = null;
+      self.handler(event);
+    }, delay);
+  }
 
   start() {
     this.state.wW = this.window.innerWidth;

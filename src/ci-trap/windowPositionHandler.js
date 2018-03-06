@@ -1,5 +1,3 @@
-/* global module */
-
 var
   eventName = "positionchanged",
   longDelay = 1000 / 2, // 2fps

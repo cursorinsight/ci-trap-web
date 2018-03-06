@@ -1,4 +1,5 @@
 /* global window document require */
+import CITrap from "../../src/ci-trap/index";
 
 (function(global, window, document, require) {
 "use strict";
@@ -6,7 +7,6 @@
 
 // Mini-apps demonstrating CITrap's functions.
 
-var CITrap = require("../../src/ci-trap");
 
 // Example 0 -- export CITrap to play around.
 window.CITrap = CITrap;

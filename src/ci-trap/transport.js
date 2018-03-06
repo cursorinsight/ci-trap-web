@@ -1,6 +1,4 @@
-/* global module */
-
-var map  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 // @constant
 var head = "BB"; // v2 :)
@@ -15,26 +13,26 @@ var
   counter = 1,
   sessionID;
 
-class Transport{
+class Transport {
   constructor(window) {
     this.window = window,
-    this.encodeWrapper = window.encodeURIComponent;
+      this.encodeWrapper = window.encodeURIComponent;
 
     this.send = this.send.bind(this);
   }
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-// @constant
+  // @constant
 
 
-  encodeValues (values, sizes) {
+  encodeValues(values, sizes) {
     var idx,
-        len = values.length,
-        bc = 0, // bit counter
-        cv, // current value
-        av = 0, // actual value
-        size,
-        results = "";
+      len = values.length,
+      bc = 0, // bit counter
+      cv, // current value
+      av = 0, // actual value
+      size,
+      results = "";
 
     for (idx = 0; idx < len; idx++) {
       cv = values[idx];
@@ -72,139 +70,164 @@ class Transport{
     return this.encodeValues([headerString.length], [12]) + headerString;
   };
 
-/*
- * @private
- * Resets buffer.
- */
-reset() {
-  buffer = "";
-  return true;
-}
-
-/*
- * @private
- * Shifts available data.  That means resetting to its defaults and returning
- * already collected events.
- */
-shift() {
-  var contents = buffer;
-  this.reset();
-  return contents;
-}
-
-/*
- * @private
- * Encodes raw bytes into stream format (length + URI encoded string
- * representation).
- */
-encodeRawBytes(bytes) {
-  var encoded = this.encodeWrapper(bytes);
-  return this.encodeValues([encoded.length], [12]) + encoded;
-}
-
-/**
- * Sends data to destination.
- */
-send(sync, callback) {
-  var
-    req = new window.XMLHttpRequest(),
-    onResponse = function() {
-      if (callback){
-        if ((req.readyState === 4) && (req.status === 200)) {
-          callback(req);
-        }
-      }
-    },
-    onSuccess = function() {}, // TODO
-    onFailure = function() {}; // TODO
-
-  // TODO make it configurable (enable/disable) w//o
-  headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
-
-  if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
-    req.open("POST", url, !sync);
-    req.onreadystatechange = onResponse; // TODO XMLHttpRequest2 has onload and co...
-    req.setRequestHeader("Content-type", "text/plain");
-    // req.withCredentials = true;
-  } else if (typeof this.window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
-    req = new window.XDomainRequest();
-    req.onload = onSuccess;
-    req.onerror = onFailure;
-    req.contentType = "text/plain";
-    req.open("POST", url);
-  } else if (typeof this.window.ActiveXObject !== "undefined") { // Is it OK? :)
-    req = new window.ActiveXObject("Microsoft.XMLHTTP");
-    req.open("POST", url);
-  } else {
-    // TODO Firefox in test mode get to this branch
-    req.open("POST", url, !sync);
-    req.onload = onResponse;
-    req.setRequestHeader("Content-type", "text/plain");
-    //req = null;
-    //throw new Error('CORS not supported'); // TODO
+  /*
+   * @private
+   * Resets buffer.
+   */
+  reset() {
+    buffer = "";
+    return true;
   }
-  console.log(head + this.encodeHeaders(headers) + this.shift());
-  req.send(head + this.encodeHeaders(headers) + this.shift());
 
-  return true;
-};
+  /*
+   * @private
+   * Shifts available data.  That means resetting to its defaults and returning
+   * already collected events.
+   */
+  shift() {
+    var contents = buffer;
+    this.reset();
+    return contents;
+  }
 
-/**
- * Sets destination URL.
- */
-setUrl(u) {
-  url = u;
-};
+  /*
+   * @private
+   * Encodes raw bytes into stream format (length + URI encoded string
+   * representation).
+   */
+  encodeRawBytes(bytes) {
+    var encoded = this.encodeWrapper(bytes);
+    return this.encodeValues([encoded.length], [12]) + encoded;
+  }
 
-/**
- * Sets request header k/v pair.
- */
-setHeader(key, value) {
-  headers[key] = value;
-};
+  send(sync, callback) {
+    try {
+      var x = new(this.window.XMLHttpRequest || this.window.ActiveXObject)('MSXML2.XMLHTTP.3.0');
+      x.open('POST', url, 1);
+      x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      x.onreadystatechange = function () {
+        x.readyState > 3 && callback && callback(x.responseText);
+      };
+      var onResponse = () =>{
+        if ((x.readyState === 4) && (x.status === 200)) {
+          console.log("success");
+        }else{
+          console.log("fail");
+        }
+      } 
+      x.onload = onResponse;
+      x.send(head + this.encodeHeaders(headers) + this.shift())
+      
+    } catch (e) {
+      window.console && console.log(e);
+    }
+  };
+  /**
+   * Sends data to destination.
+   */
+  // send(sync, callback) {
+  //   var
+  //     req = new window.XMLHttpRequest(),
+  //     onResponse = function () {
+  //       if (callback) {
+  //         if ((req.readyState === 4) && (req.status === 200)) {
+  //           callback(req);
+  //         } else {
+  //           console.log("Failure")
+  //         }
+  //       }
+  //     },
+  //     onSuccess = function () { console.log("success") }, // TODO
+  //     onFailure = function () { console.log("Failure") }; // TODO
 
-/**
- * Sets session ID for this session.
- */
-setSessionI(s) {
-  sessionID = s;
-};
+  //   // TODO make it configurable (enable/disable) w//o
+  //   headers["stream-id"] = (sessionID ? sessionID : "") + "." + (counter++);
 
-/**
- * Returns current buffer contents (without version magic and headers).
- */
-buffer() {
-  return buffer;
-};
+  //   if ("withCredentials" in req) { // Is it a real XMLHttpRequest2 object
+  //     req.open("POST", url, !sync);
+  //     req.onreadystatechange = onResponse; // TODO XMLHttpRequest2 has onload and co...
+  //     req.setRequestHeader("Content-type", "text/plain");
+  //     // req.withCredentials = true;
+  //   } else if (typeof this.window.XDomainRequest !== "undefined") { // XDomainRequest only exists in IE
+  //     req = new this.window.XDomainRequest();
+  //     req.onload = onSuccess;
+  //     req.onerror = onFailure;
+  //     req.contentType = "text/plain";
+  //     req.open("POST", url);
+  //   } else if (typeof this.window.ActiveXObject !== "undefined") { // Is it OK? :)
+  //     req = new this.window.ActiveXObject("Microsoft.XMLHTTP");
+  //     req.open("POST", url);
+  //   } else {
+  //     // TODO Firefox in test mode get to this branch
+  //     req.open("POST", url, !sync);
+  //     req.onload = onResponse;
+  //     req.setRequestHeader("Content-type", "text/plain");
+  //     //req = null;
+  //     //throw new Error('CORS not supported'); // TODO
+  //   }
+  //   console.log(head + this.encodeHeaders(headers) + this.shift());
+  //   req.send(head + this.encodeHeaders(headers) + this.shift());
 
-/**
- * Encodes and pushes values sampled by its given size into buffer.
- */
-push (values, sizes) {
-  buffer += this.encodeValues(values, sizes);
-  return buffer;
-};
+  //   return true;
+  // };
 
-/**
- * Encodes raw bytes into stream format (length + URI encoded string
- * representation).
- */
-// this.encodeRawBytes = encodeRawBytes;
+  /**
+   * Sets destination URL.
+   */
+  setUrl(u) {
+    url = u;
+  };
 
-/**
- * Appends raw (encoded) bytes to buffer.
- */
-pushRawBytes(bytes) {
-  buffer += this.encodeRawBytes(bytes);
-  return buffer;
-};
+  /**
+   * Sets request header k/v pair.
+   */
+  setHeader(key, value) {
+    headers[key] = value;
+  };
 
-/**
- * Resets buffer.
- */
-// this.reset = reset;
+  /**
+   * Sets session ID for this session.
+   */
+  setSessionI(s) {
+    sessionID = s;
+  };
 
-// ---------------------------------------------------------------------------
+  /**
+   * Returns current buffer contents (without version magic and headers).
+   */
+  buffer() {
+    return buffer;
+  };
+
+  /**
+   * Encodes and pushes values sampled by its given size into buffer.
+   */
+  push(values, sizes) {
+    buffer += this.encodeValues(values, sizes);
+    return buffer;
+  };
+
+  /**
+   * Encodes raw bytes into stream format (length + URI encoded string
+   * representation).
+   */
+  // this.encodeRawBytes = encodeRawBytes;
+
+  /**
+   * Appends raw (encoded) bytes to buffer.
+   */
+  pushRawBytes(bytes) {
+    buffer += this.encodeRawBytes(bytes);
+    return buffer;
+  };
+
+  /**
+   * Resets buffer.
+   */
+  // this.reset = reset;
+
+  // ---------------------------------------------------------------------------
 };
 
 export default Transport;

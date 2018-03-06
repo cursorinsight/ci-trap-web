@@ -1,4 +1,3 @@
-/* global module */
 var
   eventName = "ct:mark",
   defaultText = "marker";

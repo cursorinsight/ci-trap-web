@@ -1,4 +1,3 @@
-/* global module */
 
 var
   eventName = "beforeunload";

@@ -1,9 +1,4 @@
-/* global module */
-
 var
-  /*
-   * State event name (constant).
-   */
   eventName = "ct:state";
 
 class StateHandler {

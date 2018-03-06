@@ -1,4 +1,3 @@
-/* global module */
 var
   // abs = Math.abs,
   eventName = "mousemove";
