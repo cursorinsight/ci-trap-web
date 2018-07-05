@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"module.exports = function isBuffer(arg) {\n  return arg && typeof arg === 'object'\n    && typeof arg.copy === 'function'\n    && typeof arg.fill === 'function'\n    && typeof arg.readUInt8 === 'function';\n}"},"hash":"6d5df2425739f928470db9db0712f266"}

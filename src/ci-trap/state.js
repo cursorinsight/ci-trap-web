@@ -6,8 +6,9 @@ var
 class State {
   constructor(window, transport, idleTimeout) {
     this.window = window,
-      this.transport = transport,
-      this.idleTimeout = idleTimeout;
+    this.transport = transport,
+    this.idleTimeout = idleTimeout;
+
 
     this.getDT = this.getDT.bind(this);
     this.idleHandler = this.idleHandler.bind(this);

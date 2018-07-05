@@ -69,7 +69,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({8:[function(require,module,exports) {
+})({6:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -201,7 +201,7 @@ var State = function () {
 ;
 
 exports.default = State;
-},{}],9:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -275,7 +275,7 @@ var StateHandler = function () {
 ;
 
 exports.default = StateHandler;
-},{}],10:[function(require,module,exports) {
+},{}],8:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -429,7 +429,7 @@ var TouchHandler = function () {
 ;
 
 exports.default = TouchHandler;
-},{}],11:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -490,7 +490,7 @@ var MarkerHandler = function () {
 }();
 
 exports.default = MarkerHandler;
-},{}],12:[function(require,module,exports) {
+},{}],10:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -560,9 +560,9 @@ var MouseMoveHandler = function () {
 ;
 
 exports.default = MouseMoveHandler;
-},{}],24:[function(require,module,exports) {
+},{}],20:[function(require,module,exports) {
 
-},{}],13:[function(require,module,exports) {
+},{}],11:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -588,6 +588,8 @@ var MouseButtonHandler = function () {
     this.upHandler = this.upHandler.bind(this);
   }
 
+  // ---------------------------------------------------------------------------
+
   _createClass(MouseButtonHandler, [{
     key: "button",
     value: function button(event) {
@@ -606,17 +608,13 @@ var MouseButtonHandler = function () {
     key: "downHandler",
     value: function downHandler(event) {
       var dT = this.state.getDT(event, 20);
-      var sX = event.screenX,
-          sY = event.screenY;
-      this.buffer.push([2, dT, sX, sY, 0, button(event)], [4, 20, 18, 18, 1, 5]);
+      this.buffer.push([2, dT, 1, this.button(event)], [4, 20, 1, 5]);
     }
   }, {
     key: "upHandler",
     value: function upHandler(event) {
       var dT = this.state.getDT(event, 20);
-      var sX = event.screenX,
-          sY = event.screenY;
-      this.buffer.push([2, dT, sX, sY, 0, button(event)], [4, 20, 18, 18, 1, 5]);
+      this.buffer.push([2, dT, 0, this.button(event)], [4, 20, 1, 5]);
     }
   }, {
     key: "start",
@@ -636,7 +634,7 @@ var MouseButtonHandler = function () {
 }();
 
 exports.default = MouseButtonHandler;
-},{"fs":24}],14:[function(require,module,exports) {
+},{"fs":20}],12:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -733,7 +731,7 @@ var PageScrollHandler = function () {
 ;
 
 exports.default = PageScrollHandler;
-},{}],16:[function(require,module,exports) {
+},{}],13:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -804,7 +802,7 @@ var WindowSizeHandler = function () {
 ;
 
 exports.default = WindowSizeHandler;
-},{}],15:[function(require,module,exports) {
+},{}],14:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -915,7 +913,7 @@ var WindowPositionHandler = function () {
 ;
 
 exports.default = WindowPositionHandler;
-},{}],18:[function(require,module,exports) {
+},{}],17:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -965,7 +963,7 @@ var WindowUnloadHandler = function () {
 ;
 
 exports.default = WindowUnloadHandler;
-},{}],17:[function(require,module,exports) {
+},{}],15:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1034,7 +1032,7 @@ var VisibilityChangeHandler = function () {
 ;
 
 exports.default = VisibilityChangeHandler;
-},{}],19:[function(require,module,exports) {
+},{}],16:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1308,14 +1306,14 @@ var Transport = function () {
 ;
 
 exports.default = Transport;
-},{}],22:[function(require,module,exports) {
+},{}],19:[function(require,module,exports) {
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],23:[function(require,module,exports) {
+},{}],21:[function(require,module,exports) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1340,7 +1338,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],21:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -1527,7 +1525,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],7:[function(require,module,exports) {
+},{}],5:[function(require,module,exports) {
 var global = (1,eval)("this");
 var process = require("process");
 // Copyright Joyent, Inc. and other Node contributors.
@@ -2074,62 +2072,7 @@ exports._extend = function (origin, add) {
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
-},{"./support/isBuffer":22,"inherits":23,"process":21}],20:[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var downEventName = "keydown",
-    upEventName = "keyup";
-
-var KeyStrokeHandler = function () {
-  function KeyStrokeHandler(element, state, buffer) {
-    _classCallCheck(this, KeyStrokeHandler);
-
-    this.element = element, this.state = state, this.buffer = buffer;
-
-    this.downHandler = this.downHandler.bind(this);
-    this.upHandler = this.upHandler.bind(this);
-  }
-
-  _createClass(KeyStrokeHandler, [{
-    key: "downHandler",
-    value: function downHandler(event) {
-      var dT = this.state.getDT(event, 20);
-      this.buffer.push([2, dT, 1, event.keyCode], [4, 20, 1, 5]);
-    }
-  }, {
-    key: "upHandler",
-    value: function upHandler(event) {
-      var dT = this.state.getDT(event, 20);
-
-      this.buffer.push([2, dT, 0, event.keyCode], [4, 20, 1, 5]);
-    }
-  }, {
-    key: "start",
-    value: function start() {
-      this.element.addEventListener(downEventName, this.downHandler);
-      this.element.addEventListener(upEventName, this.upHandler);
-    }
-  }, {
-    key: "stop",
-    value: function stop() {
-      this.element.removeEventListener(downEventName, this.downHandler);
-      this.element.removeEventListener(upEventName, this.upHandler);
-    }
-  }]);
-
-  return KeyStrokeHandler;
-}();
-
-exports.default = KeyStrokeHandler;
-},{}],6:[function(require,module,exports) {
+},{"./support/isBuffer":19,"inherits":21,"process":18}],4:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2285,10 +2228,6 @@ var _transport2 = _interopRequireDefault(_transport);
 
 var _util = require("util");
 
-var _keyStrokeHandler = require("./keyStrokeHandler.js");
-
-var _keyStrokeHandler2 = _interopRequireDefault(_keyStrokeHandler);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2326,7 +2265,6 @@ var CITrap = function () {
     this.handlers.push(this.markerHandler);
     this.handlers.push(new _mouseMoveHandler2.default(element, this.state, this.transport));
     this.handlers.push(new _mouseButtonHandler2.default(element, this.state, this.transport));
-    this.handlers.push(new _keyStrokeHandler2.default(element, this.state, this.transport));
 
     // IE 6, 7, 8 does not support scroll event on document
     // http://www.quirksmode.org/dom/events/scroll.html
@@ -2436,7 +2374,7 @@ var CITrap = function () {
  * Expose CITrap
  */
 exports.default = CITrap;
-},{"./state.js":8,"./statehandler.js":9,"./touchHandler.js":10,"./markerHandler.js":11,"./mouseMoveHandler.js":12,"./mouseButtonHandler.js":13,"./pageScrollHandler.js":14,"./windowSizeHandler.js":16,"./windowPositionHandler.js":15,"./windowUnloadHandler.js":18,"./visibilityChangeHandler.js":17,"./transport.js":19,"util":7,"./keyStrokeHandler.js":20}],3:[function(require,module,exports) {
+},{"./state.js":6,"./statehandler.js":7,"./touchHandler.js":8,"./markerHandler.js":9,"./mouseMoveHandler.js":10,"./mouseButtonHandler.js":11,"./pageScrollHandler.js":12,"./windowSizeHandler.js":13,"./windowPositionHandler.js":14,"./windowUnloadHandler.js":17,"./visibilityChangeHandler.js":15,"./transport.js":16,"util":5}],3:[function(require,module,exports) {
 "use strict";
 
 var _index = require("../../src/ci-trap/index");
@@ -2547,123 +2485,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
   // ---------------------------------------------------------------------------
 })(undefined, window, document, require); /* global window document require */
-},{"../../src/ci-trap/index":6}],0:[function(require,module,exports) {
-var global = (1, eval)('this');
-var OldModule = module.bundle.Module;
-function Module() {
-  OldModule.call(this);
-  this.hot = {
-    accept: function (fn) {
-      this._acceptCallback = fn || function () {};
-    },
-    dispose: function (fn) {
-      this._disposeCallback = fn;
-    }
-  };
-}
-
-module.bundle.Module = Module;
-
-if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
-  var ws = new WebSocket('ws://' + window.location.hostname + ':63900/');
-  ws.onmessage = function(event) {
-    var data = JSON.parse(event.data);
-
-    if (data.type === 'update') {
-      data.assets.forEach(function (asset) {
-        hmrApply(global.require, asset);
-      });
-
-      data.assets.forEach(function (asset) {
-        if (!asset.isNew) {
-          hmrAccept(global.require, asset.id);
-        }
-      });
-    }
-
-    if (data.type === 'reload') {
-      ws.close();
-      ws.onclose = function () {
-        window.location.reload();
-      }
-    }
-
-    if (data.type === 'error-resolved') {
-      console.log('[parcel] ✨ Error resolved');
-    }
-
-    if (data.type === 'error') {
-      console.error('[parcel] 🚨  ' + data.error.message + '\n' + 'data.error.stack');
-    }
-  };
-}
-
-function getParents(bundle, id) {
-  var modules = bundle.modules;
-  if (!modules) {
-    return [];
-  }
-
-  var parents = [];
-  var k, d, dep;
-
-  for (k in modules) {
-    for (d in modules[k][1]) {
-      dep = modules[k][1][d];
-      if (dep === id || (Array.isArray(dep) && dep[dep.length - 1] === id)) {
-        parents.push(+k);
-      }
-    }
-  }
-
-  if (bundle.parent) {
-    parents = parents.concat(getParents(bundle.parent, id));
-  }
-
-  return parents;
-}
-
-function hmrApply(bundle, asset) {
-  var modules = bundle.modules;
-  if (!modules) {
-    return;
-  }
-
-  if (modules[asset.id] || !bundle.parent) {
-    var fn = new Function('require', 'module', 'exports', asset.generated.js);
-    asset.isNew = !modules[asset.id];
-    modules[asset.id] = [fn, asset.deps];
-  } else if (bundle.parent) {
-    hmrApply(bundle.parent, asset);
-  }
-}
-
-function hmrAccept(bundle, id) {
-  var modules = bundle.modules;
-  if (!modules) {
-    return;
-  }
-
-  if (!modules[id] && bundle.parent) {
-    return hmrAccept(bundle.parent, id);
-  }
-
-  var cached = bundle.cache[id];
-  if (cached && cached.hot._disposeCallback) {
-    cached.hot._disposeCallback();
-  }
-
-  delete bundle.cache[id];
-  bundle(id);
-
-  cached = bundle.cache[id];
-  if (cached && cached.hot && cached.hot._acceptCallback) {
-    cached.hot._acceptCallback();
-    return true;
-  }
-
-  return getParents(global.require, id).some(function (id) {
-    return hmrAccept(global.require, id)
-  });
-}
-},{}]},{},[0,3])
+},{"../../src/ci-trap/index":4}]},{},[3])

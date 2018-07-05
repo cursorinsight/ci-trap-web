@@ -1,10 +1,9 @@
-import { stat } from "fs";
 
 var
-  downEventName = "mousedown",
-  upEventName = "mouseup";
+  downEventName = "keydown",
+  upEventName = "keyup";
 
-class MouseButtonHandler {
+class KeyStrokeHandler {
   constructor(element, state, buffer) {
     this.element = element,
       this.state = state,
@@ -15,30 +14,15 @@ class MouseButtonHandler {
       
   }
 
-
-  button(event) {
-    var bb = event.which ||
-      function (b) {
-        if (b === 4) { return 2; }
-        else if (b === 2) { return 3; }
-        else { return 1; }
-      }(event.button);
-    return bb;
-  }
-
-
   downHandler(event) {
     var dT = this.state.getDT(event, 20);
-    var sX = event.screenX,
-        sY = event.screenY;
-    this.buffer.push([2, dT, sX, sY, 0, this.button(event)], [4, 20, 18, 18, 1, 5]);
+    this.buffer.push([2, dT, 1, event.keyCode], [4, 20, 1, 5]);
   }
 
   upHandler(event) {
     var dT = this.state.getDT(event, 20);
-    var sX = event.screenX,
-        sY = event.screenY;
-    this.buffer.push([2, dT, sX, sY, 0, this.button(event)], [4, 20, 18, 18, 1, 5]);
+
+    this.buffer.push([2, dT, 0, event.keyCode], [4, 20, 1, 5]);
   }
 
   start() {
@@ -53,4 +37,4 @@ class MouseButtonHandler {
 
 }
 
-export default MouseButtonHandler;
+export default KeyStrokeHandler;

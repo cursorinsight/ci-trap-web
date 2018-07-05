@@ -4,7 +4,6 @@ var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var head = "BB"; // v2 :)
 
 // buffer
-var buffer = "";
 
 // Locals.
 var
@@ -17,7 +16,7 @@ class Transport {
   constructor(window) {
     this.window = window,
       this.encodeWrapper = window.encodeURIComponent;
-
+      this.buffer = "";
     this.send = this.send.bind(this);
   }
   // ---------------------------------------------------------------------------
@@ -75,7 +74,7 @@ class Transport {
    * Resets buffer.
    */
   reset() {
-    buffer = "";
+    this.buffer = "";
     return true;
   }
 
@@ -85,7 +84,7 @@ class Transport {
    * already collected events.
    */
   shift() {
-    var contents = buffer;
+    var contents = this.buffer;
     this.reset();
     return contents;
   }
@@ -102,23 +101,20 @@ class Transport {
 
   send(sync, callback) {
     try {
-      var x = new(this.window.XMLHttpRequest || this.window.ActiveXObject)('MSXML2.XMLHTTP.3.0');
+      var x = new (this.window.XMLHttpRequest || this.window.ActiveXObject)('MSXML2.XMLHTTP.3.0');
       x.open('POST', url, 1);
       x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       x.onreadystatechange = function () {
-        x.readyState > 3 && callback && callback(x.responseText);
-      };
-      var onResponse = () =>{
         if ((x.readyState === 4) && (x.status === 200)) {
           console.log("success");
-        }else{
+        } else {
           console.log("fail");
         }
-      } 
-      x.onload = onResponse;
+      };
+
       x.send(head + this.encodeHeaders(headers) + this.shift())
-      
+
     } catch (e) {
       window.console && console.log(e);
     }
@@ -196,16 +192,16 @@ class Transport {
   /**
    * Returns current buffer contents (without version magic and headers).
    */
-  buffer() {
-    return buffer;
+  getBuffer() {
+    return this.buffer;
   };
 
   /**
    * Encodes and pushes values sampled by its given size into buffer.
    */
   push(values, sizes) {
-    buffer += this.encodeValues(values, sizes);
-    return buffer;
+    this.buffer += this.encodeValues(values, sizes);
+    return this.buffer;
   };
 
   /**
@@ -218,8 +214,8 @@ class Transport {
    * Appends raw (encoded) bytes to buffer.
    */
   pushRawBytes(bytes) {
-    buffer += this.encodeRawBytes(bytes);
-    return buffer;
+    this.buffer += this.encodeRawBytes(bytes);
+    return this.buffer;
   };
 
   /**
