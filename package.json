@@ -1,0 +1,26 @@
+{
+  "name": "ci-trap",
+  "version": "0.0.1",
+  "description": "citrap",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "karma start"
+  },
+  "keywords": [],
+  "author": "Balint Dobesch",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "karma": "^2.0.4",
+    "karma-mocha": "^1.3.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^3.0.0",
+    "mocha": "^5.2.0",
+    "preload-webpack-plugin": "^2.0.0",
+    "webpack": "^3.6.0"
+  }
+}
