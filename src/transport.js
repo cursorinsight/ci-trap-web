@@ -1,37 +1,32 @@
-var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 // @constant
-var head = "BB"; // v2 :)
+var head = 'BB'; // v2 :)
 
 // buffer
 
 // Locals.
-var
-  url = "/s",
-  headers = {},
-  counter = 1,
-  sessionID;
+var url = '/s';
+var headers = {};
+var sessionID;
+var counter = 1;
 
 class Transport {
-  constructor(window) {
-    this.window = window,
-      this.encodeWrapper = window.encodeURIComponent;
-      this.buffer = "";
+  constructor (window) {
+    this.window = window;
+    this.encodeWrapper = window.encodeURIComponent;
+    this.buffer = '';
     this.send = this.send.bind(this);
   }
-  // ---------------------------------------------------------------------------
 
-  // @constant
-
-
-  encodeValues(values, sizes) {
-    var idx,
-      len = values.length,
-      bc = 0, // bit counter
-      cv, // current value
-      av = 0, // actual value
-      size,
-      results = "";
+  encodeValues (values, sizes) {
+    var idx;
+    var len = values.length;
+    var bc = 0; // bit counter
+    var cv; // current value
+    var av = 0; // actual value
+    var size;
+    var results = '';
 
     for (idx = 0; idx < len; idx++) {
       cv = values[idx];
@@ -55,14 +50,14 @@ class Transport {
     return results;
   };
 
-  encodeHeaders(headers) {
-    var headerString = "";
+  encodeHeaders (headers) {
+    var headerString = '';
 
     for (var key in headers) {
       if (headers.hasOwnProperty(key)) {
-        headerString = headerString
-          + this.encodeWrapper(key) + "="
-          + this.encodeWrapper(headers[key]) + ",";
+        headerString = headerString +
+          this.encodeWrapper(key) + '=' +
+          this.encodeWrapper(headers[key]) + ',';
       }
     }
 
@@ -73,8 +68,8 @@ class Transport {
    * @private
    * Resets buffer.
    */
-  reset() {
-    this.buffer = "";
+  reset () {
+    this.buffer = '';
     return true;
   }
 
@@ -83,7 +78,7 @@ class Transport {
    * Shifts available data.  That means resetting to its defaults and returning
    * already collected events.
    */
-  shift() {
+  shift () {
     var contents = this.buffer;
     this.reset();
     return contents;
@@ -94,27 +89,25 @@ class Transport {
    * Encodes raw bytes into stream format (length + URI encoded string
    * representation).
    */
-  encodeRawBytes(bytes) {
+  encodeRawBytes (bytes) {
     var encoded = this.encodeWrapper(bytes);
     return this.encodeValues([encoded.length], [12]) + encoded;
   }
 
-  send(sync, callback) {
+  send (sync, callback) {
     try {
-      var x = new (this.window.XMLHttpRequest || this.window.ActiveXObject)('MSXML2.XMLHTTP.3.0');
-      x.open('POST', url, 1);
+      var x = new window.XMLHttpRequest();
+      x.open('POST', url, true);
       x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      x.onreadystatechange = function () {
-        if ((x.readyState === 4) && (x.status === 200)) {
-          console.log("success");
-        } else {
-          console.log("fail");
+      x.onreadystatechange = function () { // Call a function when the state changes.
+        if (callback) {
+          callback(x);
         }
       };
 
-      x.send(head + this.encodeHeaders(headers) + this.shift())
-
+      headers['stream-id'] = (sessionID) + '.' + (counter++);
+      x.send(head + this.encodeHeaders(headers) + this.shift());
     } catch (e) {
       window.console && console.log(e);
     }
@@ -171,35 +164,35 @@ class Transport {
   /**
    * Sets destination URL.
    */
-  setUrl(u) {
+  setUrl (u) {
     url = u;
   };
 
   /**
    * Sets request header k/v pair.
    */
-  setHeader(key, value) {
+  setHeader (key, value) {
     headers[key] = value;
   };
 
   /**
    * Sets session ID for this session.
    */
-  setSessionI(s) {
+  setSessionID (s) {
     sessionID = s;
   };
 
   /**
    * Returns current buffer contents (without version magic and headers).
    */
-  getBuffer() {
+  getBuffer () {
     return this.buffer;
   };
 
   /**
    * Encodes and pushes values sampled by its given size into buffer.
    */
-  push(values, sizes) {
+  push (values, sizes) {
     this.buffer += this.encodeValues(values, sizes);
     return this.buffer;
   };
@@ -213,7 +206,7 @@ class Transport {
   /**
    * Appends raw (encoded) bytes to buffer.
    */
-  pushRawBytes(bytes) {
+  pushRawBytes (bytes) {
     this.buffer += this.encodeRawBytes(bytes);
     return this.buffer;
   };

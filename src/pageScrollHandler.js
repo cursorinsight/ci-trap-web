@@ -1,31 +1,31 @@
-var
-  abs = Math.abs,
-  eventName = "scroll";
+var abs = Math.abs;
+var eventName = 'scroll';
 
 // TODO simplify/check this handler
 
 class PageScrollHandler {
-  constructor(element, state, buffer) {
-    this.element = element,
-      this.state = state,
-      this.buffer = buffer;
+  constructor (element, state, buffer) {
+    this.element = element;
+    this.state = state;
+    this.buffer = buffer;
 
-      this.handler = this.handler.bind(this);
+    this.handler = this.handler.bind(this);
   }
-  // ---------------------------------------------------------------------------
 
-  handler(event) {
+  handler (event) {
+    var pX;
+    var pY;
+    var dX;
+    var dY;
+    var signDX;
+    var signDY;
+    var absDX;
+    var absDY;
 
-    var
-      pX, pY,
-      dX, dY,
-      signDX, signDY,
-      absDX, absDY,
-
-      dT = this.state.getDT(event, 20);
+    var dT = this.state.getDT(event, 20);
 
     // Scroll X/Y on current page
-    if ("pageXOffset" in this.element && this.element.document) { // it's a window, or looks like a window
+    if ('pageXOffset' in this.element && this.element.document) { // it's a window, or looks like a window
       var doc = this.element.document.documentElement;
       pX = (this.element.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
       pY = (this.element.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
@@ -50,10 +50,9 @@ class PageScrollHandler {
     return true;
   };
 
-  start() {
-
+  start () {
     // Scroll X/Y on current page
-    if ("pageXOffset" in this.element && this.element.document) { // it's a window, or looks like a window
+    if ('pageXOffset' in this.element && this.element.document) { // it's a window, or looks like a window
       var doc = this.element.document.documentElement;
       this.state.pageScrollX = (this.element.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
       this.state.pageScrollY = (this.element.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
@@ -65,11 +64,9 @@ class PageScrollHandler {
     this.element.addEventListener(eventName, this.handler, false);
   };
 
-  stop() {
+  stop () {
     this.element.removeEventListener(eventName, this.handler, false);
   };
-
-  // ---------------------------------------------------------------------------
 };
 
 export default PageScrollHandler;

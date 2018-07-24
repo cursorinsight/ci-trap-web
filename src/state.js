@@ -4,11 +4,10 @@ var
   epochTs, lastTs;
 
 class State {
-  constructor(window, transport, idleTimeout) {
-    this.window = window,
-    this.transport = transport,
+  constructor (window, transport, idleTimeout) {
+    this.window = window;
+    this.transport = transport;
     this.idleTimeout = idleTimeout;
-
 
     this.getDT = this.getDT.bind(this);
     this.idleHandler = this.idleHandler.bind(this);
@@ -16,11 +15,9 @@ class State {
     if (idleTimeout !== 0) {
       this.idleHandler();
     }
-
-
   }
-  
-  idleHandler() {
+
+  idleHandler () {
     this.transport.send();
     idleTimer = null;
   }
@@ -39,12 +36,10 @@ class State {
    *   1000000000000000 -- timestamp micro boundary
    *   1409096424364149 -- firefox custom event
    */
-  getDT(event, bits) {
-
-    var
-      round = Math.round,
-      currentTs = event && typeof event.timeStamp === "number" && event.timeStamp || (new Date()).getTime(),
-      dT;
+  getDT (event, bits) {
+    var round = Math.round;
+    var currentTs = (event && typeof event.timeStamp === 'number' && event.timeStamp) || (new Date()).getTime();
+    var dT;
 
     if (idleTimer) {
       this.window.clearTimeout(idleTimer);
@@ -63,7 +58,8 @@ class State {
         dT = (currentTs + epochTs) - lastTs;
       }
       lastTs = (currentTs + epochTs);
-    } else {                      // (milliseconds) everything else
+    } else {
+      // (milliseconds) everything else
       if (lastTs) {
         dT = currentTs - lastTs;
       }
@@ -96,19 +92,17 @@ class State {
     return dT;
   };
 
-lastTs () {
-  return lastTs;
-};
+  lastTs () {
+    return lastTs;
+  };
 
-start() {
-  // noop
-};
+  start () {
+    // noop
+  };
 
-stop() {
-  lastTs = null;
-};
-
-// ---------------------------------------------------------------------------
+  stop () {
+    lastTs = null;
+  };
 };
 
 export default State;

@@ -1,19 +1,18 @@
-var
-  stateKey,
-  eventKey,
+var stateKey;
+var eventKey;
 
-  keys = {
-    hidden: "visibilitychange",
-    webkitHidden: "webkitvisibilitychange",
-    mozHidden: "mozvisibilitychange",
-    msHidden: "msvisibilitychange"
-  };
+var keys = {
+  hidden: 'visibilitychange',
+  webkitHidden: 'webkitvisibilitychange',
+  mozHidden: 'mozvisibilitychange',
+  msHidden: 'msvisibilitychange'
+};
 
 class VisibilityChangeHandler {
-  constructor(window, state, buffer) {
-    this.window = window,
-      this.state = state,
-      this.buffer = buffer;
+  constructor (window, state, buffer) {
+    this.window = window;
+    this.state = state;
+    this.buffer = buffer;
 
     for (stateKey in keys) {
       if (stateKey in window.document) {
@@ -24,10 +23,8 @@ class VisibilityChangeHandler {
 
     this.handler = this.handler.bind(this);
   }
-  // ---------------------------------------------------------------------------
 
-
-  handler(event) {
+  handler (event) {
     var dT = this.state.getDT(event, 20);
 
     if (this.window.document[stateKey]) { // idle/hidden, 0b1011
@@ -39,15 +36,13 @@ class VisibilityChangeHandler {
     }
   };
 
-  start() {
+  start () {
     window.addEventListener(eventKey, this.handler, false);
   };
 
-  stop() {
+  stop () {
     window.removeEventListener(eventKey, this.handler, false);
   };
-
-  // ---------------------------------------------------------------------------
 };
 
 export default VisibilityChangeHandler;

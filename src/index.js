@@ -1,6 +1,4 @@
-// ! ci-trap v0.2.0 - MIT license 
-
-
+// ! ci-trap v0.2.0 - MIT license
 // Motion event (mouse movement) catcher for browsers emitting data compatible
 // with Cursor Insight's motion analyzer engine. (touch, gyro, etc. is WIP)
 
@@ -93,49 +91,38 @@
 
 // @link ClassName#CITrap
 
+import State from './state.js';
+import StateHandler from './statehandler.js';
+import TouchHandler from './touchHandler.js';
+import MarkerHandler from './markerHandler.js';
+import MouseMoveHandler from './mouseMoveHandler.js';
+import MouseButtonHandler from './mouseButtonHandler.js';
+import PageScrollHandler from './pageScrollHandler.js';
+import WindowSizeHandler from './windowSizeHandler.js';
+import WindowPositionHandler from './windowPositionHandler.js';
+import WindowUnloadHandler from './windowUnloadHandler.js';
+import VisibilityChangeHandler from './visibilityChangeHandler.js';
+//  import  MouseWheelHandler = from './mouseWheelHandler.js'
 
-import State from "./state.js";
-import StateHandler from "./statehandler.js";
-import TouchHandler from "./touchHandler.js";
-import MarkerHandler from "./markerHandler.js";
-import MouseMoveHandler from "./mouseMoveHandler.js";
-import MouseButtonHandler from "./mouseButtonHandler.js";
-import PageScrollHandler from "./pageScrollHandler.js";
-import WindowSizeHandler from "./windowSizeHandler.js";
-import WindowPositionHandler from "./windowPositionHandler.js";
-import WindowUnloadHandler from "./windowUnloadHandler.js";
-import VisibilityChangeHandler from "./visibilityChangeHandler.js";
-//import  MouseWheelHandler = from "./mouseWheelHandler.js";
-import Transport from "./transport.js";
-import {
-  isNullOrUndefined
-} from "util";
-import KeyStrokeHandler from "./keyStrokeHandler.js";
-
+import Transport from './transport.js';
+import isNullOrUndefined from 'util';
+import KeyStrokeHandler from './keyStrokeHandler.js';
 
 class CITrap {
-  constructor(element = window.document, idleTimeout = 0) {
+  constructor (element = window.document, idleTimeout = 0) {
+    var windowAlias = window;
+    var documentAlias = window.document;
+    var undefinedAlias;
 
-
-    var
-      windowAlias = window,
-      documentAlias = window.document,
-      undefinedAlias;
-
-    var
-      windowSupport = (element === windowAlias || element === documentAlias),
-      touchSupport = "ontouchstart" in windowAlias || // works on most browsers
-      "onmsgesturechange" in windowAlias; // works on ie10
-
+    var windowSupport = (element === windowAlias || element === documentAlias);
+    var touchSupport = 'ontouchstart' in windowAlias || 'onmsgesturechange' in windowAlias; // works on ie10
 
     // Set up defaults.
     if (element === undefinedAlias) {
       this.element = documentAlias;
-    }else{
+    } else {
       this.element = element;
     }
-
-
     // master loop
     this.running = false;
 
@@ -147,8 +134,6 @@ class CITrap {
 
     // Handlers
     this.handlers = new Array(this.state);
-
-
 
     this.markerHandler = new MarkerHandler(windowAlias, documentAlias, element, this.state, this.transport);
 
@@ -175,7 +160,6 @@ class CITrap {
       this.handlers.push(new TouchHandler(element, this.state, this.transport));
     }
 
-
     this.start = this.start.bind(this);
     this.stop = this.stop.bind(this);
   }
@@ -186,15 +170,14 @@ class CITrap {
   /**
    *  Starts event processing.
    */
-  start(options) {
+  start (options) {
     if (this.running) {
       return;
     }
     options = options || {};
-    var length = this.handlers.length,
-      i = 0;
-    for (; i < length; i++) {
-      if ((this.handlers[i] !== isNullOrUndefined) && (typeof this.handlers[i].start === "function")) {
+    var length = this.handlers.length;
+    for (var i = 0; i < length; i++) {
+      if ((this.handlers[i] !== isNullOrUndefined) && (typeof this.handlers[i].start === 'function')) {
         this.handlers[i].start(options);
       }
     }
@@ -204,46 +187,44 @@ class CITrap {
   /**
    *  Stops event processing.
    */
-  stop() {
+  stop () {
     if (!this.running) {
       return;
     }
-    var length = this.handlers.length,
-      i = 0;
-    for (; i < length; i++) {
-      if ((this.handlers[i] !== isNullOrUndefined) && (typeof this.handlers[i].stop === "function")) {
+    var length = this.handlers.length;
+    for (var i = 0; i < length; i++) {
+      if ((this.handlers[i] !== isNullOrUndefined) && (typeof this.handlers[i].stop === 'function')) {
         this.handlers[i].stop();
       }
     }
     this.running = false;
   }
 
-  buffer() {
+  buffer () {
     return this.transport.getBuffer();
   }
 
-  send() {
+  send () {
     return this.transport.send.apply(this, arguments);
   }
 
-  setHeader() {
+  setHeader () {
     return this.transport.setHeader.apply(this, arguments);
   }
 
-  setUrl() {
+  setUrl () {
     return this.transport.setUrl.apply(this, arguments);
   }
 
-  setSessionID() {
+  setSessionID () {
     return this.transport.setSessionID.apply(this, arguments);
   }
 
-  mark(text) {
+  mark (text) {
     if (this.markerHandler) {
       this.markerHandler.trigger(text);
     }
   }
-
 };
 
 /**

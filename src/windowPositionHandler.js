@@ -1,33 +1,30 @@
-var
-  eventName = "positionchanged",
-  longDelay = 1000 / 2, // 2fps
-  shortDelay = 1000 / 15, // 15fps
-  throttleBase = 15, // it's a "constant"
-  throttleCount = throttleBase,
-  timeout;
+var eventName = 'positionchanged';
+var longDelay = 1000 / 2; // 2fps
+var shortDelay = 1000 / 15; // 15fps
+var throttleBase = 15; // it's a "constant"
+var throttleCount = throttleBase;
+var timeout;
 
 class WindowPositionHandler {
-  constructor(window, document, state, buffer) {
-    this.window = window,
-      this.document = document,
-      this.state = state,
-      this.buffer = buffer;
+  constructor (window, document, state, buffer) {
+    this.window = window;
+    this.document = document;
+    this.state = state;
+    this.buffer = buffer;
 
-      this.handler = this.handler.bind(this);
-      this.poller = this.poller.bind(this);
+    this.handler = this.handler.bind(this);
+    this.poller = this.poller.bind(this);
   }
-  // ---------------------------------------------------------------------------
 
-
-  windowPositionX() {
+  windowPositionX () {
     return this.window.screenX || this.window.screenLeft || 0;
   };
 
-  windowPositionY() {
+  windowPositionY () {
     return this.window.screenY || this.window.screenTop || 0;
   };
 
-  handler(event) {
+  handler (event) {
     var dT = this.state.getDT(null, 20);
 
     this.state.windowPositionX = event.x;
@@ -38,13 +35,12 @@ class WindowPositionHandler {
       [4, 20, 15, 15]);
   };
 
-  poller() {
-    var
-      x = this.windowPositionX(),
-      y = this.windowPositionY();
+  poller () {
+    var x = this.windowPositionX();
+    var y = this.windowPositionY();
 
     if (this.state.windowPositionX !== x || this.state.windowPositionY !== y) {
-      var event = this.document.createEvent("CustomEvent");
+      var event = this.document.createEvent('CustomEvent');
       event.initEvent(eventName, true, false);
       event.x = x;
       event.y = y;
@@ -61,29 +57,27 @@ class WindowPositionHandler {
     }
   };
 
-  startPoller() {
+  startPoller () {
     this.window.setTimeout(this.poller, longDelay);
   };
 
-  stopPoller() {
+  stopPoller () {
     if (timeout) {
       this.window.clearTimeout(timeout);
     }
   };
 
-  start() {
+  start () {
     this.state.windowPositionX = this.windowPositionX();
     this.state.windowPositionY = this.windowPositionY();
     this.window.addEventListener(eventName, this.handler, false);
     this.startPoller();
   };
 
-  stop() {
+  stop () {
     this.stopPoller();
     this.window.removeEventListener(eventName, this.handler, false);
   };
-
-  // ---------------------------------------------------------------------------
 };
 
 export default WindowPositionHandler;

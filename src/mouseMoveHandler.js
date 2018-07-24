@@ -1,23 +1,22 @@
 var
   // abs = Math.abs,
-  eventName = "mousemove";
+  eventName = 'mousemove';
 
 // TODO: http://www.jacklmoore.com/notes/mouse-position/
 
 class MouseMoveHandler {
-  constructor(element, state, buffer) {
-    this.element = element,
-      this.state = state,
-      this.buffer = buffer;
+  constructor (element, state, buffer) {
+    this.element = element;
+    this.state = state;
+    this.buffer = buffer;
 
-      this.handler = this.handler.bind(this);
+    this.handler = this.handler.bind(this);
   }
 
-  handler(event) {
-    var
-      dT = this.state.getDT(event, 20),
-      sX = event.screenX,
-      sY = event.screenY;
+  handler (event) {
+    var dT = this.state.getDT(event, 20);
+    var sX = event.screenX;
+    var sY = event.screenY;
 
     // Saving for next check
     this.state.mouseScreenX = sX;
@@ -35,8 +34,7 @@ class MouseMoveHandler {
     return true;
   };
 
-  start() {
-
+  start () {
     // TODO: Something more accurate is needed.
     this.state.mouseScreenX = this.state.mouseScreenX || 0;
     this.state.mouseScreenY = this.state.mouseScreenY || 0;
@@ -44,7 +42,7 @@ class MouseMoveHandler {
     this.element.addEventListener(eventName, this.handler);
   };
 
-  stop() {
+  stop () {
     this.element.removeEventListener(eventName, this.handler);
   };
 

@@ -1,20 +1,16 @@
 
-var
-  eventName = "beforeunload";
+var eventName = 'beforeunload';
 
 class WindowUnloadHandler {
-  constructor(window, state, buffer) {
-    this.window = window,
-      this.state = state,
-      this.buffer = buffer;
+  constructor (window, state, buffer) {
+    this.window = window;
+    this.state = state;
+    this.buffer = buffer;
 
     this.handler = this.handler.bind(this);
   }
-  // ---------------------------------------------------------------------------
 
-
-
-  handler(event) {
+  handler (event) {
     var dT = this.state.getDT(event, 20);
 
     // 0b1001
@@ -22,15 +18,13 @@ class WindowUnloadHandler {
       [4, 20]);
   };
 
-  start() {
+  start () {
     this.window.addEventListener(eventName, this.handler, false);
   };
 
-  stop() {
+  stop () {
     this.window.removeEventListener(eventName, this.handler, false);
   };
-
-  // ---------------------------------------------------------------------------
 };
 
 export default WindowUnloadHandler;
