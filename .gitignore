@@ -1,0 +1,16 @@
+# NPM artifacts
+/node_modules/
+/examples/*/node_modules
+
+# Build artifacts -- release artifacts are added manually
+/dist/
+/release.tar.xz
+
+# Test and code checker artifacts
+/coverage/
+/eslint-report.json
+/.scannerwork/
+/test-report.xml
+
+# Example artifacts
+/examples/research/output/

@@ -1,0 +1,23 @@
+# Ignore self -- we don't want to rebuild images just because a single, but not
+# necessarily related file has changed
+Dockerfile
+.dockerignore
+Makefile.docker
+
+# Node
+/node_modules/
+
+# Git
+/.git
+
+# Examples
+/examples
+
+# Release artifacts and build intermediate files
+/dist/
+/release.tar.xz
+
+# Editor helper files
+**/.*.swo
+**/.*.swp
+/tags.*

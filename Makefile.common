@@ -1,0 +1,56 @@
+#-------------------------------------------------------------------------------
+# Copyright (C) 2021- Cursor Insight
+#
+# All rights reserved.
+#-------------------------------------------------------------------------------
+
+# Common directories and paths
+TOP_DIR := $(dir $(firstword $(MAKEFILE_LIST)))
+ABS_DIR := $(abspath $(TOP_DIR))
+
+# Specify default target
+.PHONY: default
+default:
+
+# Check for and set up required tools
+define set-up-tools-template
+$(1) := $$(shell which $(2))
+
+ifeq "$$(strip $$($(1)))" ""
+$(1) := $(2)
+endif
+
+$$($(1)):
+	@echo Please install \`$$@\' manually!
+	@exit 1
+endef
+
+# Common tools
+$(eval $(call set-up-tools-template,SED,sed))
+$(eval $(call set-up-tools-template,SORT,sort))
+$(eval $(call set-up-tools-template,GIT,git))
+$(eval $(call set-up-tools-template,TPUT,tput))
+
+# Default Git user
+GIT_USER ?= $(USER)
+
+# Project version
+PROJECT_VERSION := $(shell $(GIT) describe --always --dirty --broken --long --tags)
+
+# Automatic help generator
+.PHONY: help
+help: | $(SED) $(SORT) $(TPUT)
+	@export hl=`$(TPUT) bold` && \
+	export rs=`$(TPUT) sgr0` && \
+	$(SED) '# \
+	/^#: .*$$/!d		# skip non-help contents \
+	/^#: .*$$/{		# process only lines starting with "#:" \
+		$$!{ N		# append the next line if not EOF \
+			s/^#: \(.*\)\n\([^:]*\):.*/'"$${hl}"'\2'"$${rs}"': \1/ # match help and target \
+			t yes	# branch_on_substitue \
+			:not 	# self-documenting label \
+			D 	# remove non-matching line -- eventually it \
+				# was not a help comment \
+			:yes 	# substitution did its part, move on \
+		} 		# \
+	}' $(filter-out Makefile.common,$(MAKEFILE_LIST)) | $(SORT)

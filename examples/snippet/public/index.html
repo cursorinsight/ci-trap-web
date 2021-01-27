@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Cursor Insight's Tracker -- Snippet Example </title>
+    <script>
+      (function(g,r,a,b,o,x,y){g[o]=g[o]||function(){(g[o]
+      .q=g[o].q||[]).push(arguments)},g[o].t=1*new Date();
+      x=r.createElement(a),y=r.getElementsByTagName(a)[0];
+      x.async=1;x.src=b;y.parentNode.insertBefore(x,y)})(
+      window,document,'script','gt.min.js','gt');
+      gt('url', '/api/1/s');
+      gt('apiKey', 'example-api-key');
+      gt('setLogDestination', 'log');
+
+      function copyTrapUrl() {
+        gt('url', document.getElementById('trapUrl').value);
+      }
+
+      function clearLog() {
+        var log = document.getElementById('log');
+        log.innerHTML = '-- log --';
+      }
+    </script>
+    <style>
+      html { height: 100%; }
+      body { min-height: 100%; }
+
+      #testElement {
+        height: 300px;
+        width: 500px;
+        background-color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="trapSubmitForm">
+      <ul>
+        <li>
+          <input type="text" id="trapUrl" value="/api/1/s"></input>
+          <input type="button" onclick="copyTrapUrl();" value="Submit URL"></input>
+        </li>
+        <li>
+          <input type="button" onclick="gt('submit');" value="Submit data"></input>
+        </li>
+        <li>
+          <input type="button" onclick="clearLog();" value="Clear Log"></input>
+        </li>
+      </ul>
+    </form>
+    <h1> Tracker's Snippet Example </h1>
+    <div id="testElement">
+      test element -- collection is enabled on the entire page
+    </div>
+    <a href="/index.html">Link to this page</a>
+    <a href="https://cursorinsight.com">Cursor Insight</a>
+    <div id="log" style="white-space:pre;font-family:monospace;">-- log --</div>
+  </body>
+</html>

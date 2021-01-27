@@ -1,0 +1,18 @@
+server {
+  listen ${APP_SERVER_PORT} default_server;
+  listen [::]:${APP_SERVER_PORT} default_server;
+  server_name ${APP_SERVER_DOMAIN};
+  root /opt/app;
+
+  index index.html;
+  error_page 403 404 /404.html; # don't show forbidden, just not found
+  error_page 500 /500.html;
+  error_page 502 /502.html;
+
+  location / {
+    if (-f $document_root/down.html) {
+      return 503;
+    }
+    try_files $uri $uri/index.html;
+  }
+}

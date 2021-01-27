@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Cursor Insight's Trap -- IIFE Example </title>
+    <script src="trap-iife.min.js"></script>
+    <style>
+      #testElement {
+        height: 300px;
+        width: 500px;
+        background-color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="trapSubmitForm">
+      <ul>
+        <li>
+          <input type="text" id="trapUrl" value="/api/1/s"></input>
+          <input type="button" id="trapSetUrl" value="Submit URL"></input>
+        </li>
+        <li>
+          <input type="button" id="trapSubmit" value="Submit data"></input>
+          <div id="trapResults"></div>
+        </li>
+      </ul>
+    </form>
+    <h1> Trap's IIFE Example </h1>
+    <div id="testElement"> test element </div>
+    <div id="log" style="white-space:pre;font-family:monospace;">-- log --</div>
+    <script>
+
+      // TODO: resolve "default" vs named exports in trap and then remove this.
+      var trap = trap.default;
+
+      // Mount Trap's event listener and disable touch events
+      var testElement = document.getElementById('testElement');
+      trap.mount(testElement); // trap is "global" here
+      trap.disableTouchEvents(testElement);
+
+      // Set up logging
+      trap.setLogDestination('log');
+
+      // Set up API key
+      trap.apiKey('iifeExampleApiKey');
+
+      // Convenience methods
+      var copyTrapUrl = function() {
+        trap.url(document.getElementById('trapUrl').value);
+      }
+
+      // Set up URL settings
+      document.getElementById('trapSetUrl')
+        .addEventListener('click', function(e) {
+          copyTrapUrl();
+        });
+
+      // Submit button
+      document.getElementById('trapSubmit')
+        .addEventListener('click', function(e) {
+          trap.submit().then(results => {
+            document.getElementById('trapResults').innerHTML = results;
+          });
+        });
+
+      // Set up Trap defaults by copying `trapUrl`'s value
+      copyTrapUrl();
+
+      // Set custom metadata
+      trap.metadata('foo', 'bar');
+    </script>
+    <p>
+      Please note that you have to manually release the project to make
+      changes effect here.
+    </p>
+  </body>
+</html>
