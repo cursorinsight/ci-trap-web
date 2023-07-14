@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Cursor Insight's Trap -- WebSocket Example </title>
+  </head>
+  <body>
+    <form id="trapSubmitForm">
+      <ul>
+        <li>
+          <input type="text" id="trapUrl" value="/api/1/ws"></input>
+          <input type="button" id="trapSetUrl" value="Submit URL"></input>
+        </li>
+        <li>
+          <input type="button" id="trapSubmit" value="Submit data"></input>
+        </li>
+        <li>
+          <input type="button" id="trapStart" value="Start"></input>
+          <input type="button" id="trapStop" value="Stop"></input>
+        </li>
+      </ul>
+    </form>
+    <h1> Trap's WebSocket Example </h1>
+    <div id="testElement"> test element </div>
+    <div id="log" style="white-space:pre;font-family:monospace;">-- log --</div>
+    <!--
+      `esm.bundle.js` is automagically injected here by Webpack HTML plugin.
+    -->
+  </body>
+</html>

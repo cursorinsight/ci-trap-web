@@ -79,3 +79,6 @@ export const SCHEMA = { version: SCHEMA_VERSION };
 
 // Default Tracker object name ('gt'; which assigns Tracker as `window.gt`)
 export const DEFAULT_TRACKER_OBJECT_NAME = 'gt';
+
+// By default use HTTP transport
+export const DEFAULT_TRAP_USE_WS_TRANSPORT = false;

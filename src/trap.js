@@ -15,8 +15,9 @@ import Handlers from './handlers';
 // Event buffer
 import Buffer from './buffer';
 
-// Transport implementation
+// Transport implementations
 import HTTP from './http';
+import WS from './ws';
 
 // Metadata
 import Metadata from './metadata';
@@ -43,9 +44,6 @@ class Trap {
     // Initialize DOM event handlers
     this._handlers = new Handlers(this._buffer);
 
-    // Initialize HTTP transport by default
-    this._transport = new HTTP(this._metadata, this._buffer);
-
     // Mutable state
     //
     // A frozen instance is immutable, thus it can not directly have a single
@@ -55,6 +53,7 @@ class Trap {
       // Default logger sends logs to console
       // eslint-disable-next-line no-console
       logger: (...m) => { console.log(...m); },
+      transport: new HTTP(this._metadata, this._buffer),
     };
 
     // Prepare current instance to freeze
@@ -65,7 +64,7 @@ class Trap {
   //
   // TODO: refactor Buffer -> Transport messaging and remove this function
   get transport() {
-    return this._transport;
+    return this.state.transport;
   }
 
   // Metadata API
@@ -129,12 +128,12 @@ class Trap {
 
   // `enableCompression` setter proxy
   enableCompression(enableCompression) {
-    this._transport.enableCompression = enableCompression;
+    this.transport.enableCompression = enableCompression;
   }
 
   // Remote Trap server URL setter
   url(url) {
-    this._transport.url = url;
+    this.transport.url = url;
   }
 
   // Inject and later send custom event to stream
@@ -165,7 +164,7 @@ class Trap {
   //
   // TODO: refactor and preferably remove this code
   reset() {
-    this._transport.reset();
+    this.transport.reset();
   }
 
   // TODO: remove this if it is unnecessary
@@ -186,6 +185,16 @@ class Trap {
       default:
         // eslint-disable-next-line no-console
         this.state.logger = (...m) => { console.log(...m); };
+    }
+  }
+
+  setUseWsTransport(useWsTransport) {
+    this.state.transport.close();
+
+    if (useWsTransport) {
+      this.state.transport = new WS(this._metadata, this._buffer, this.log);
+    } else {
+      this.state.transport = new HTTP(this._metadata, this._buffer);
     }
   }
 

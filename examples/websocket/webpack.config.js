@@ -27,25 +27,22 @@ module.exports = {
 
       middlewares.push({
         path: '/api/1/s',
-        middleware: httpMiddleware({
-          dataDirectory: path.resolve(__dirname, 'output'),
-        }),
+        middleware: httpMiddleware(),
       });
 
       return middlewares;
     },
 
     onListening: (devServer) => {
-      devServer.server.on('upgrade', wsMiddleware({
-        dataDirectory: path.resolve(__dirname, 'output'),
-      }));
+      devServer.server.on('upgrade', wsMiddleware());
     },
 
+    liveReload: false,
     webSocketServer: false,
   },
 
   entry: {
-    'index': path.resolve(__dirname, 'src', 'index.js'),
+    'esm': path.resolve(__dirname, 'src', 'esm.js'),
   },
 
   devtool: 'inline-source-map',
@@ -59,9 +56,11 @@ module.exports = {
       path: path.resolve(__dirname, '..', '..', '.env'),
     }),
     new HtmlWebpackPlugin({
+      // use `esm.html` if additional examples (e.g. ESM tracker example)
+      // are added here
       filename: 'index.html',
-      chunks: ['index'],
-      template: path.resolve(__dirname, 'src', 'index.html'),
+      chunks: ['esm'],
+      template: path.resolve(__dirname, 'src', 'esm.html'),
     }),
   ],
 

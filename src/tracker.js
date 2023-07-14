@@ -18,6 +18,7 @@ import {
   TRAP_API_KEY_VALUE,
   TRAP_ENABLE_COMPRESSION,
   TRACKER_OBJECT_NAME,
+  TRAP_USE_WS_TRANSPORT,
 } from './tracker-config';
 import { Trap } from './trap';
 
@@ -60,6 +61,7 @@ const tracker = new Tracker();
 Object.freeze(tracker);
 
 // Apply Trap configurations
+tracker.trap.setUseWsTransport(TRAP_USE_WS_TRANSPORT);
 tracker.trap.url(TRAP_SERVER_URL);
 tracker.trap.idleTimeout(TRAP_IDLE_TIMEOUT);
 tracker.trap.bufferSizeLimit(TRAP_BUFFER_SIZE_LIMIT);

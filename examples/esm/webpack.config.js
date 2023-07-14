@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const httpMiddleware = require('../common/http-middleware');
+const wsMiddleware = require('../common/ws-middleware');
 
 module.exports = {
   mode: 'development',
@@ -31,6 +32,12 @@ module.exports = {
 
       return middlewares;
     },
+
+    onListening: (devServer) => {
+      devServer.server.on('upgrade', wsMiddleware());
+    },
+
+    webSocketServer: false,
   },
 
   entry: {
