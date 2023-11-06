@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { METADATA_EVENT_TYPE } from '../src/constants';
+import { METADATA_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -43,7 +43,7 @@ describe('custom metadata', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // Expect a single chunk to be submitted with the actual "custom-key":
     // "custom-value" keypair serialized into the body

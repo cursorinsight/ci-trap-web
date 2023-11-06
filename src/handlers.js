@@ -13,16 +13,16 @@ import {
   POINTER_ENABLED,
   VISIBILITY_CHANGE_ENABLED,
   FREEZE_ENABLED,
-  MOUSE_MOVE_EVENT_TYPE,
-  TOUCH_START_EVENT_TYPE,
-  TOUCH_MOVE_EVENT_TYPE,
-  TOUCH_END_EVENT_TYPE,
-  MOUSE_DOWN_EVENT_TYPE,
-  MOUSE_UP_EVENT_TYPE,
-  BLUR_WINDOW_EVENT_TYPE,
-  FOCUS_WINDOW_EVENT_TYPE,
-  WHEEL_EVENT_TYPE,
-  SCROLL_EVENT_TYPE,
+  MOUSE_MOVE_MESSAGE_TYPE,
+  TOUCH_START_MESSAGE_TYPE,
+  TOUCH_MOVE_MESSAGE_TYPE,
+  TOUCH_END_MESSAGE_TYPE,
+  MOUSE_DOWN_MESSAGE_TYPE,
+  MOUSE_UP_MESSAGE_TYPE,
+  BLUR_WINDOW_MESSAGE_TYPE,
+  FOCUS_WINDOW_MESSAGE_TYPE,
+  WHEEL_MESSAGE_TYPE,
+  SCROLL_MESSAGE_TYPE,
 } from './constants';
 
 export default class Handlers {
@@ -148,7 +148,7 @@ export default class Handlers {
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
     this.push(
-      MOUSE_MOVE_EVENT_TYPE,
+      MOUSE_MOVE_MESSAGE_TYPE,
       event,
       event.screenX,
       event.screenY,
@@ -159,7 +159,7 @@ export default class Handlers {
   // `pointerdown` and `mousedown` event handler
   handlePointerDown(event) {
     this.push(
-      MOUSE_DOWN_EVENT_TYPE,
+      MOUSE_DOWN_MESSAGE_TYPE,
       event,
       event.screenX,
       event.screenY,
@@ -171,7 +171,7 @@ export default class Handlers {
   // `pointerup` and `mouseup` event handler
   handlePointerUp(event) {
     this.push(
-      MOUSE_UP_EVENT_TYPE,
+      MOUSE_UP_MESSAGE_TYPE,
       event,
       event.screenX,
       event.screenY,
@@ -184,7 +184,7 @@ export default class Handlers {
   handleTouchStart(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_START_EVENT_TYPE,
+        TOUCH_START_MESSAGE_TYPE,
         event,
         touch.identifier,
         touch.screenX,
@@ -197,7 +197,7 @@ export default class Handlers {
   handleTouchMove(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_MOVE_EVENT_TYPE,
+        TOUCH_MOVE_MESSAGE_TYPE,
         event,
         touch.identifier,
         touch.screenX,
@@ -210,7 +210,7 @@ export default class Handlers {
   handleTouchEnd(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_END_EVENT_TYPE,
+        TOUCH_END_MESSAGE_TYPE,
         event,
         touch.identifier,
         touch.screenX,
@@ -228,7 +228,7 @@ export default class Handlers {
   // Wheel event handler
   handleWheel(event) {
     this.push(
-      WHEEL_EVENT_TYPE,
+      WHEEL_MESSAGE_TYPE,
       event,
       event.deltaX,
       event.deltaY,
@@ -240,7 +240,7 @@ export default class Handlers {
   // Scroll event handler
   handleScroll(event) {
     this.push(
-      SCROLL_EVENT_TYPE,
+      SCROLL_MESSAGE_TYPE,
       event,
       window.scrollX,
       window.scrollY,
@@ -275,12 +275,12 @@ export default class Handlers {
   // Handle window focus leave event: register event and send stream
   // automatically.
   handleBlur(event) {
-    this.push(BLUR_WINDOW_EVENT_TYPE, event);
+    this.push(BLUR_WINDOW_MESSAGE_TYPE, event);
     this.submit();
   }
 
   // Handle window focus event: register a new event to the stream
   handleFocus(event) {
-    this.push(FOCUS_WINDOW_EVENT_TYPE, event);
+    this.push(FOCUS_WINDOW_MESSAGE_TYPE, event);
   }
 }

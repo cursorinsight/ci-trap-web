@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { CUSTOM_EVENT_TYPE } from '../src/constants';
+import { CUSTOM_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -40,7 +40,7 @@ describe('custom message', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first custom message event
-    const message = jsonBody.filter((e) => e[0] === CUSTOM_EVENT_TYPE)[0];
+    const message = jsonBody.filter((e) => e[0] === CUSTOM_MESSAGE_TYPE)[0];
 
     // Check first event's third argument -- which is an object
     expect(message).toMatchObject([
@@ -64,7 +64,7 @@ describe('custom message', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first custom message event
-    const message = jsonBody.filter((e) => e[0] === CUSTOM_EVENT_TYPE)[0];
+    const message = jsonBody.filter((e) => e[0] === CUSTOM_MESSAGE_TYPE)[0];
 
     expect(message).toMatchObject([
       expect.any(Number),

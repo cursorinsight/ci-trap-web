@@ -27,7 +27,7 @@ import disableTouchEventMixin from './disableTouchEventMixin';
 
 // Constants
 import {
-  CUSTOM_EVENT_TYPE,
+  CUSTOM_MESSAGE_TYPE,
 } from './constants';
 
 class Trap {
@@ -139,9 +139,9 @@ class Trap {
   // Inject and later send custom event to stream
   send(props) {
     if (typeof props === 'string') {
-      this._buffer.push(CUSTOM_EVENT_TYPE, undefined, { message: props });
+      this._buffer.push(CUSTOM_MESSAGE_TYPE, undefined, { message: props });
     } else if (typeof props === 'object') {
-      this._buffer.push(CUSTOM_EVENT_TYPE, undefined, props);
+      this._buffer.push(CUSTOM_MESSAGE_TYPE, undefined, props);
     }
   }
 

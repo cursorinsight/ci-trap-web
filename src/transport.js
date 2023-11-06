@@ -12,8 +12,8 @@ import {
   DEFAULT_METADATA_SUBMISSION_INTERVAL,
   DEFAULT_TRAP_ENABLE_COMPRESSION,
   DEFAULT_TRAP_SERVER_URL,
-  HEADER_EVENT_TYPE,
-  METADATA_EVENT_TYPE,
+  HEADER_MESSAGE_TYPE,
+  METADATA_MESSAGE_TYPE,
   SCHEMA,
 } from './constants';
 
@@ -71,7 +71,7 @@ class Transport {
   // eslint-disable-next-line class-methods-use-this
   serializeHeader(ts, sessionId, streamId, sequenceNumber, schema) {
     return [
-      HEADER_EVENT_TYPE,
+      HEADER_MESSAGE_TYPE,
       // TODO: merge this with buffer's currentTs
       ts,
       sessionId,
@@ -104,7 +104,7 @@ class Transport {
   // eslint-disable-next-line class-methods-use-this
   serializeMetadata(ts, platform, location, custom, screen, document) {
     return [
-      METADATA_EVENT_TYPE,
+      METADATA_MESSAGE_TYPE,
       // TODO: merge this with buffer's currentTs
       ts,
       {

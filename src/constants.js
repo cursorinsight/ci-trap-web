@@ -32,19 +32,19 @@ export const VISIBILITY_CHANGE_ENABLED = 'onvisibilitychange' in document
 export const FREEZE_ENABLED = 'onfreeze' in document;
 
 // Monotonously increasing event types
-export const HEADER_EVENT_TYPE = -1;
-export const MOUSE_MOVE_EVENT_TYPE = 0;
-export const CUSTOM_EVENT_TYPE = 1;
-export const TOUCH_START_EVENT_TYPE = 2;
-export const TOUCH_MOVE_EVENT_TYPE = 3;
-export const TOUCH_END_EVENT_TYPE = 4;
-export const MOUSE_DOWN_EVENT_TYPE = 5;
-export const MOUSE_UP_EVENT_TYPE = 6;
-export const BLUR_WINDOW_EVENT_TYPE = 7;
-export const FOCUS_WINDOW_EVENT_TYPE = 8;
-export const WHEEL_EVENT_TYPE = 9;
-export const SCROLL_EVENT_TYPE = 10;
-export const METADATA_EVENT_TYPE = 11;
+export const HEADER_MESSAGE_TYPE = -1;
+export const MOUSE_MOVE_MESSAGE_TYPE = 0;
+export const CUSTOM_MESSAGE_TYPE = 1;
+export const TOUCH_START_MESSAGE_TYPE = 2;
+export const TOUCH_MOVE_MESSAGE_TYPE = 3;
+export const TOUCH_END_MESSAGE_TYPE = 4;
+export const MOUSE_DOWN_MESSAGE_TYPE = 5;
+export const MOUSE_UP_MESSAGE_TYPE = 6;
+export const BLUR_WINDOW_MESSAGE_TYPE = 7;
+export const FOCUS_WINDOW_MESSAGE_TYPE = 8;
+export const WHEEL_MESSAGE_TYPE = 9;
+export const SCROLL_MESSAGE_TYPE = 10;
+export const METADATA_MESSAGE_TYPE = 11;
 
 // Default Trap server endpoint
 export const DEFAULT_TRAP_SERVER_URL = '?UNCONFIGURED=http';

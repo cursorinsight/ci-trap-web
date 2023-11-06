@@ -3,8 +3,8 @@ import { fireEvent } from '@testing-library/dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import {
-  BLUR_WINDOW_EVENT_TYPE,
-  FOCUS_WINDOW_EVENT_TYPE,
+  BLUR_WINDOW_MESSAGE_TYPE,
+  FOCUS_WINDOW_MESSAGE_TYPE,
 } from '../src/constants';
 import trap from '../src/trap';
 
@@ -53,7 +53,7 @@ describe('blur event handlers', () => {
 
     // Check registered blur event
     expect(JSON.parse(fetch.mock.calls[0][1].body).map((e) => e[0]))
-      .toContain(BLUR_WINDOW_EVENT_TYPE);
+      .toContain(BLUR_WINDOW_MESSAGE_TYPE);
   });
 
   test('registers focus event', () => {
@@ -65,7 +65,7 @@ describe('blur event handlers', () => {
 
     // Check registered focus event
     expect(JSON.parse(fetch.mock.calls[0][1].body).map((e) => e[0]))
-      .toContain(FOCUS_WINDOW_EVENT_TYPE);
+      .toContain(FOCUS_WINDOW_MESSAGE_TYPE);
   });
 
   // This test case is a CONTINUATION

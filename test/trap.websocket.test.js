@@ -3,9 +3,9 @@ import WS from 'jest-websocket-mock';
 import trap from '../src/trap';
 
 import {
-  CUSTOM_EVENT_TYPE,
-  HEADER_EVENT_TYPE,
-  METADATA_EVENT_TYPE,
+  CUSTOM_MESSAGE_TYPE,
+  HEADER_MESSAGE_TYPE,
+  METADATA_MESSAGE_TYPE,
 
 } from '../src/constants';
 
@@ -62,14 +62,14 @@ describe('metadata', () => {
     expect(jsonBody).toHaveLength(3);
 
     // First message is header
-    expect(jsonBody[0][0]).toEqual(HEADER_EVENT_TYPE);
+    expect(jsonBody[0][0]).toEqual(HEADER_MESSAGE_TYPE);
 
     // Second message is metaData
-    expect(jsonBody[1][0]).toEqual(METADATA_EVENT_TYPE);
+    expect(jsonBody[1][0]).toEqual(METADATA_MESSAGE_TYPE);
 
     // Third message is the custom event
     expect(jsonBody[2]).toMatchObject([
-      CUSTOM_EVENT_TYPE,
+      CUSTOM_MESSAGE_TYPE,
       expect.any(Number),
       expect.objectContaining({
         message: 'message',
@@ -132,11 +132,11 @@ describe('metadata', () => {
     expect(jsonBody).toHaveLength(2);
 
     // First message is header
-    expect(jsonBody[0][0]).toEqual(HEADER_EVENT_TYPE);
+    expect(jsonBody[0][0]).toEqual(HEADER_MESSAGE_TYPE);
 
     // Second message is the custom event
     expect(jsonBody[1]).toMatchObject([
-      CUSTOM_EVENT_TYPE,
+      CUSTOM_MESSAGE_TYPE,
       expect.any(Number),
       expect.objectContaining({
         message: 'message2',

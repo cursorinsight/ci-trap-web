@@ -3,7 +3,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { CUSTOM_EVENT_TYPE } from '../src/constants';
+import { CUSTOM_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -55,7 +55,7 @@ describe('time-property', () => {
     // Read the timestamp of the first custom message -- this will be our epoch
     // in this test session.
     const epoch = JSON.parse(fetch.mock.calls[0][1].body)
-      .filter((e) => e[0] === CUSTOM_EVENT_TYPE)[0][1];
+      .filter((e) => e[0] === CUSTOM_MESSAGE_TYPE)[0][1];
 
     // Read submissions and reduce a list to event timestamps only
     const firstSubmissionTimestamps = JSON.parse(fetch.mock.calls[0][1].body)

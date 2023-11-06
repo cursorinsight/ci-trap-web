@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import {
-  METADATA_EVENT_TYPE,
+  METADATA_MESSAGE_TYPE,
   DEFAULT_METADATA_SUBMISSION_INTERVAL,
 } from '../src/constants';
 import trap from '../src/trap';
@@ -56,14 +56,14 @@ describe('metadata', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Get metadata message
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE);
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
 
     // Check number of metadata messages in the stream
     expect(metadata).toHaveLength(1);
 
     // Check first event's third argument -- which is an object
     expect(metadata[0]).toMatchObject([
-      METADATA_EVENT_TYPE,
+      METADATA_MESSAGE_TYPE,
       expect.any(Number),
       expect.objectContaining({
         platform: expect.any(Object),
@@ -94,13 +94,13 @@ describe('metadata', () => {
 
     // Fetch "fetch bodies" and parse their JSON
     const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);
-    const metadata1 = jsonBody1.filter((e) => e[0] === METADATA_EVENT_TYPE);
+    const metadata1 = jsonBody1.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
     const jsonBody2 = JSON.parse(fetch.mock.calls[1][1].body);
-    const metadata2 = jsonBody2.filter((e) => e[0] === METADATA_EVENT_TYPE);
+    const metadata2 = jsonBody2.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
     const jsonBody3 = JSON.parse(fetch.mock.calls[2][1].body);
-    const metadata3 = jsonBody3.filter((e) => e[0] === METADATA_EVENT_TYPE);
+    const metadata3 = jsonBody3.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
     const jsonBody4 = JSON.parse(fetch.mock.calls[3][1].body);
-    const metadata4 = jsonBody4.filter((e) => e[0] === METADATA_EVENT_TYPE);
+    const metadata4 = jsonBody4.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
 
     // Check number of metadata messages in the stream
     expect(metadata1).toHaveLength(1);
