@@ -124,17 +124,18 @@ export default class Metadata {
   }
 
   get screen() {
+    let screen = window.screen;
     return { // screen metadata
-      availHeight: window.screen.availHeight,
-      availWidth: window.screen.availWidth,
-      availLeft: window.screen.availLeft,
-      availTop: window.screen.availTop,
-      height: window.screen.height,
-      width: window.screen.width,
-      top: window.screen.top,
-      left: window.screen.left,
-      colorDepth: window.screen.colorDepth,
-      pixelDepth: window.screen.pixelDepth,
+      availHeight: screen.availHeight,
+      availWidth: screen.availWidth,
+      availLeft: screen.availLeft,
+      availTop: screen.availTop,
+      height: screen.height,
+      width: screen.width,
+      top: screen.top,
+      left: screen.left,
+      colorDepth: screen.colorDepth,
+      pixelDepth: screen.pixelDepth,
       devicePixelRatio: window.devicePixelRatio,
       orientation: { ...(this.orientation) },
     };
@@ -167,17 +168,18 @@ export default class Metadata {
   // Return document metadata
   // eslint-disable-next-line class-methods-use-this
   get document() {
+    let documentElement = document.documentElement;
     return {
-      scrollLeft: document.documentElement.scrollLeft,
-      scrollTop: document.documentElement.scrollTop,
-      scrollHeight: document.documentElement.scrollHeight,
-      scrollWidth: document.documentElement.scrollWidth,
-      offsetHeight: document.documentElement.offsetHeight,
-      offsetWidth: document.documentElement.offsetWidth,
-      clientTop: document.documentElement.clientTop,
-      clientLeft: document.documentElement.clientLeft,
-      clientHeight: document.documentElement.clientHeight,
-      clientWidth: document.documentElement.clientWidth,
+      scrollLeft: documentElement.scrollLeft,
+      scrollTop: documentElement.scrollTop,
+      scrollHeight: documentElement.scrollHeight,
+      scrollWidth: documentElement.scrollWidth,
+      offsetHeight: documentElement.offsetHeight,
+      offsetWidth: documentElement.offsetWidth,
+      clientTop: documentElement.clientTop,
+      clientLeft: documentElement.clientLeft,
+      clientHeight: documentElement.clientHeight,
+      clientWidth: documentElement.clientWidth,
     };
   }
 }
