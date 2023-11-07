@@ -36,11 +36,11 @@ class Trap {
   constructor() {
     simpleAutoBind(this);
 
-    // Initialize metadata handler
-    this._metadata = new Metadata();
-
     // Initialize buffer to store collected events before sending
     this._buffer = new Buffer(this);
+
+    // Initialize metadata handler
+    this._metadata = new Metadata(this._buffer);
 
     // Initialize DOM event handlers
     this._handlers = new Handlers(this._buffer);
@@ -67,8 +67,6 @@ class Trap {
   get transport() {
     return this.state.transport;
   }
-
-  // Metadata API
 
   // `streamId` getter
   streamId() {
@@ -115,11 +113,13 @@ class Trap {
   // Enable/start data collection
   start() {
     this._buffer.enable();
+    this._metadata.enable();
   }
 
   // Disable/stop data collection
   stop() {
     this._buffer.disable();
+    this._metadata.disable();
   }
 
   // `bufferSizeLimit` setter proxy
@@ -172,6 +172,7 @@ class Trap {
   // TODO: refactor and preferably remove this code
   reset() {
     this.transport.reset();
+    this._metadata.reset();
   }
 
   // TODO: remove this if it is unnecessary

@@ -45,11 +45,13 @@ describe('metadata', () => {
   beforeEach(async () => {
     trap.setUseWsTransport(true);
     trap.url(`${fakeUrl}/\${sessionId}/\${streamId}`);
+    trap.start();
   });
 
   afterEach(() => {
     // Close all connections
     WS.clean();
+    trap.stop();
   });
 
   test('if server is running message is sent', async () => {

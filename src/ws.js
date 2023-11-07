@@ -40,9 +40,6 @@ class WS extends Transport {
     // Current timestamp
     const currentTs = TimeUtils.currentTs();
 
-    // Add metaData if it hasn't been submitted recently
-    this.maybeAddMetadataToBuffer(buffer, currentTs);
-
     // Initialize socket -- if null
     if (this._socket === null) {
       await this.initializeSocket();

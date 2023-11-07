@@ -3,6 +3,7 @@ import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import { METADATA_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
+import { json } from 'express';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
@@ -29,9 +30,8 @@ describe('screen orientation handlers', () => {
     disableFetchMocks();
   });
 
-  beforeEach(() => {
-    // Reset Trap's internals
-    trap.reset();
+  afterEach(() => {
+    trap.stop();
   });
 
   // Metadata events are composed of the followings:
@@ -45,6 +45,9 @@ describe('screen orientation handlers', () => {
     // Set `window.orientation` to `0` (portrait)
     const originalWindowOrientation = window.orientation;
     window.orientation = 0;
+
+    // Start periodic metadata
+    trap.start();
 
     // Send a simple custom message
     trap.send('message');
@@ -71,6 +74,9 @@ describe('screen orientation handlers', () => {
     const originalWindowOrientation = window.orientation;
     window.orientation = 90;
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -95,6 +101,9 @@ describe('screen orientation handlers', () => {
     // Set `window.orientation` to `-90` (inverted landscape)
     const originalWindowOrientation = window.orientation;
     window.orientation = -90;
+
+    // Start periodic metadata
+    trap.start();
 
     // Send a simple custom message
     trap.send('message');
@@ -121,6 +130,9 @@ describe('screen orientation handlers', () => {
     const originalWindowScreenOrientation = window.screen.orientation;
     window.screen.orientation = { type: 'custom-tilted', angle: 42 };
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -145,6 +157,9 @@ describe('screen orientation handlers', () => {
     // Unset related values
     window.screen.orientation = undefined;
     window.orientation = undefined;
+
+    // Start periodic metadata
+    trap.start();
 
     // Send a simple custom message
     trap.send('message');

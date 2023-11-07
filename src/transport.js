@@ -9,11 +9,9 @@
 import simpleAutoBind from './simpleAutoBind';
 
 import {
-  DEFAULT_METADATA_SUBMISSION_INTERVAL,
   DEFAULT_TRAP_ENABLE_COMPRESSION,
   DEFAULT_TRAP_SERVER_URL,
   HEADER_MESSAGE_TYPE,
-  METADATA_MESSAGE_TYPE,
   SCHEMA,
 } from './constants';
 
@@ -41,9 +39,6 @@ class Transport {
 
     // Save last submission's timestamp
     this._lastSubmissionTs = TimeUtils.currentTs();
-
-    // Last metadata submission's timestamp
-    this._lastMetadataTs = 0;
   }
 
   createUrl(url) {
@@ -80,42 +75,6 @@ class Transport {
       streamId,
       sequenceNumber,
       schema,
-    ];
-  }
-
-  maybeAddMetadataToBuffer(buffer, currentTs) {
-    // Send metadata every minutes only once -- right before the data
-    if (this._lastMetadataTs + DEFAULT_METADATA_SUBMISSION_INTERVAL
-        < currentTs) {
-      buffer.unshift(
-        // TODO refactor: move this to the buffer -- and include these data
-        // there
-        this.serializeMetadata(
-          this._lastSubmissionTs,
-          this._metadata.platform,
-          this._metadata.location,
-          this._metadata.custom,
-          this._metadata.screen,
-          this._metadata.document,
-        ),
-      );
-      this._lastMetadataTs = currentTs;
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  serializeMetadata(ts, platform, location, custom, screen, document) {
-    return [
-      METADATA_MESSAGE_TYPE,
-      // TODO: merge this with buffer's currentTs
-      ts,
-      {
-        platform,
-        location,
-        custom,
-        screen,
-        document,
-      },
     ];
   }
 

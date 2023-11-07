@@ -37,6 +37,12 @@ describe('time-property', () => {
   beforeEach(() => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
   });
 
   test('header and metadata timestamps are consistent', () => {
@@ -67,15 +73,13 @@ describe('time-property', () => {
     //
     // `message1a` and `message1b` timestamps should be exactly at 0 and 100,
     // respectively.
-    expect(firstSubmissionTimestamps.slice(2, 4)).toStrictEqual([0, 100]);
+    expect(firstSubmissionTimestamps.slice(1, 4)).toStrictEqual([0, 0, 100]);
     expect(secondSubmissionTimestamps).toStrictEqual([100, 1000, 1100]);
 
     // TODO: Since the "trap" instance is initialized **before** jest could set
     // up its fake timers, its epoch has always a small offset and the
     // timestamp of the first header and metadata messages always come early.
-    expect(firstSubmissionTimestamps[0]).toEqual(firstSubmissionTimestamps[1]);
-    // TODO: this is a failing test case which works in the browser properly
-    // expect(firstSubmissionTimestamps[1])
-    //          .toBeLessThanOrEqual(firstSubmissionTimestamps[2]);
+    expect(firstSubmissionTimestamps[1])
+      .toBeLessThanOrEqual(firstSubmissionTimestamps[2]);
   });
 });

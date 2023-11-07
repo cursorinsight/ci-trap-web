@@ -37,6 +37,14 @@ describe('buffer limit', () => {
     disableFetchMocks();
   });
 
+  beforeEach(() => {
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
+  });
+
   test('sends compressed, binary chunks', () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));

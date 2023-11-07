@@ -39,9 +39,11 @@ describe('metadata', () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
-    // Reset trap instance -- to make it sure that HTTP resends metadata
-    // messages
-    trap.reset();
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
   });
 
   test('sends metadata message', () => {
@@ -83,7 +85,7 @@ describe('metadata', () => {
     trap.submit();
 
     // advance time by exactly 1 minute
-    jest.advanceTimersByTime(DEFAULT_METADATA_SUBMISSION_INTERVAL);
+    jest.advanceTimersByTime(DEFAULT_METADATA_SUBMISSION_INTERVAL - 1);
     trap.send('message3');
     trap.submit();
 

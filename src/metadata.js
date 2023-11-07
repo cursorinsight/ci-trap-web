@@ -15,16 +15,22 @@ import Cookies from 'js-cookie';
 import Platform from 'platform';
 
 import simpleAutoBind from './simpleAutoBind';
+import TimeUtils from './timeUtils';
 
 // Constants
 import {
   DEFAULT_TRAP_API_KEY_NAME,
   DEFAULT_TRAP_API_KEY_VALUE,
+  DEFAULT_METADATA_SUBMISSION_INTERVAL,
+  METADATA_MESSAGE_TYPE,
 } from './constants';
 
 export default class Metadata {
-  constructor() {
+  constructor(buffer) {
     simpleAutoBind(this);
+
+    // Event buffer that receive messages
+    this._buffer = buffer;
 
     // Unique session id -- that represents a unique browser; load or set up a
     // new cookie
@@ -84,9 +90,53 @@ export default class Metadata {
     this._apiKeyValue = apiKeyValue;
   }
 
+  // Enable periodical metadata submission
+  enable() {
+    if (this._submissionTimer === undefined) {
+      this._submissionTimer = window.setInterval(
+        this.submit,
+        DEFAULT_METADATA_SUBMISSION_INTERVAL,
+      );
+      this.submit();
+    }
+  }
+
+  // Disable metadata submission
+  disable() {
+    if (this._submissionTimer !== undefined) {
+      window.clearInterval(this._submissionTimer);
+      this._submissionTimer = undefined;
+    }
+  }
+
+  submit() {
+    this._buffer.push(...this.serializeMetadata());
+  }
+
+  reset() {
+    this.disable();
+    this.enable();
+  }
+
+  serializeMetadata() {
+    return [
+      METADATA_MESSAGE_TYPE,
+      // TODO: merge this with buffer's currentTs
+      TimeUtils.currentTs(),
+      {
+        platform: this.platform,
+        location: this.location,
+        custom: this.custom,
+        screen: this.screen,
+        document: this.document,
+      },
+    ];
+  }
+
   // Set custom metadata key/value pair
   set(key, value) {
     this._customMetadata[key] = value;
+    this.submit();
   }
 
   // Return custom, user-defined metadata
@@ -124,7 +174,7 @@ export default class Metadata {
   }
 
   get screen() {
-    let screen = window.screen;
+    const { screen } = window;
     return { // screen metadata
       availHeight: screen.availHeight,
       availWidth: screen.availWidth,
@@ -168,7 +218,7 @@ export default class Metadata {
   // Return document metadata
   // eslint-disable-next-line class-methods-use-this
   get document() {
-    let documentElement = document.documentElement;
+    const { documentElement } = document;
     return {
       scrollLeft: documentElement.scrollLeft,
       scrollTop: documentElement.scrollTop,

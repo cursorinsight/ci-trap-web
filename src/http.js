@@ -42,9 +42,6 @@ class HTTP extends Transport {
     // Current timestamp
     const currentTs = TimeUtils.currentTs();
 
-    // Add metaData if it hasn't been submitted recently
-    this.maybeAddMetadataToBuffer(buffer, currentTs);
-
     // Put the header to the very first place
     this.addHeaderToBuffer(buffer);
 
