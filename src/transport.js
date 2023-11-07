@@ -17,6 +17,8 @@ import {
   SCHEMA,
 } from './constants';
 
+import TimeUtils from './timeUtils';
+
 class Transport {
   constructor(metadata, buffer) {
     simpleAutoBind(this);
@@ -38,7 +40,7 @@ class Transport {
     this.url = DEFAULT_TRAP_SERVER_URL;
 
     // Save last submission's timestamp
-    this._lastSubmissionTs = this._buffer.currentTs();
+    this._lastSubmissionTs = TimeUtils.currentTs();
 
     // Last metadata submission's timestamp
     this._lastMetadataTs = 0;

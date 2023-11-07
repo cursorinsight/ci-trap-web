@@ -25,6 +25,8 @@ import {
   SCROLL_MESSAGE_TYPE,
 } from './constants';
 
+import TimeUtils from './timeUtils';
+
 export default class Handlers {
   constructor(buffer) {
     simpleAutoBind(this);
@@ -149,7 +151,7 @@ export default class Handlers {
   handlePointerMove(event) {
     this.push(
       MOUSE_MOVE_MESSAGE_TYPE,
-      event,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -160,7 +162,7 @@ export default class Handlers {
   handlePointerDown(event) {
     this.push(
       MOUSE_DOWN_MESSAGE_TYPE,
-      event,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -172,7 +174,7 @@ export default class Handlers {
   handlePointerUp(event) {
     this.push(
       MOUSE_UP_MESSAGE_TYPE,
-      event,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -185,7 +187,7 @@ export default class Handlers {
     this.iterateTouches(event, (touch) => {
       this.push(
         TOUCH_START_MESSAGE_TYPE,
-        event,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -198,7 +200,7 @@ export default class Handlers {
     this.iterateTouches(event, (touch) => {
       this.push(
         TOUCH_MOVE_MESSAGE_TYPE,
-        event,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -211,7 +213,7 @@ export default class Handlers {
     this.iterateTouches(event, (touch) => {
       this.push(
         TOUCH_END_MESSAGE_TYPE,
-        event,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -229,7 +231,7 @@ export default class Handlers {
   handleWheel(event) {
     this.push(
       WHEEL_MESSAGE_TYPE,
-      event,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.deltaX,
       event.deltaY,
       event.deltaZ,
@@ -241,7 +243,7 @@ export default class Handlers {
   handleScroll(event) {
     this.push(
       SCROLL_MESSAGE_TYPE,
-      event,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       window.scrollX,
       window.scrollY,
     );

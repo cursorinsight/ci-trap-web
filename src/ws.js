@@ -8,6 +8,7 @@
 
 import simpleAutoBind from './simpleAutoBind';
 import Transport from './transport';
+import TimeUtils from './timeUtils';
 
 class WS extends Transport {
   constructor(metadata, buffer, logger) {
@@ -37,7 +38,7 @@ class WS extends Transport {
   // Submit
   async submit(buffer) {
     // Current timestamp
-    const currentTs = this._buffer.currentTs();
+    const currentTs = TimeUtils.currentTs();
 
     // Add metaData if it hasn't been submitted recently
     this.maybeAddMetadataToBuffer(buffer, currentTs);

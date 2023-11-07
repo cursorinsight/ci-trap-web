@@ -21,6 +21,7 @@ import WS from './ws';
 
 // Metadata
 import Metadata from './metadata';
+import TimeUtils from './timeUtils';
 
 // Mixins
 import disableTouchEventMixin from './disableTouchEventMixin';
@@ -139,9 +140,15 @@ class Trap {
   // Inject and later send custom event to stream
   send(props) {
     if (typeof props === 'string') {
-      this._buffer.push(CUSTOM_MESSAGE_TYPE, undefined, { message: props });
+      this._buffer.push(
+        CUSTOM_MESSAGE_TYPE,
+        TimeUtils.currentTs(),
+        { message: props });
     } else if (typeof props === 'object') {
-      this._buffer.push(CUSTOM_MESSAGE_TYPE, undefined, props);
+      this._buffer.push(
+        CUSTOM_MESSAGE_TYPE,
+        TimeUtils.currentTs(),
+        props);
     }
   }
 

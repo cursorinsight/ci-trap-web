@@ -11,7 +11,6 @@
 import simpleAutoBind from './simpleAutoBind';
 
 import {
-  PERFORMANCE_TIMEORIGIN_ENABLED,
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
   DEFAULT_TRAP_IDLE_TIMEOUT,
 } from './constants';
@@ -25,15 +24,6 @@ class Buffer {
 
     // Enable/disable Trap collection
     this._enabled = true;
-
-    // Timestamp basis; milliseconds since the Unix epoch (1970-01-01)
-    this._epoch = PERFORMANCE_TIMEORIGIN_ENABLED
-      ? performance.timeOrigin
-      : (() => {
-        const hrSyncPoint = performance.now();
-        const unixSyncPoint = new Date().getTime();
-        return unixSyncPoint - hrSyncPoint; // timeOrigin
-      })();
 
     // Event buffer to store messages
     this._buffer = [];
@@ -87,11 +77,11 @@ class Buffer {
   }
 
   // Register a new event to be sent
-  push(type, originalEvent, ...props) {
+  push(type, timestamp, ...props) {
     // Skip event if collection is not enabled
     if (!this._enabled) { return; }
 
-    const event = [type, this.currentTs(originalEvent), ...props];
+    const event = [type, timestamp, ...props];
 
     this.clearIdleTimer();
     this._buffer.push(event);
@@ -141,21 +131,6 @@ class Buffer {
     this.clearIdleTimer();
     this.submit();
     this._enabled = false;
-  }
-
-  // Get current timestamp
-  currentTs(event) {
-    if (typeof event === 'undefined') {
-      return (PERFORMANCE_TIMEORIGIN_ENABLED
-        ? performance.now() + this._epoch
-        : Date.now());
-    }
-
-    if (event.timeStamp < 1000000000000) {
-      return event.timeStamp + this._epoch;
-    }
-
-    return event.timeStamp;
   }
 }
 

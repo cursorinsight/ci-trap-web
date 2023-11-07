@@ -11,6 +11,8 @@ import { strToU8, zlibSync } from 'fflate';
 import Transport from './transport';
 import simpleAutoBind from './simpleAutoBind';
 
+import TimeUtils from './timeUtils';
+
 class HTTP extends Transport {
   constructor(metadata, buffer) {
     super(metadata, buffer);
@@ -38,7 +40,7 @@ class HTTP extends Transport {
     // Set up monotonically incrementing sequence number
 
     // Current timestamp
-    const currentTs = this._buffer.currentTs();
+    const currentTs = TimeUtils.currentTs();
 
     // Add metaData if it hasn't been submitted recently
     this.maybeAddMetadataToBuffer(buffer, currentTs);
