@@ -5,8 +5,8 @@
 //------------------------------------------------------------------------------
 // Handler implementation to manage incoming DOM events.
 //------------------------------------------------------------------------------
-
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
 
 import {
   TOUCH_ENABLED,
@@ -27,12 +27,9 @@ import {
 
 import TimeUtils from './timeUtils';
 
-export default class Handlers {
-  constructor(buffer) {
+class Handlers {
+  constructor() {
     simpleAutoBind(this);
-
-    // Event buffer that receive messages
-    this._buffer = buffer;
 
     // DOM elements to which these handlers are already mounted to
     this._registeredElements = [];
@@ -137,14 +134,13 @@ export default class Handlers {
     this.umountGlobal();
   }
 
-  // Push event to the buffer
   push(...props) {
-    this._buffer.push(...props);
+    this.emit('message', props);
   }
 
   // Submit events explicitly
-  submit() {
-    this._buffer.submit();
+  requestSubmission() {
+    this.emit('requestSubmission');
   }
 
   // `pointermove` and `mousemove` event handler
@@ -257,7 +253,7 @@ export default class Handlers {
   // - https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event
   handleVisibilityChange(/* event */) {
     if (document.visibilityState === 'hidden') {
-      this.submit();
+      this.requestSubmission();
     }
   }
 
@@ -266,19 +262,19 @@ export default class Handlers {
   //
   // For more info, see: `handleVisibilityChange` too.
   handlePageHide(/* event */) {
-    this.submit();
+    this.requestSubmission();
   }
 
   // Handle document freeze event
   handleFreeze(/* event */) {
-    this.submit();
+    this.requestSubmission();
   }
 
   // Handle window focus leave event: register event and send stream
   // automatically.
   handleBlur(event) {
     this.push(BLUR_WINDOW_MESSAGE_TYPE, event);
-    this.submit();
+    this.requestSubmission();
   }
 
   // Handle window focus event: register a new event to the stream
@@ -286,3 +282,7 @@ export default class Handlers {
     this.push(FOCUS_WINDOW_MESSAGE_TYPE, event);
   }
 }
+
+Object.assign(Handlers.prototype, eventEmitterMixin);
+
+export default Handlers;

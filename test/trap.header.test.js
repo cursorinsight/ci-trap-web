@@ -32,6 +32,13 @@ describe('header', () => {
   beforeEach(() => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
+    trap.state.sequenceNumber = 0;
   });
 
   test('API provides valid header metadata getter functions', () => {
@@ -93,7 +100,7 @@ describe('header', () => {
       .filter((e) => e[0] === HEADER_MESSAGE_TYPE)[0][4];
 
     // Assertion
-    expect(firstSequenceNumber).toBe(1);
+    expect(firstSequenceNumber).toBe(0);
     expect(secondSequenceNumber).toEqual(firstSequenceNumber + 1);
   });
 });

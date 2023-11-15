@@ -71,15 +71,7 @@ describe('time-property', () => {
 
     // Assertions
     //
-    // `message1a` and `message1b` timestamps should be exactly at 0 and 100,
-    // respectively.
-    expect(firstSubmissionTimestamps.slice(1, 4)).toStrictEqual([0, 0, 100]);
+    expect(firstSubmissionTimestamps).toStrictEqual([0, 0, 0, 100]);
     expect(secondSubmissionTimestamps).toStrictEqual([100, 1000, 1100]);
-
-    // TODO: Since the "trap" instance is initialized **before** jest could set
-    // up its fake timers, its epoch has always a small offset and the
-    // timestamp of the first header and metadata messages always come early.
-    expect(firstSubmissionTimestamps[1])
-      .toBeLessThanOrEqual(firstSubmissionTimestamps[2]);
   });
 });

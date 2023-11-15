@@ -15,6 +15,7 @@ import Cookies from 'js-cookie';
 import Platform from 'platform';
 
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
 import TimeUtils from './timeUtils';
 
 // Constants
@@ -25,12 +26,9 @@ import {
   METADATA_MESSAGE_TYPE,
 } from './constants';
 
-export default class Metadata {
-  constructor(buffer) {
+class Metadata {
+  constructor() {
     simpleAutoBind(this);
-
-    // Event buffer that receive messages
-    this._buffer = buffer;
 
     // Unique session id -- that represents a unique browser; load or set up a
     // new cookie
@@ -110,7 +108,7 @@ export default class Metadata {
   }
 
   submit() {
-    this._buffer.push(...this.serializeMetadata());
+    this.emit('message', this.serializeMetadata());
   }
 
   reset() {
@@ -121,7 +119,6 @@ export default class Metadata {
   serializeMetadata() {
     return [
       METADATA_MESSAGE_TYPE,
-      // TODO: merge this with buffer's currentTs
       TimeUtils.currentTs(),
       {
         platform: this.platform,
@@ -233,3 +230,7 @@ export default class Metadata {
     };
   }
 }
+
+Object.assign(Metadata.prototype, eventEmitterMixin);
+
+export default Metadata;

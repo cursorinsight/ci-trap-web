@@ -8,7 +8,6 @@
 
 import simpleAutoBind from './simpleAutoBind';
 import Transport from './transport';
-import TimeUtils from './timeUtils';
 
 class WS extends Transport {
   constructor(metadata, buffer, logger) {
@@ -37,19 +36,10 @@ class WS extends Transport {
 
   // Submit
   async submit(buffer) {
-    // Current timestamp
-    const currentTs = TimeUtils.currentTs();
-
     // Initialize socket -- if null
     if (this._socket === null) {
       await this.initializeSocket();
-
-      // TODO: send session metadata
-      this.addHeaderToBuffer(buffer);
     }
-
-    // Save last submission's timestamp -- for the next run
-    this._lastSubmissionTs = currentTs;
 
     // Send data
     await this._socket.send(JSON.stringify(buffer));
@@ -80,7 +70,7 @@ class WS extends Transport {
 
       const handleError = (event) => {
         this._logger(`WebSocket connection error: ${event}`);
-        reject();
+        reject(new Error(event));
       };
 
       socket.addEventListener('error', handleError);
@@ -94,7 +84,6 @@ class WS extends Transport {
     if (this._socket != null) {
       this._socket.close();
     }
-    this.reset();
   }
 }
 

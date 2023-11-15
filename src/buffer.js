@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
 
 import {
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
@@ -16,17 +17,17 @@ import {
 } from './constants';
 
 class Buffer {
-  constructor(trap) {
+  constructor() {
     simpleAutoBind(this);
-
-    // Trap object reference -- to reach current transport module
-    this._trap = trap;
 
     // Enable/disable Trap collection
     this._enabled = true;
 
     // Event buffer to store messages
     this._buffer = [];
+
+    // Fix items at the beginning of the stream
+    this._headerItems = [];
 
     // Maximum allowed buffer size -- it automatically sends the contents when
     // this limit is reached.
@@ -65,15 +66,10 @@ class Buffer {
   setIdleTimer() {
     if (typeof this._idleTimeout === 'number') {
       this._idleTimer = window.setTimeout(
-        this.handleTimeout, // TODO: emit event instead
+        this.requestSubmission,
         this._idleTimeout,
       );
     }
-  }
-
-  // Handle internal `idle` timeout
-  handleTimeout() {
-    this.submit();
   }
 
   // Register a new event to be sent
@@ -88,17 +84,24 @@ class Buffer {
     this.setIdleTimer();
 
     // Automatically send data when the buffer gets filled
-    //
-    // TODO: emit event
     if (this._buffer.length >= this._bufferSizeLimit) {
-      this.submit();
+      this.requestSubmission();
     }
+  }
+
+  // Add header item
+  addHeaderItem(...props) {
+    this._headerItems.push([...props]);
   }
 
   // Return buffer contents and clear it afterwards.
   flush() {
-    const sendBuffer = Array.from(this._buffer); // clone buffer
+    this.clearIdleTimer(); // TODO: merge this with push's setIdleTimer call
+
+    // create merged buffer
+    const sendBuffer = this._headerItems.concat(this._buffer);
     this._buffer.length = 0; // clear buffer
+    this._headerItems.length = 0;
     return sendBuffer;
   }
 
@@ -108,14 +111,8 @@ class Buffer {
   }
 
   // Submit data over the wire
-  submit() {
-    this.clearIdleTimer(); // TODO: merge this with push's setIdleTimer call
-
-    // Return an empty, immediately resolveable function
-    if (this.isEmpty()) {
-      return new Promise(() => { });
-    }
-    return this._trap.transport.submit(this.flush());
+  requestSubmission(final) {
+    return this.emit('requestSubmission', final);
   }
 
   // Enable collection
@@ -129,9 +126,13 @@ class Buffer {
   // Mounted handlers work as before but events are not put into the buffer.
   disable() {
     this.clearIdleTimer();
-    this.submit();
+    this.requestSubmission(true);
     this._enabled = false;
+    this._headerItems.length = 0;
   }
 }
+
+// Append mixins
+Object.assign(Buffer.prototype, eventEmitterMixin);
 
 export default Buffer;

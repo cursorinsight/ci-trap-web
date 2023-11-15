@@ -3,7 +3,6 @@ import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import { METADATA_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
-import { json } from 'express';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
