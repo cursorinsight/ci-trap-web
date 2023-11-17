@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { METADATA_EVENT_TYPE } from '../src/constants';
+import { METADATA_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -29,9 +29,8 @@ describe('screen orientation handlers', () => {
     disableFetchMocks();
   });
 
-  beforeEach(() => {
-    // Reset Trap's internals
-    trap.reset();
+  afterEach(() => {
+    trap.stop();
   });
 
   // Metadata events are composed of the followings:
@@ -46,6 +45,9 @@ describe('screen orientation handlers', () => {
     const originalWindowOrientation = window.orientation;
     window.orientation = 0;
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -56,7 +58,7 @@ describe('screen orientation handlers', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // Check body
     expect(metadata).toHaveProperty(ANGLE_KEY, 0);
@@ -71,6 +73,9 @@ describe('screen orientation handlers', () => {
     const originalWindowOrientation = window.orientation;
     window.orientation = 90;
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -81,7 +86,7 @@ describe('screen orientation handlers', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // Check body
     expect(metadata).toHaveProperty(ANGLE_KEY, 90);
@@ -96,6 +101,9 @@ describe('screen orientation handlers', () => {
     const originalWindowOrientation = window.orientation;
     window.orientation = -90;
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -106,7 +114,7 @@ describe('screen orientation handlers', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // Check body
     expect(metadata).toHaveProperty(ANGLE_KEY, -90);
@@ -121,6 +129,9 @@ describe('screen orientation handlers', () => {
     const originalWindowScreenOrientation = window.screen.orientation;
     window.screen.orientation = { type: 'custom-tilted', angle: 42 };
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -131,7 +142,7 @@ describe('screen orientation handlers', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // Check body
     expect(metadata).toHaveProperty(ANGLE_KEY, 42);
@@ -146,6 +157,9 @@ describe('screen orientation handlers', () => {
     window.screen.orientation = undefined;
     window.orientation = undefined;
 
+    // Start periodic metadata
+    trap.start();
+
     // Send a simple custom message
     trap.send('message');
 
@@ -156,7 +170,7 @@ describe('screen orientation handlers', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Select first metadata event
-    const metadata = jsonBody.filter((e) => e[0] === METADATA_EVENT_TYPE)[0];
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
 
     // TODO: review this value -- or remove it from the parent entirely
     // check body

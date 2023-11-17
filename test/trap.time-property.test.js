@@ -3,7 +3,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { CUSTOM_EVENT_TYPE } from '../src/constants';
+import { CUSTOM_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -37,6 +37,12 @@ describe('time-property', () => {
   beforeEach(() => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
   });
 
   test('header and metadata timestamps are consistent', () => {
@@ -55,7 +61,7 @@ describe('time-property', () => {
     // Read the timestamp of the first custom message -- this will be our epoch
     // in this test session.
     const epoch = JSON.parse(fetch.mock.calls[0][1].body)
-      .filter((e) => e[0] === CUSTOM_EVENT_TYPE)[0][1];
+      .filter((e) => e[0] === CUSTOM_MESSAGE_TYPE)[0][1];
 
     // Read submissions and reduce a list to event timestamps only
     const firstSubmissionTimestamps = JSON.parse(fetch.mock.calls[0][1].body)
@@ -65,17 +71,7 @@ describe('time-property', () => {
 
     // Assertions
     //
-    // `message1a` and `message1b` timestamps should be exactly at 0 and 100,
-    // respectively.
-    expect(firstSubmissionTimestamps.slice(2, 4)).toStrictEqual([0, 100]);
+    expect(firstSubmissionTimestamps).toStrictEqual([0, 0, 0, 100]);
     expect(secondSubmissionTimestamps).toStrictEqual([100, 1000, 1100]);
-
-    // TODO: Since the "trap" instance is initialized **before** jest could set
-    // up its fake timers, its epoch has always a small offset and the
-    // timestamp of the first header and metadata messages always come early.
-    expect(firstSubmissionTimestamps[0]).toEqual(firstSubmissionTimestamps[1]);
-    // TODO: this is a failing test case which works in the browser properly
-    // expect(firstSubmissionTimestamps[1])
-    //          .toBeLessThanOrEqual(firstSubmissionTimestamps[2]);
   });
 });

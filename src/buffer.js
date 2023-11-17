@@ -9,34 +9,25 @@
 //------------------------------------------------------------------------------
 
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
 
 import {
-  PERFORMANCE_TIMEORIGIN_ENABLED,
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
   DEFAULT_TRAP_IDLE_TIMEOUT,
 } from './constants';
 
 class Buffer {
-  constructor(trap) {
+  constructor() {
     simpleAutoBind(this);
-
-    // Trap object reference -- to reach current transport module
-    this._trap = trap;
 
     // Enable/disable Trap collection
     this._enabled = true;
 
-    // Timestamp basis; milliseconds since the Unix epoch (1970-01-01)
-    this._epoch = PERFORMANCE_TIMEORIGIN_ENABLED
-      ? performance.timeOrigin
-      : (() => {
-        const hrSyncPoint = performance.now();
-        const unixSyncPoint = new Date().getTime();
-        return unixSyncPoint - hrSyncPoint; // timeOrigin
-      })();
-
     // Event buffer to store messages
     this._buffer = [];
+
+    // Fix items at the beginning of the stream
+    this._headerItems = [];
 
     // Maximum allowed buffer size -- it automatically sends the contents when
     // this limit is reached.
@@ -75,40 +66,42 @@ class Buffer {
   setIdleTimer() {
     if (typeof this._idleTimeout === 'number') {
       this._idleTimer = window.setTimeout(
-        this.handleTimeout, // TODO: emit event instead
+        this.requestSubmission,
         this._idleTimeout,
       );
     }
   }
 
-  // Handle internal `idle` timeout
-  handleTimeout() {
-    this.submit();
-  }
-
   // Register a new event to be sent
-  push(type, originalEvent, ...props) {
+  push(type, timestamp, ...props) {
     // Skip event if collection is not enabled
     if (!this._enabled) { return; }
 
-    const event = [type, this.currentTs(originalEvent), ...props];
+    const event = [type, timestamp, ...props];
 
     this.clearIdleTimer();
     this._buffer.push(event);
     this.setIdleTimer();
 
     // Automatically send data when the buffer gets filled
-    //
-    // TODO: emit event
     if (this._buffer.length >= this._bufferSizeLimit) {
-      this.submit();
+      this.requestSubmission();
     }
+  }
+
+  // Add header item
+  addHeaderItem(...props) {
+    this._headerItems.push([...props]);
   }
 
   // Return buffer contents and clear it afterwards.
   flush() {
-    const sendBuffer = Array.from(this._buffer); // clone buffer
+    this.clearIdleTimer(); // TODO: merge this with push's setIdleTimer call
+
+    // create merged buffer
+    const sendBuffer = this._headerItems.concat(this._buffer);
     this._buffer.length = 0; // clear buffer
+    this._headerItems.length = 0;
     return sendBuffer;
   }
 
@@ -118,14 +111,8 @@ class Buffer {
   }
 
   // Submit data over the wire
-  submit() {
-    this.clearIdleTimer(); // TODO: merge this with push's setIdleTimer call
-
-    // Return an empty, immediately resolveable function
-    if (this.isEmpty()) {
-      return new Promise(() => { });
-    }
-    return this._trap.transport.submit(this.flush());
+  requestSubmission(final) {
+    return this.emit('requestSubmission', final);
   }
 
   // Enable collection
@@ -139,24 +126,13 @@ class Buffer {
   // Mounted handlers work as before but events are not put into the buffer.
   disable() {
     this.clearIdleTimer();
-    this.submit();
+    this.requestSubmission(true);
     this._enabled = false;
-  }
-
-  // Get current timestamp
-  currentTs(event) {
-    if (typeof event === 'undefined') {
-      return (PERFORMANCE_TIMEORIGIN_ENABLED
-        ? performance.now() + this._epoch
-        : Date.now());
-    }
-
-    if (event.timeStamp < 1000000000000) {
-      return event.timeStamp + this._epoch;
-    }
-
-    return event.timeStamp;
+    this._headerItems.length = 0;
   }
 }
+
+// Append mixins
+Object.assign(Buffer.prototype, eventEmitterMixin);
 
 export default Buffer;

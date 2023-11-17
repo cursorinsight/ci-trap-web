@@ -72,5 +72,7 @@ tracker.trap.enableCompression(TRAP_ENABLE_COMPRESSION);
 // Apply configurations that were set beforehand
 tracker.applyConfigurations(TRACKER_OBJECT_NAME);
 
+tracker.trap.start();
+
 // Export the singleton instance as `default`
 export default tracker;

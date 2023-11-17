@@ -35,20 +35,6 @@ class HTTP extends Transport {
   // extended with a `header` and `metadata` using an unconventional
   // `unshift()` call.
   async submit(buffer) {
-    // Set up monotonically incrementing sequence number
-
-    // Current timestamp
-    const currentTs = this._buffer.currentTs();
-
-    // Add metaData if it hasn't been submitted recently
-    this.maybeAddMetadataToBuffer(buffer, currentTs);
-
-    // Put the header to the very first place
-    this.addHeaderToBuffer(buffer);
-
-    // Save last submission's timestamp -- for the next run
-    this._lastSubmissionTs = currentTs;
-
     // Compress data if `enableCompression` is set
     const final = this._enableCompression
       ? zlibSync(strToU8(JSON.stringify(buffer)), { level: 9, mem: 10 })
@@ -103,10 +89,10 @@ class HTTP extends Transport {
     });
   }
 
-  // Closes the current transport channel. In case of HTTP there is no active
-  // connection, so we only call reset.
+  // Closes the current transport channel.
+  // eslint-disable-next-line class-methods-use-this
   close() {
-    this.reset();
+    // In case of HTTP there is no active connection, so nothing to do.
   }
 }
 

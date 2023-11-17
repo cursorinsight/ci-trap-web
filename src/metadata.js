@@ -15,14 +15,18 @@ import Cookies from 'js-cookie';
 import Platform from 'platform';
 
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
+import TimeUtils from './timeUtils';
 
 // Constants
 import {
   DEFAULT_TRAP_API_KEY_NAME,
   DEFAULT_TRAP_API_KEY_VALUE,
+  DEFAULT_METADATA_SUBMISSION_INTERVAL,
+  METADATA_MESSAGE_TYPE,
 } from './constants';
 
-export default class Metadata {
+class Metadata {
   constructor() {
     simpleAutoBind(this);
 
@@ -84,9 +88,52 @@ export default class Metadata {
     this._apiKeyValue = apiKeyValue;
   }
 
+  // Enable periodical metadata submission
+  enable() {
+    if (this._submissionTimer === undefined) {
+      this._submissionTimer = window.setInterval(
+        this.submit,
+        DEFAULT_METADATA_SUBMISSION_INTERVAL,
+      );
+      this.submit();
+    }
+  }
+
+  // Disable metadata submission
+  disable() {
+    if (this._submissionTimer !== undefined) {
+      window.clearInterval(this._submissionTimer);
+      this._submissionTimer = undefined;
+    }
+  }
+
+  submit() {
+    this.emit('message', this.serializeMetadata());
+  }
+
+  reset() {
+    this.disable();
+    this.enable();
+  }
+
+  serializeMetadata() {
+    return [
+      METADATA_MESSAGE_TYPE,
+      TimeUtils.currentTs(),
+      {
+        platform: this.platform,
+        location: this.location,
+        custom: this.custom,
+        screen: this.screen,
+        document: this.document,
+      },
+    ];
+  }
+
   // Set custom metadata key/value pair
   set(key, value) {
     this._customMetadata[key] = value;
+    this.submit();
   }
 
   // Return custom, user-defined metadata
@@ -124,17 +171,18 @@ export default class Metadata {
   }
 
   get screen() {
+    const { screen } = window;
     return { // screen metadata
-      availHeight: window.screen.availHeight,
-      availWidth: window.screen.availWidth,
-      availLeft: window.screen.availLeft,
-      availTop: window.screen.availTop,
-      height: window.screen.height,
-      width: window.screen.width,
-      top: window.screen.top,
-      left: window.screen.left,
-      colorDepth: window.screen.colorDepth,
-      pixelDepth: window.screen.pixelDepth,
+      availHeight: screen.availHeight,
+      availWidth: screen.availWidth,
+      availLeft: screen.availLeft,
+      availTop: screen.availTop,
+      height: screen.height,
+      width: screen.width,
+      top: screen.top,
+      left: screen.left,
+      colorDepth: screen.colorDepth,
+      pixelDepth: screen.pixelDepth,
       devicePixelRatio: window.devicePixelRatio,
       orientation: { ...(this.orientation) },
     };
@@ -167,17 +215,22 @@ export default class Metadata {
   // Return document metadata
   // eslint-disable-next-line class-methods-use-this
   get document() {
+    const { documentElement } = document;
     return {
-      scrollLeft: document.documentElement.scrollLeft,
-      scrollTop: document.documentElement.scrollTop,
-      scrollHeight: document.documentElement.scrollHeight,
-      scrollWidth: document.documentElement.scrollWidth,
-      offsetHeight: document.documentElement.offsetHeight,
-      offsetWidth: document.documentElement.offsetWidth,
-      clientTop: document.documentElement.clientTop,
-      clientLeft: document.documentElement.clientLeft,
-      clientHeight: document.documentElement.clientHeight,
-      clientWidth: document.documentElement.clientWidth,
+      scrollLeft: documentElement.scrollLeft,
+      scrollTop: documentElement.scrollTop,
+      scrollHeight: documentElement.scrollHeight,
+      scrollWidth: documentElement.scrollWidth,
+      offsetHeight: documentElement.offsetHeight,
+      offsetWidth: documentElement.offsetWidth,
+      clientTop: documentElement.clientTop,
+      clientLeft: documentElement.clientLeft,
+      clientHeight: documentElement.clientHeight,
+      clientWidth: documentElement.clientWidth,
     };
   }
 }
+
+Object.assign(Metadata.prototype, eventEmitterMixin);
+
+export default Metadata;

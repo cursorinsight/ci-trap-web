@@ -4,7 +4,7 @@
 import '@testing-library/jest-dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
-import { HEADER_EVENT_TYPE } from '../src/constants';
+import { HEADER_MESSAGE_TYPE } from '../src/constants';
 import trap from '../src/trap';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
@@ -32,6 +32,13 @@ describe('header', () => {
   beforeEach(() => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+
+    trap.start();
+  });
+
+  afterEach(() => {
+    trap.stop();
+    trap.state.sequenceNumber = 0;
   });
 
   test('API provides valid header metadata getter functions', () => {
@@ -51,14 +58,14 @@ describe('header', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Get metadata message
-    const headers = jsonBody.filter((e) => e[0] === HEADER_EVENT_TYPE);
+    const headers = jsonBody.filter((e) => e[0] === HEADER_MESSAGE_TYPE);
 
     // Check number of metadata messages in the stream
     expect(headers).toHaveLength(1);
 
     // Check first event's third argument -- which is an object
     expect(headers[0]).toMatchObject([
-      HEADER_EVENT_TYPE, // message type
+      HEADER_MESSAGE_TYPE, // message type
       expect.any(Number), // current timestamp
       expect.stringMatching(/^[-0-9a-f]{36}$/), // sessionId
       expect.stringMatching(/^[-0-9a-f]{36}$/), // streamId
@@ -80,7 +87,7 @@ describe('header', () => {
     // Fetch message sent and save sequence number to check against the next
     // message
     const firstSequenceNumber = JSON.parse(fetch.mock.calls[0][1].body)
-      .filter((e) => e[0] === HEADER_EVENT_TYPE)[0][4];
+      .filter((e) => e[0] === HEADER_MESSAGE_TYPE)[0][4];
 
     // Send a next message
     trap.send('message2');
@@ -90,10 +97,10 @@ describe('header', () => {
 
     // Fetch SQ# from second message
     const secondSequenceNumber = JSON.parse(fetch.mock.calls[1][1].body)
-      .filter((e) => e[0] === HEADER_EVENT_TYPE)[0][4];
+      .filter((e) => e[0] === HEADER_MESSAGE_TYPE)[0][4];
 
     // Assertion
-    expect(firstSequenceNumber).toBe(1);
+    expect(firstSequenceNumber).toBe(0);
     expect(secondSequenceNumber).toEqual(firstSequenceNumber + 1);
   });
 });

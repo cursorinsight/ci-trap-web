@@ -36,22 +36,10 @@ class WS extends Transport {
 
   // Submit
   async submit(buffer) {
-    // Current timestamp
-    const currentTs = this._buffer.currentTs();
-
-    // Add metaData if it hasn't been submitted recently
-    this.maybeAddMetadataToBuffer(buffer, currentTs);
-
     // Initialize socket -- if null
     if (this._socket === null) {
       await this.initializeSocket();
-
-      // TODO: send session metadata
-      this.addHeaderToBuffer(buffer);
     }
-
-    // Save last submission's timestamp -- for the next run
-    this._lastSubmissionTs = currentTs;
 
     // Send data
     await this._socket.send(JSON.stringify(buffer));
@@ -82,7 +70,7 @@ class WS extends Transport {
 
       const handleError = (event) => {
         this._logger(`WebSocket connection error: ${event}`);
-        reject();
+        reject(new Error(event));
       };
 
       socket.addEventListener('error', handleError);
@@ -96,7 +84,6 @@ class WS extends Transport {
     if (this._socket != null) {
       this._socket.close();
     }
-    this.reset();
   }
 }
 

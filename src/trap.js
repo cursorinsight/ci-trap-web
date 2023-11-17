@@ -21,13 +21,16 @@ import WS from './ws';
 
 // Metadata
 import Metadata from './metadata';
+import TimeUtils from './timeUtils';
 
 // Mixins
 import disableTouchEventMixin from './disableTouchEventMixin';
 
 // Constants
 import {
-  CUSTOM_EVENT_TYPE,
+  CUSTOM_MESSAGE_TYPE,
+  HEADER_MESSAGE_TYPE,
+  SCHEMA,
 } from './constants';
 
 class Trap {
@@ -35,14 +38,14 @@ class Trap {
   constructor() {
     simpleAutoBind(this);
 
-    // Initialize metadata handler
-    this._metadata = new Metadata();
-
     // Initialize buffer to store collected events before sending
     this._buffer = new Buffer(this);
 
+    // Initialize metadata handler
+    this._metadata = new Metadata();
+
     // Initialize DOM event handlers
-    this._handlers = new Handlers(this._buffer);
+    this._handlers = new Handlers();
 
     // Mutable state
     //
@@ -54,17 +57,15 @@ class Trap {
       // eslint-disable-next-line no-console
       logger: (...m) => { console.log(...m); },
       transport: new HTTP(this._metadata, this._buffer),
+      sequenceNumber: 0,
     };
 
+    this._handlers.on('message', this.pushMessage);
+    this._metadata.on('message', this.pushMessage);
+    this._handlers.on('requestSubmission', this.submit);
+    this._buffer.on('requestSubmission', this.submit);
     // Prepare current instance to freeze
     if (!Trap.instance) { Trap.instance = this; }
-  }
-
-  // Inter-module communications
-  //
-  // TODO: refactor Buffer -> Transport messaging and remove this function
-  get transport() {
-    return this.state.transport;
   }
 
   // Metadata API
@@ -114,11 +115,14 @@ class Trap {
   // Enable/start data collection
   start() {
     this._buffer.enable();
+    this.addHeaderToBuffer();
+    this._metadata.enable();
   }
 
   // Disable/stop data collection
   stop() {
     this._buffer.disable();
+    this._metadata.disable();
   }
 
   // `bufferSizeLimit` setter proxy
@@ -128,26 +132,60 @@ class Trap {
 
   // `enableCompression` setter proxy
   enableCompression(enableCompression) {
-    this.transport.enableCompression = enableCompression;
+    this.state.transport.enableCompression = enableCompression;
   }
 
   // Remote Trap server URL setter
   url(url) {
-    this.transport.url = url;
+    this.state.transport.url = url;
   }
 
   // Inject and later send custom event to stream
   send(props) {
     if (typeof props === 'string') {
-      this._buffer.push(CUSTOM_EVENT_TYPE, undefined, { message: props });
+      this.pushMessage([
+        CUSTOM_MESSAGE_TYPE,
+        TimeUtils.currentTs(),
+        { message: props },
+      ]);
     } else if (typeof props === 'object') {
-      this._buffer.push(CUSTOM_EVENT_TYPE, undefined, props);
+      this.pushMessage([
+        CUSTOM_MESSAGE_TYPE,
+        TimeUtils.currentTs(),
+        props,
+      ]);
     }
   }
 
+  pushMessage(message) {
+    this._buffer.push(...message);
+  }
+
   // Submit data manually
-  submit() {
-    return this._buffer.submit();
+  submit(final) {
+    if (this._buffer.isEmpty()) {
+      return new Promise(() => { });
+    }
+
+    const events = this._buffer.flush();
+    if (!final) {
+      this.addHeaderToBuffer();
+    }
+    return this.state.transport.submit(events);
+  }
+
+  addHeaderToBuffer() {
+    // eslint-disable-next-line no-plusplus
+    const sequenceNumber = this.state.sequenceNumber++;
+
+    this._buffer.addHeaderItem(
+      HEADER_MESSAGE_TYPE,
+      TimeUtils.currentTs(),
+      this._metadata.sessionId,
+      this._metadata.streamId,
+      sequenceNumber,
+      SCHEMA,
+    );
   }
 
   // Set application specific, custom metadata key-value pair
@@ -158,13 +196,6 @@ class Trap {
   // Return application specified custom metadata
   customMetadata() {
     return this._metadata.custom;
-  }
-
-  // Reset internal state -- it is useful for resetting state between tests
-  //
-  // TODO: refactor and preferably remove this code
-  reset() {
-    this.transport.reset();
   }
 
   // TODO: remove this if it is unnecessary

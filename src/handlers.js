@@ -5,32 +5,31 @@
 //------------------------------------------------------------------------------
 // Handler implementation to manage incoming DOM events.
 //------------------------------------------------------------------------------
-
 import simpleAutoBind from './simpleAutoBind';
+import eventEmitterMixin from './eventEmitterMixin';
 
 import {
   TOUCH_ENABLED,
   POINTER_ENABLED,
   VISIBILITY_CHANGE_ENABLED,
   FREEZE_ENABLED,
-  MOUSE_MOVE_EVENT_TYPE,
-  TOUCH_START_EVENT_TYPE,
-  TOUCH_MOVE_EVENT_TYPE,
-  TOUCH_END_EVENT_TYPE,
-  MOUSE_DOWN_EVENT_TYPE,
-  MOUSE_UP_EVENT_TYPE,
-  BLUR_WINDOW_EVENT_TYPE,
-  FOCUS_WINDOW_EVENT_TYPE,
-  WHEEL_EVENT_TYPE,
-  SCROLL_EVENT_TYPE,
+  MOUSE_MOVE_MESSAGE_TYPE,
+  TOUCH_START_MESSAGE_TYPE,
+  TOUCH_MOVE_MESSAGE_TYPE,
+  TOUCH_END_MESSAGE_TYPE,
+  MOUSE_DOWN_MESSAGE_TYPE,
+  MOUSE_UP_MESSAGE_TYPE,
+  BLUR_WINDOW_MESSAGE_TYPE,
+  FOCUS_WINDOW_MESSAGE_TYPE,
+  WHEEL_MESSAGE_TYPE,
+  SCROLL_MESSAGE_TYPE,
 } from './constants';
 
-export default class Handlers {
-  constructor(buffer) {
-    simpleAutoBind(this);
+import TimeUtils from './timeUtils';
 
-    // Event buffer that receive messages
-    this._buffer = buffer;
+class Handlers {
+  constructor() {
+    simpleAutoBind(this);
 
     // DOM elements to which these handlers are already mounted to
     this._registeredElements = [];
@@ -135,21 +134,20 @@ export default class Handlers {
     this.umountGlobal();
   }
 
-  // Push event to the buffer
   push(...props) {
-    this._buffer.push(...props);
+    this.emit('message', props);
   }
 
   // Submit events explicitly
-  submit() {
-    this._buffer.submit();
+  requestSubmission() {
+    this.emit('requestSubmission');
   }
 
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
     this.push(
-      MOUSE_MOVE_EVENT_TYPE,
-      event,
+      MOUSE_MOVE_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -159,8 +157,8 @@ export default class Handlers {
   // `pointerdown` and `mousedown` event handler
   handlePointerDown(event) {
     this.push(
-      MOUSE_DOWN_EVENT_TYPE,
-      event,
+      MOUSE_DOWN_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -171,8 +169,8 @@ export default class Handlers {
   // `pointerup` and `mouseup` event handler
   handlePointerUp(event) {
     this.push(
-      MOUSE_UP_EVENT_TYPE,
-      event,
+      MOUSE_UP_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
@@ -184,8 +182,8 @@ export default class Handlers {
   handleTouchStart(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_START_EVENT_TYPE,
-        event,
+        TOUCH_START_MESSAGE_TYPE,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -197,8 +195,8 @@ export default class Handlers {
   handleTouchMove(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_MOVE_EVENT_TYPE,
-        event,
+        TOUCH_MOVE_MESSAGE_TYPE,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -210,8 +208,8 @@ export default class Handlers {
   handleTouchEnd(event) {
     this.iterateTouches(event, (touch) => {
       this.push(
-        TOUCH_END_EVENT_TYPE,
-        event,
+        TOUCH_END_MESSAGE_TYPE,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
         touch.identifier,
         touch.screenX,
         touch.screenY,
@@ -228,8 +226,8 @@ export default class Handlers {
   // Wheel event handler
   handleWheel(event) {
     this.push(
-      WHEEL_EVENT_TYPE,
-      event,
+      WHEEL_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.deltaX,
       event.deltaY,
       event.deltaZ,
@@ -240,8 +238,8 @@ export default class Handlers {
   // Scroll event handler
   handleScroll(event) {
     this.push(
-      SCROLL_EVENT_TYPE,
-      event,
+      SCROLL_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
       window.scrollX,
       window.scrollY,
     );
@@ -255,7 +253,7 @@ export default class Handlers {
   // - https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event
   handleVisibilityChange(/* event */) {
     if (document.visibilityState === 'hidden') {
-      this.submit();
+      this.requestSubmission();
     }
   }
 
@@ -264,23 +262,27 @@ export default class Handlers {
   //
   // For more info, see: `handleVisibilityChange` too.
   handlePageHide(/* event */) {
-    this.submit();
+    this.requestSubmission();
   }
 
   // Handle document freeze event
   handleFreeze(/* event */) {
-    this.submit();
+    this.requestSubmission();
   }
 
   // Handle window focus leave event: register event and send stream
   // automatically.
   handleBlur(event) {
-    this.push(BLUR_WINDOW_EVENT_TYPE, event);
-    this.submit();
+    this.push(BLUR_WINDOW_MESSAGE_TYPE, event);
+    this.requestSubmission();
   }
 
   // Handle window focus event: register a new event to the stream
   handleFocus(event) {
-    this.push(FOCUS_WINDOW_EVENT_TYPE, event);
+    this.push(FOCUS_WINDOW_MESSAGE_TYPE, event);
   }
 }
+
+Object.assign(Handlers.prototype, eventEmitterMixin);
+
+export default Handlers;
