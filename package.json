@@ -1,7 +1,7 @@
 {
   "name": "ci-trap",
-  "version": "0.4.0",
-  "description": "Lightweight mouse movement tracker library for browsers.",
+  "version": "1.0.0",
+  "description": "Lightweight mouse and touch event tracker library for browsers.",
   "main": "dist/trap-umd.min.js",
   "module": "src/trap.js",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cursorinsight/ci-trap"
+    "url": "git+https://github.com/cursorinsight/ci-trap-web.git"
   },
   "keywords": [
     "mouse",
