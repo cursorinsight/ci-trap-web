@@ -52,8 +52,16 @@ describe('blur event handlers', () => {
     expect(fetch).toHaveBeenCalled();
 
     // Check registered blur event
-    expect(JSON.parse(fetch.mock.calls[0][1].body).map((e) => e[0]))
-      .toContain(BLUR_WINDOW_MESSAGE_TYPE);
+    // Check registered focus event
+    const message = JSON.parse(fetch.mock.calls[0][1].body)
+      .filter((e) => e[0] === BLUR_WINDOW_MESSAGE_TYPE)[0];
+
+    expect(message)
+      .toMatchObject([
+        BLUR_WINDOW_MESSAGE_TYPE,
+        expect.any(Number),
+        expect.any(Object),
+      ]);
   });
 
   test('registers focus event', () => {
@@ -64,8 +72,15 @@ describe('blur event handlers', () => {
     trap.submit();
 
     // Check registered focus event
-    expect(JSON.parse(fetch.mock.calls[0][1].body).map((e) => e[0]))
-      .toContain(FOCUS_WINDOW_MESSAGE_TYPE);
+    const message = JSON.parse(fetch.mock.calls[0][1].body)
+      .filter((e) => e[0] === FOCUS_WINDOW_MESSAGE_TYPE)[0];
+
+    expect(message)
+      .toMatchObject([
+        FOCUS_WINDOW_MESSAGE_TYPE,
+        expect.any(Number),
+        expect.any(Object),
+      ]);
   });
 
   // This test case is a CONTINUATION

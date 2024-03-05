@@ -273,13 +273,21 @@ class Handlers {
   // Handle window focus leave event: register event and send stream
   // automatically.
   handleBlur(event) {
-    this.push(BLUR_WINDOW_MESSAGE_TYPE, event);
+    this.push(
+      BLUR_WINDOW_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
+      event,
+    );
     this.requestSubmission();
   }
 
   // Handle window focus event: register a new event to the stream
   handleFocus(event) {
-    this.push(FOCUS_WINDOW_MESSAGE_TYPE, event);
+    this.push(
+      FOCUS_WINDOW_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
+      event,
+    );
   }
 }
 
