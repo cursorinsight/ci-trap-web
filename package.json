@@ -36,6 +36,13 @@
       "url": "https://github.com/gbence"
     }
   ],
+  "files": [
+    "src",
+    "dist",
+    "LICENSE",
+    "README.md",
+    "SCHEMA.md"
+  ],
   "license": "MIT",
   "browserslist": "last 2 versions, > 0.2%, not dead",
   "dependencies": {
