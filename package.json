@@ -1,6 +1,6 @@
 {
   "name": "ci-trap",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lightweight mouse and touch event tracker library for browsers.",
   "main": "dist/trap-umd.min.js",
   "module": "src/trap.js",
