@@ -1,6 +1,6 @@
 {
   "name": "ci-trap",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lightweight mouse and touch event tracker library for browsers.",
   "main": "dist/trap-umd.min.js",
   "module": "src/trap.js",
@@ -35,6 +35,13 @@
       "email": "bence@cursorinsight.com",
       "url": "https://github.com/gbence"
     }
+  ],
+  "files": [
+    "src",
+    "dist",
+    "LICENSE",
+    "README.md",
+    "SCHEMA.md"
   ],
   "license": "MIT",
   "browserslist": "last 2 versions, > 0.2%, not dead",
