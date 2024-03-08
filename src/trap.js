@@ -130,6 +130,11 @@ class Trap {
     this._buffer.bufferSizeLimit = bufferSizeLimit;
   }
 
+  // `bufferTimeout` setter proxy
+  bufferTimeout(bufferTimeout) {
+    this._buffer.bufferTimeout = bufferTimeout;
+  }
+
   // `enableCompression` setter proxy
   enableCompression(enableCompression) {
     this.state.transport.enableCompression = enableCompression;
