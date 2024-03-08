@@ -92,8 +92,9 @@ describe('idle timeout', () => {
   });
 
   test('disables idle timer', () => {
-    // Disable idle timeout
+    // Disable idle and buffer timeout
     trap.idleTimeout(undefined);
+    trap.bufferTimeout(undefined);
 
     // Send a single message to test timeout
     trap.send('message');

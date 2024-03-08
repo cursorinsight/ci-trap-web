@@ -14,6 +14,7 @@ import {
   TRAP_SERVER_URL,
   TRAP_IDLE_TIMEOUT,
   TRAP_BUFFER_SIZE_LIMIT,
+  TRAP_BUFFER_TIMEOUT,
   TRAP_API_KEY_NAME,
   TRAP_API_KEY_VALUE,
   TRAP_ENABLE_COMPRESSION,
@@ -65,6 +66,7 @@ tracker.trap.setUseWsTransport(TRAP_USE_WS_TRANSPORT);
 tracker.trap.url(TRAP_SERVER_URL);
 tracker.trap.idleTimeout(TRAP_IDLE_TIMEOUT);
 tracker.trap.bufferSizeLimit(TRAP_BUFFER_SIZE_LIMIT);
+tracker.trap.bufferTimeout(TRAP_BUFFER_TIMEOUT);
 tracker.trap.apiKeyName(TRAP_API_KEY_NAME);
 tracker.trap.apiKeyValue(TRAP_API_KEY_VALUE);
 tracker.trap.enableCompression(TRAP_ENABLE_COMPRESSION);

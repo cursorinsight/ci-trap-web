@@ -55,6 +55,10 @@ export const DEFAULT_TRAP_IDLE_TIMEOUT = 2000;
 // Default maximum buffer size (3.600 events ~= 1 minute on 60fps systems)
 export const DEFAULT_TRAP_BUFFER_SIZE_LIMIT = 3600;
 
+// Default timeout for sending the buffer automatically (in milliseconds;
+// default is 2 minutes)
+export const DEFAULT_TRAP_BUFFER_TIMEOUT = 120000;
+
 // Default WebSockets server endpoint
 export const DEFAULT_WS_SERVER_URL = '?UNCONFIGURED=ws';
 
