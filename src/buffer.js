@@ -13,6 +13,7 @@ import eventEmitterMixin from './eventEmitterMixin';
 
 import {
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
+  DEFAULT_TRAP_BUFFER_TIMEOUT,
   DEFAULT_TRAP_IDLE_TIMEOUT,
 } from './constants';
 
@@ -33,16 +34,52 @@ class Buffer {
     // this limit is reached.
     this._bufferSizeLimit = DEFAULT_TRAP_BUFFER_SIZE_LIMIT;
 
+    // Default buffer timeout -- Trap sends events after this amount of time
+    // automatically.
+    this._bufferTimeout = DEFAULT_TRAP_BUFFER_TIMEOUT;
+
+    // Buffer timer
+    this._bufferTimer = null;
+
     // Idle timeout (2 seconds)
     this._idleTimeout = DEFAULT_TRAP_IDLE_TIMEOUT;
 
     // Idle timer, tracking idle state
-    this._idleTimer = undefined;
+    this._idleTimer = null;
   }
 
   // Set buffer size limit
   set bufferSizeLimit(bufferSizeLimit) {
     this._bufferSizeLimit = bufferSizeLimit;
+  }
+
+  // Set buffer timeout -- which guarantees that no events are in the buffer
+  // longer than it is expected (by default 2 minutes).
+  set bufferTimeout(bufferTimeout) {
+    this._bufferTimeout = bufferTimeout;
+    this.setBufferTimer();
+  }
+
+  // Clear buffer time -- which is expected when there is no event in the
+  // buffer.
+  clearBufferTimer() {
+    if (this._bufferTimer) {
+      window.clearTimeout(this._bufferTimer);
+      this._bufferTimer = null;
+    }
+  }
+
+  // Set buffer timer to guarantee sending events in a configured amount of
+  // time.
+  setBufferTimer() {
+    // Set buffer timer only once when the first event gets into the buffer
+    if (this._bufferTimer) { return; }
+    if (typeof this._bufferTimeout === 'number') {
+      this._bufferTimer = window.setTimeout(
+        this.requestSubmission,
+        this._bufferTimeout,
+      );
+    }
   }
 
   // Set idleTimeout
@@ -82,6 +119,7 @@ class Buffer {
     this.clearIdleTimer();
     this._buffer.push(event);
     this.setIdleTimer();
+    this.setBufferTimer();
 
     // Automatically send data when the buffer gets filled
     if (this._buffer.length >= this._bufferSizeLimit) {
@@ -97,6 +135,7 @@ class Buffer {
   // Return buffer contents and clear it afterwards.
   flush() {
     this.clearIdleTimer(); // TODO: merge this with push's setIdleTimer call
+    this.clearBufferTimer(); // TODO: as above
 
     // create merged buffer
     const sendBuffer = this._headerItems.concat(this._buffer);
@@ -119,6 +158,7 @@ class Buffer {
   enable() {
     this._enabled = true;
     this.setIdleTimer();
+    this.setBufferTimer(); // We start over `bufferTimer`.
   }
 
   // Disable data collection
@@ -126,6 +166,7 @@ class Buffer {
   // Mounted handlers work as before but events are not put into the buffer.
   disable() {
     this.clearIdleTimer();
+    this.clearBufferTimer();
     this.requestSubmission(true);
     this._enabled = false;
     this._headerItems.length = 0;
