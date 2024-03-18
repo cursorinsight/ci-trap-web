@@ -2,6 +2,8 @@
 
 Lightweight mouse movement tracker library for browsers.
 
+![](https://github.com/cursorinsight/ci-trap-web/actions/workflows/test.yaml/badge.svg?branch=main)
+
 ## Examples
 
 A few examples show the project's capabilities, API and its common use:
