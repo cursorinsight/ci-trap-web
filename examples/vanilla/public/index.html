@@ -3,16 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Cursor Insight's Tracker -- Snippet Example </title>
+    <title> Cursor Insight's Tracker -- Vanilla Example </title>
     <script>
+      // Load the precompiled JS bundle
       (function(g,r,a,b,o,x,y){g[o]=g[o]||function(){(g[o]
       .q=g[o].q||[]).push(arguments)},g[o].t=1*new Date();
       x=r.createElement(a),y=r.getElementsByTagName(a)[0];
       x.async=1;x.src=b;y.parentNode.insertBefore(x,y)})(
       window,document,'script','gt.min.js','gt');
+
+      // Set up Trap
       gt('url', '/api/1/s');
       gt('apiKey', 'example-api-key');
       gt('setLogDestination', 'log');
+
+      // ...data collection is automatically enabled in the bundle. 
 
       function copyTrapUrl() {
         gt('url', document.getElementById('trapUrl').value);
@@ -49,7 +54,7 @@
         </li>
       </ul>
     </form>
-    <h1> Tracker's Snippet Example </h1>
+    <h1> Cursor Insight's Trap -- Vanilla Example </h1>
     <div id="testElement">
       test element -- collection is enabled on the entire page
     </div>

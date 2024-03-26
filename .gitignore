@@ -1,16 +1,12 @@
-# NPM artifacts
-/node_modules/
-/examples/*/node_modules
+# Ignore NPM artifacts here and in examples, too
+node_modules/
 
-# Build artifacts -- release artifacts are added manually
+# Ignore build artifacts -- release artifacts are added manually
 /dist/
 /release.tar.xz
 
-# Test and code checker artifacts
+# Ignore test and code checker artifacts
 /coverage/
 /eslint-report.json
 /.scannerwork/
 /test-report.xml
-
-# Example artifacts
-/examples/research/output/

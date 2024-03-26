@@ -1,38 +1,63 @@
-# Cursor Insight's Trap
+# ci-trap-web [![test](https://github.com/cursorinsight/ci-trap-web/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/cursorinsight/ci-trap-web/actions?query=workflow%3Atest)
 
 Lightweight mouse movement tracker library for browsers.
 
-![](https://github.com/cursorinsight/ci-trap-web/actions/workflows/test.yaml/badge.svg?branch=main)
+## Quickstart
+
+In order to collect mouse, pointer, touch and various other browser events from
+a website do the following in your ES6 or CommonJS compatible project:
+
+**1. Install:**
+
+```shell
+$ npm install ci-trap
+```
+
+**2. Import `trap` client using ES6 module syntax:**
+
+```javascript
+import trap from 'ci-trap';
+```
+
+**... or using CommonJS syntax:**
+
+```javascript
+const { trap } = require('ci-trap');
+```
+
+**3. Set up data collection server and start collecting events:**
+
+```javascript
+trap.url('https://your.server.com');
+trap.mount(document.body);
+```
+
+**4. Check for Trap submissions in your network communications, e.g. using your
+browser's development tools.**
 
 ## Examples
 
-A few examples show the project's capabilities, API and its common use:
+There are working examples in the `examples/` directory:
 
-*   `examples/angular` -- `ci-trap`'s Angular integrations. Only Trap
-    integration is provided.
+*   **ES6** (in `examples/es6/`) provides a fully configured ES6 compatible
+    example to start integrating Trap into a modern Javascript framework, e.g.
+    React.
 
-*   `examples/esm` -- An example project that loads `ci-trap` via ES modules
-    interface (e.g. `import ...`, etc.). It is best to develop new features in
-    the library.
+*   **Vanilla** (in `examples/vanilla/`) contains a precompiled Javascript
+    bundle and the necessary steps to integrate Trap into a bare-bone HTML
+    document -- without the need to set up a complex build framework.
 
-*   `examples/iife` -- A minimal project loading the `ci-trap` library via the
-    IIFE interface, i.e. the way a browser usually does without any further
-    support. It is best to present the project's vanilla JS API.
+*   **Sandbox** (in `examples/sandbox/`) is our experimental sandbox to test
+    and validate new features, execute various research tasks, e.g., saving
+    collected chunks to files into a configurable directory.
 
-*   `examples/react` -- `ci-trap`'s React integrations. Only Trap integration
-    is provided.
+## Develop
 
-*   `examples/research` -- Integrated tracker example to fulfil special
-    Research needs, e.g., saving collected chunks to files into a configurable
-    directory.
+You may want to develop new features or reproduce bugs in a working
+environment, for this we recommend using our "Sandbox" example in the
+`examples/sandbox/` directory.
 
-*   `examples/snippet` -- A vanilla example project integrating the Tracker
-    using the HTML snippet. It is created to present the Tracker project's API
-    and integration issues.
-
-### Usage
-
-Examples are set up. Each can be installed and started with these simple
+Examples are set up. They can be installed and started with these simple
 commands:
 
 1.  Install the root project's dependencies (in the project's root):
@@ -41,11 +66,11 @@ commands:
     $ make install-deps
     ```
 
-2.  Go into the example you want to start -- e.g. IIFE in this case -- and
-    install the example's dependencies:
+2.  Go into the example you want to start -- e.g. "Sandbox" in this case -- and
+    install its dependencies:
 
     ```
-    $ cd examples/iife
+    $ cd examples/sandbox/
     $ make install-deps
     ```
 
@@ -55,7 +80,7 @@ commands:
     $ make server
     ```
 
-The example of your choice is available at http://localhost:3000/.
+The UI of the example is available at http://localhost:3000/.
 
 ## Configuration
 
