@@ -10,19 +10,19 @@ a website do the following in your ES6 or CommonJS compatible project:
 **1. Install:**
 
 ```shell
-$ npm install ci-trap
+$ npm install ci-trap-web
 ```
 
 **2. Import `trap` client using ES6 module syntax:**
 
 ```javascript
-import trap from 'ci-trap';
+import trap from 'ci-trap-web';
 ```
 
 **... or using CommonJS syntax:**
 
 ```javascript
-const { trap } = require('ci-trap');
+const { trap } = require('ci-trap-web');
 ```
 
 **3. Set up data collection server and start collecting events:**
@@ -84,7 +84,7 @@ The UI of the example is available at http://localhost:3000/.
 
 ## Configuration
 
-You can configure `ci-trap` by specifying environment variables during build
+You can configure `ci-trap-web` by specifying environment variables during build
 time. These environment variables act as configuration parameters.
 
 You can find the configuration parameters in `src/constants.js`. Each
@@ -132,7 +132,8 @@ Node.js and its dependencies.
 2.  Build JavaScript asset files with the Docker environment provided:
 
     ```
-    $ docker build --ssh default --build-arg GIT_USER=${GIT_USER} . -t ci-trap
+    $ docker build --ssh default --build-arg GIT_USER=${GIT_USER} . \
+        -t ci-trap-web
     ```
 
     Replace `${GIT_USER}` with your Gerrit/Git user.
@@ -144,7 +145,7 @@ Node.js and its dependencies.
     -   Start the container:
 
         ```
-        $ docker run --rm -p 8080:80 --name ci-trap ci-trap
+        $ docker run --rm -p 8080:80 --name ci-trap-web ci-trap-web
         ```
 
     -   In a separate shell, use `curl` to fetch the asset:
@@ -156,11 +157,11 @@ Node.js and its dependencies.
     -   Or directly copy the file out of it:
 
         ```
-        $ docker cp ci-trap:/opt/app/gt.min.js ./gt.min.js
+        $ docker cp ci-trap-web:/opt/app/gt.min.js ./gt.min.js
         ```
 
 ## License
 
-`ci-trap` is released under the [MIT license].
+`ci-trap-web` is released under the [MIT license].
 
 [MIT license]: https://github.com/cursorinsight/ci-trap/blob/master/LICENSE
