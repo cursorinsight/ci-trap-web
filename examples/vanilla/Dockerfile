@@ -18,7 +18,7 @@
 # https://docker-server:8080/.
 
 # Source image name
-ARG CI_TRAP_IMAGE_NAME=ci-trap
+ARG CI_TRAP_IMAGE_NAME=ci-trap-web
 
 # Source image tag
 ARG CI_TRAP_IMAGE_TAG=latest

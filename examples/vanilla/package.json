@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ci-trap": "file:../../"
+    "ci-trap-web": "file:../../"
   },
   "devDependencies": {
     "babel-loader": "^9.1.2",

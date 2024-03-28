@@ -1,4 +1,4 @@
-import trap from 'ci-trap';
+import trap from 'ci-trap-web';
 import './style.css';
 
 // Mount Trap's event listener and disable touch events

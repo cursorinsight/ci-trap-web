@@ -5,13 +5,13 @@
 #
 # Use the following command to build the image:
 #
-#     $ docker build --ssh default --build-arg GIT_USER=build . -t ci-trap
+#     $ docker build --ssh default --build-arg GIT_USER=build . -t ci-trap-web
 #
 # Replace `build` with your Git user to be able to clone sources from Gerrit.
 #
 # Then run the built image with:
 #
-#     $ docker run --rm -p 8080:80 --name ci-trap ci-trap
+#     $ docker run --rm -p 8080:80 --name ci-trap-web ci-trap-web
 #
 # Your static asset server with `trap.min.js` and `gt.min.js` assets will be
 # available at https://docker-server:8080/.

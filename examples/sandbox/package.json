@@ -2,7 +2,7 @@
   "name": "ci-trap-example-research",
   "version": "1.0.0",
   "private": true,
-  "description": "Research example for ci-trap",
+  "description": "Research example for ci-trap-web",
   "scripts": {
     "serve": "webpack serve --config webpack.config.js --hot"
   },
@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ci-trap": "file:../../"
+    "ci-trap-web": "file:../../"
   },
   "devDependencies": {
     "babel-loader": "^9.1.2",
