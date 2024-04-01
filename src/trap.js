@@ -195,7 +195,17 @@ class Trap {
 
   // Set application specific, custom metadata key-value pair
   metadata(key, value) {
+    this.addCustomMetadata(key, value);
+  }
+
+  // Set application specific, custom metadata key-value pair
+  addCustomMetadata(key, value) {
     this._metadata.set(key, value);
+  }
+
+  // Remove application specific, custom metadata by key
+  removeCustomMetadata(key) {
+    this._metadata.remove(key);
   }
 
   // Return application specified custom metadata
