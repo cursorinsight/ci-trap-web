@@ -33,8 +33,18 @@ import {
   SCHEMA,
 } from './constants';
 
+/**
+ * Trap class for managing the data collection
+ *
+ * @class Trap
+ * @typedef {Trap}
+ */
 class Trap {
-  // Trap constructor
+  /**
+   * Creates an instance of Trap.
+   *
+   * @constructor
+   */
   constructor() {
     simpleAutoBind(this);
 
@@ -70,82 +80,140 @@ class Trap {
 
   // Metadata API
 
-  // `streamId` getter
+  /**
+   * `streamId` getter
+   *
+   * @returns {string}
+   */
   streamId() {
     return this._metadata.streamId;
   }
 
-  // `sessionId` getter
+  /**
+   * `sessionId` getter
+   *
+   * @returns {string}
+   */
   sessionId() {
     return this._metadata.sessionId;
   }
 
-  // Set API key header name
+  /**
+   * Set API key header name
+   *
+   * @param {string} apiKeyName
+   */
   apiKeyName(apiKeyName) {
     this._metadata.apiKeyName = apiKeyName;
   }
 
-  // Set API key value that is used to identify a client
+  /**
+   * Set API key value that is used to identify the integrator
+   * organization/person who uses the data collection library.
+   *
+   * @param {string} apiKeyValue
+   */
   apiKeyValue(apiKeyValue) {
     this._metadata.apiKeyValue = apiKeyValue;
   }
 
-  // Deprecated alias of `apiKeyValue` setter
+  /**
+   * Deprecated alias of `apiKeyValue` setter
+   * @deprecated use apiKeyValue instead
+   *
+   * @param {string} apiKeyValue
+   */
   apiKey(apiKeyValue) {
     this._metadata.apiKeyValue = apiKeyValue;
   }
 
   // Handler API
 
-  // Mount Trap to a DOM element
+  /**
+   * Mount Trap to a DOM element
+   *
+   * @param {EventTarget} element
+   */
   mount(element) {
-    return this._handlers.mount(element);
+    this._handlers.mount(element);
   }
 
-  // Umount Trap from a DOM element
+  /**
+   * Umount Trap from a DOM element
+   *
+   * @param {EventTarget} element
+   */
   umount(element) {
-    return this._handlers.umount(element);
+    this._handlers.umount(element);
   }
 
-  // Set Buffer's idleTimeout
+  /**
+   * Set Buffer's idleTimeout
+   *
+   * @param {number} idleTimeout
+   */
   idleTimeout(idleTimeout) {
     this._buffer.idleTimeout = idleTimeout;
   }
 
-  // Enable/start data collection
+  /**
+   * Enable/start data collection
+   */
   start() {
     this._buffer.enable();
     this.addHeaderToBuffer();
     this._metadata.enable();
   }
 
-  // Disable/stop data collection
+  /**
+   * Disable/stop data collection
+   */
   stop() {
     this._buffer.disable();
     this._metadata.disable();
   }
 
-  // `bufferSizeLimit` setter proxy
+  /**
+   * `bufferSizeLimit` setter proxy
+   *
+   * @param {number} bufferSizeLimit
+   */
   bufferSizeLimit(bufferSizeLimit) {
     this._buffer.bufferSizeLimit = bufferSizeLimit;
   }
 
-  // `bufferTimeout` setter proxy
+  /**
+   * `bufferTimeout` setter proxy
+   *
+   * @param {number} bufferTimeout
+   */
   bufferTimeout(bufferTimeout) {
     this._buffer.bufferTimeout = bufferTimeout;
   }
 
-  // `enableCompression` setter proxy
+  /**
+   * `enableCompression` setter proxy
+   *
+   * @param {boolean} enableCompression
+   */
   enableCompression(enableCompression) {
     this.state.transport.enableCompression = enableCompression;
   }
 
-  // Remote Trap server URL setter
+  /**
+   * Remote Trap server URL setter
+   *
+   * @param {string} url
+   */
   url(url) {
     this.state.transport.url = url;
   }
 
-  // Inject and later send custom event to stream
+  /**
+   * Inject and later send custom event to stream
+   *
+   * @param {string|object} props
+   */
   send(props) {
     if (typeof props === 'string') {
       this.pushMessage([
@@ -162,11 +230,22 @@ class Trap {
     }
   }
 
+  /**
+   * Add message to buffer
+   * @private
+   *
+   * @param {*} message
+   */
   pushMessage(message) {
     this._buffer.push(...message);
   }
 
-  // Submit data manually
+  /**
+   * Submit data manually
+   *
+   * @param {boolean} final
+   * @returns {Promise<void>}
+   */
   submit(final) {
     if (this._buffer.isEmpty()) {
       return new Promise(() => { });
@@ -179,6 +258,10 @@ class Trap {
     return this.state.transport.submit(events);
   }
 
+  /**
+   * Add the header message to the buffer
+   * @private
+   */
   addHeaderToBuffer() {
     // eslint-disable-next-line no-plusplus
     const sequenceNumber = this.state.sequenceNumber++;
@@ -193,29 +276,52 @@ class Trap {
     );
   }
 
-  // Set application specific, custom metadata key-value pair
+  /**
+   * Set application specific, custom metadata key-value pair
+   * @deprecated Use addCustomMetadata instead
+   *
+   * @param {string} key
+   * @param {string} value
+   */
   metadata(key, value) {
     this.addCustomMetadata(key, value);
   }
 
-  // Set application specific, custom metadata key-value pair
+  /**
+   * Set application specific, custom metadata key-value pair
+   *
+   * @param {string} key
+   * @param {string} value
+   */
   addCustomMetadata(key, value) {
     this._metadata.set(key, value);
   }
 
-  // Remove application specific, custom metadata by key
+  /**
+   * Remove application specific, custom metadata by key
+   *
+   * @param {string} key
+   */
   removeCustomMetadata(key) {
     this._metadata.remove(key);
   }
 
-  // Return application specified custom metadata
+  /**
+   * Return application specified custom metadata
+   *
+   * @returns {object}
+   */
   customMetadata() {
     return this._metadata.custom;
   }
 
-  // TODO: remove this if it is unnecessary
-  //
-  // Set log destination helper to an element
+  /**
+   * Set log destination helper to an element
+   *
+   * TODO: remove this if it is unnecessary
+   *
+   * @param {string|object|any} destination
+   */
   setLogDestination(destination) {
     switch (typeof destination) {
       case 'string':
@@ -234,6 +340,11 @@ class Trap {
     }
   }
 
+  /**
+   * Sets the transport method. `True` sets WS, `False` sets HTTP method.
+   *
+   * @param {boolean} useWsTransport
+   */
   setUseWsTransport(useWsTransport) {
     this.state.transport.close();
 
@@ -244,7 +355,11 @@ class Trap {
     }
   }
 
-  // Log arbitrary messages
+  /**
+   * Log arbitrary messages
+   *
+   * @param {...any} props
+   */
   log(...props) {
     this.state.logger(...props);
   }
@@ -253,7 +368,11 @@ class Trap {
 // Append mixins
 Object.assign(Trap.prototype, disableTouchEventMixin);
 
-// Make it a singleton instance
+/**
+ * Singleton instance of Trap
+ *
+ * @type {Trap}
+ */
 const instance = new Trap();
 Object.freeze(instance);
 

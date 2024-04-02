@@ -4,6 +4,7 @@
   "description": "Lightweight mouse and touch event tracker library for browsers.",
   "main": "dist/trap-umd.min.js",
   "module": "src/trap.js",
+  "types": "dist/trap.d.ts",
   "scripts": {
     "build": "npm run build:prod",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
@@ -64,6 +65,7 @@
     "@rollup/plugin-commonjs": "^25.0.2",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@testing-library/dom": "^9.3.1",
     "@testing-library/jest-dom": "^5.16.5",
     "babel-jest": "^29.6.0",
@@ -82,6 +84,9 @@
     "jest-websocket-mock": "^2.4.0",
     "jsdom": "^22.1.0",
     "rollup": "^3.26.0",
-    "rollup-plugin-dotenv": "^0.5.0"
+    "rollup-plugin-dotenv": "^0.5.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.3"
   }
 }
