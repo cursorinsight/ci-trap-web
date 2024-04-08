@@ -28,7 +28,14 @@ class Transport {
     this._enableCompression = DEFAULT_TRAP_ENABLE_COMPRESSION;
 
     // Set default URL
-    this.url = DEFAULT_TRAP_SERVER_URL;
+    this._url = this.createUrl(DEFAULT_TRAP_SERVER_URL);
+  }
+
+  // `url` setter
+  //
+  // It replaces ${sessionId} and ${streamId} occurences with their values.
+  set url(url) {
+    this._url = this.createUrl(url);
   }
 
   createUrl(url) {

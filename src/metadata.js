@@ -136,6 +136,12 @@ class Metadata {
     this.submit();
   }
 
+  // Remove custom metadata by key
+  remove(key) {
+    delete this._customMetadata[key];
+    this.submit();
+  }
+
   // Return custom, user-defined metadata
   get custom() {
     return this._customMetadata;

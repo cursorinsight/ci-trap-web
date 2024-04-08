@@ -31,7 +31,7 @@ class WS extends Transport {
       this._socket.close();
       this._socket = null;
     }
-    this._url = this.createUrl(url);
+    super.url = url;
   }
 
   // Submit

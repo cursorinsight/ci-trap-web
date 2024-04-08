@@ -5,6 +5,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import rollupDotenv from 'rollup-plugin-dotenv';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
+import dts from 'rollup-plugin-dts';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
@@ -90,6 +92,16 @@ export default [{
 
   plugins: [
     terser(terserOptions),
+  ],
+}, {
+  // Typescript Type definitions
+  input: 'src/trap.js',
+
+  output: [{ file: 'dist/trap.d.ts', format: 'es' }],
+
+  plugins: [
+    typescript(),
+    dts(),
   ],
 }, {
   // Browser friendly, preconfigured, IIFE tracker module

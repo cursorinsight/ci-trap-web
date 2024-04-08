@@ -17,13 +17,6 @@ class HTTP extends Transport {
     simpleAutoBind(this);
   }
 
-  // `url` setter
-  //
-  // It replaces ${sessionId} and ${streamId} occurences with their values.
-  set url(url) {
-    this._url = this.createUrl(url);
-  }
-
   // `enableCompression` setter
   set enableCompression(enableCompression) {
     this._enableCompression = !!enableCompression;
