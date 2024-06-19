@@ -170,6 +170,7 @@ class Trap {
    * Disable/stop data collection
    */
   stop() {
+    this.submit(true);
     this._buffer.disable();
     this._metadata.disable();
   }
