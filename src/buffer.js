@@ -171,6 +171,11 @@ class Buffer {
     this._enabled = false;
     this._headerItems.length = 0;
   }
+
+  // Returns the number of events
+  eventCount() {
+    return this._buffer.length;
+  }
 }
 
 // Append mixins
