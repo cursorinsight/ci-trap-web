@@ -46,7 +46,7 @@ class Metadata {
     })();
 
     // Unique stream id to identify browser sessions, i.e. page loads
-    this._streamId = uuidv4();
+    this.generateNewStreamId();
 
     // Custom metadata store
     this._customMetadata = {};
@@ -114,6 +114,11 @@ class Metadata {
   reset() {
     this.disable();
     this.enable();
+  }
+
+  // Generates a new streamId
+  generateNewStreamId() {
+    this._streamId = uuidv4();
   }
 
   serializeMetadata() {

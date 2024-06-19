@@ -382,6 +382,14 @@ class Trap {
     this.state.eventCount = 0;
   }
 
+  /**
+   * Generate a new streamId
+   *
+   * @param {boolean} resetStreamId
+   */
+  generateNewStreamId() {
+    this._metadata.generateNewStreamId();
+  }
 }
 
 // Append mixins
