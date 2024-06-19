@@ -46,6 +46,15 @@ describe('header', () => {
     expect(trap.streamId()).toMatch(/^[-0-9a-f]{36}$/);
   });
 
+  test('GenerateNewStreamId generates new valid streamId', () => {
+    const originalStreamId = trap.streamId();
+
+    trap.generateNewStreamId();
+
+    expect(trap.streamId()).toMatch(/^[-0-9a-f]{36}$/);
+    expect(trap.streamId()).not.toEqual(originalStreamId);
+  });
+
   test('sends header message', () => {
     // Send a simple custom message -- this message ensures that something will
     // be sent over the wire

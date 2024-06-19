@@ -52,10 +52,17 @@ describe('trap', () => {
 
   test('#start reenables automatic data collection', () => {
     trap.start();
-
     // Send a message and call `submit` manually
     trap.send('message');
     trap.submit();
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('#stop submits collected data', () => {
+    // Send a message and call `stop`
+    trap.send('message');
+
+    trap.stop();
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

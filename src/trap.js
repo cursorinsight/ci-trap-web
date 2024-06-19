@@ -68,6 +68,7 @@ class Trap {
       logger: (...m) => { console.log(...m); },
       transport: new HTTP(this._metadata, this._buffer),
       sequenceNumber: 0,
+      eventCount: 0,
     };
 
     this._handlers.on('message', this.pushMessage);
@@ -169,6 +170,7 @@ class Trap {
    * Disable/stop data collection
    */
   stop() {
+    this.submit(true);
     this._buffer.disable();
     this._metadata.disable();
   }
@@ -252,6 +254,7 @@ class Trap {
     }
 
     const events = this._buffer.flush();
+    this.state.eventCount += events.length;
     if (!final) {
       this.addHeaderToBuffer();
     }
@@ -362,6 +365,31 @@ class Trap {
    */
   log(...props) {
     this.state.logger(...props);
+  }
+
+  /**
+   * Return the number of events captured since start
+   *
+   * @returns {int}
+   */
+  eventCount() {
+    return this.state.eventCount + this._buffer.eventCount();
+  }
+
+  /**
+   * Reset event count
+   */
+  resetEventCount() {
+    this.state.eventCount = 0;
+  }
+
+  /**
+   * Generate a new streamId
+   *
+   * @param {boolean} resetStreamId
+   */
+  generateNewStreamId() {
+    this._metadata.generateNewStreamId();
   }
 }
 

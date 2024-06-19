@@ -59,10 +59,38 @@ describe('browser with mouse events', () => {
       screenY: 4,
     });
 
+    // Two, not yet submitted events
+    expect(trap.eventCount()).toBe(2);
+
     // Manually trigger submit
     trap.submit();
 
+    // Two submitted events
+    expect(trap.eventCount()).toBe(2);
+
     expect(fetch).toHaveBeenCalledTimes(1);
+
+    fireEvent.mouseMove(body, {
+      bubbles: true,
+      cancelable: true,
+      screenX: 5,
+      screenY: 6,
+    });
+
+    // Two submitted, one not submitted event
+    expect(trap.eventCount()).toBe(3);
+
+    // Manually trigger submit
+    trap.submit(true);
+
+    // Four submitted (3 mouse + 1 header)
+    expect(trap.eventCount()).toBe(4);
+
+    // Resets event count
+    trap.resetEventCount();
+
+    // Event count reseted
+    expect(trap.eventCount()).toBe(0);
   });
 
   test('triggers mouse down and up events', () => {
