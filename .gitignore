@@ -10,3 +10,6 @@ node_modules/
 /eslint-report.json
 /.scannerwork/
 /test-report.xml
+
+# Ignore generated docs
+/out
