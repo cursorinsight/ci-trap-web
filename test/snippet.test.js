@@ -12,7 +12,7 @@ describe('snippet', () => {
       x=r.createElement(a),y=r.getElementsByTagName(a)[0];
       x.async=1;x.src=b;y.parentNode.insertBefore(x,y)})(
       window,document,'script','gt.min.js','gt');
-      gt('apiKey', 'example-api-key');
+      gt('apiKeyName', 'example-api-key');
     </script>
   </head>
   <body>
