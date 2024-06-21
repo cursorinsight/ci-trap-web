@@ -37,7 +37,6 @@ import {
  * Trap class for managing the data collection
  *
  * @class Trap
- * @typedef {Trap}
  */
 class Trap {
   /**

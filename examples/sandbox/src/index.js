@@ -10,7 +10,8 @@ trap.disableTouchEvents(testElement);
 trap.setLogDestination('log');
 
 // Set up API key
-trap.apiKey('example-api-key');
+trap.apiKeyName('example-api-key-name');
+trap.apiKeyValue('example-api-key-value');
 
 // Enclose submit features into a function
 function setUpTrapSubmit() {
@@ -41,4 +42,4 @@ function setUpTrapSubmit() {
 setUpTrapSubmit();
 
 // Set custom metadata
-trap.metadata('foo', 'bar');
+trap.addCustomMetadata('foo', 'bar');

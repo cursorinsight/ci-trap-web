@@ -33,7 +33,7 @@ describe('custom metadata', () => {
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
     // Set custom K/V pair
-    trap.metadata(customKey, customValue);
+    trap.addCustomMetadata(customKey, customValue);
 
     // Send a simple custom message
     trap.send('message');
