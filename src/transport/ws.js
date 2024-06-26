@@ -6,12 +6,12 @@
 // WebSocket transport for Cursor Insight's ligthweight mouse tracker.
 //------------------------------------------------------------------------------
 
-import simpleAutoBind from './simpleAutoBind';
+import simpleAutoBind from '../simpleAutoBind';
 import Transport from './transport';
 
 class WS extends Transport {
-  constructor(metadata, buffer, logger) {
-    super(metadata, buffer);
+  constructor(metadata, logger, allowInMemoryBuffer = false) {
+    super(metadata, allowInMemoryBuffer);
     simpleAutoBind(this);
 
     this._logger = logger;
@@ -36,6 +36,7 @@ class WS extends Transport {
 
   // Submit
   async submit(buffer) {
+    super.submit(buffer);
     // Initialize socket -- if null
     if (this._socket === null) {
       await this.initializeSocket();

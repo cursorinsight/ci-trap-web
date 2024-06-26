@@ -16,8 +16,11 @@ import Handlers from './handlers';
 import Buffer from './buffer';
 
 // Transport implementations
-import HTTP from './http';
-import WS from './ws';
+import HTTP from './transport/http';
+import WS from './transport/ws';
+import Dummy from './transport/dummy';
+
+import InMemoryEventStorage from './inMemoryEventStorage';
 
 // Metadata
 import Metadata from './metadata';
@@ -68,6 +71,8 @@ class Trap {
       transport: new HTTP(this._metadata, this._buffer),
       sequenceNumber: 0,
       eventCount: 0,
+      eventStorage: new InMemoryEventStorage(),
+      collectEvents: false,
     };
 
     this._handlers.on('message', this.pushMessage);
@@ -344,17 +349,86 @@ class Trap {
 
   /**
    * Sets the transport method. `True` sets WS, `False` sets HTTP method.
+   * @deprecated use setTransportMethod instead
    *
    * @param {boolean} useWsTransport
    */
   setUseWsTransport(useWsTransport) {
-    this.state.transport.close();
+    this.setTransportMethod(useWsTransport ? 'ws' : 'http');
+  }
 
-    if (useWsTransport) {
-      this.state.transport = new WS(this._metadata, this._buffer, this.log);
+  /**
+   * Sets the transport method. Specify `ws` for Websocket transport,
+   * `http` for HTTP transport. If you specify anything else the data is
+   * not submitted to a server.
+   * @param {string} transportMethod
+   */
+  setTransportMethod(transportMethod) {
+    this.state.transport.off(
+      'dataSubmitted',
+      this.state.eventStorage.onDataSubmitted,
+    );
+    this.state.transport.close();
+    if (transportMethod.startsWith('ws')) {
+      this.state.transport = new WS(this._metadata, this.log);
+    } else if (transportMethod.startsWith('http')) {
+      this.state.transport = new HTTP(this._metadata);
     } else {
-      this.state.transport = new HTTP(this._metadata, this._buffer);
+      this.state.transport = new Dummy(this._metadata);
     }
+    if (this.state.collectEvents) {
+      this.state.transport.on(
+        'dataSubmitted',
+        this.state.eventStorage.onDataSubmitted,
+      );
+    }
+  }
+
+  /**
+   * Enable / disable in-memory collection of events.
+   *
+   * @param {boolean} collectEvents
+   */
+  setCollectEvents(collectEvents) {
+    this.state.collectEvents = collectEvents;
+    if (collectEvents) {
+      this.state.transport.on(
+        'dataSubmitted',
+        this.state.eventStorage.onDataSubmitted,
+      );
+    } else {
+      this.state.transport.off(
+        'dataSubmitted',
+        this.state.eventStorage.onDataSubmitted,
+      );
+    }
+  }
+
+  /**
+   * Set the buffer size limit for in-memory event collection
+   *
+   * @param {int} sizeLimit
+   */
+  setEventCollectionSizeLimit(sizeLimit) {
+    this.state.eventStorage.sizeLimit = sizeLimit;
+  }
+
+  /**
+   * Set the metadata submission interval
+   *
+   * @param {int} metadataSubmissionInterval
+   */
+  setMetadataSubmissionInterval(metadataSubmissionInterval) {
+    this._metadata.metadataSubmissionInterval = metadataSubmissionInterval;
+  }
+
+  /**
+   * Add metadata event to the stream (immediately, independently from the
+   * periodic submission)
+   *
+   */
+  submitMetadata() {
+    this._metadata.submit();
   }
 
   /**
@@ -389,6 +463,17 @@ class Trap {
    */
   generateNewStreamId() {
     this._metadata.generateNewStreamId();
+  }
+
+  /**
+   * Returns the collected events that have not been flushed yet.
+   * Only works if `setCollectEvents(true)` was set before the data collection
+   * was performed.
+   *
+   * @returns {undefined|Array<Array>}
+   */
+  flushCollectedEvents() {
+    return this.state.eventStorage.flushStorage();
   }
 }
 

@@ -56,6 +56,9 @@ class Metadata {
 
     // API key that is used to distinguish clients
     this._apiKeyValue = DEFAULT_TRAP_API_KEY_VALUE;
+
+    // Default submission inverval
+    this._metadataSubmissionInterval = DEFAULT_METADATA_SUBMISSION_INTERVAL;
   }
 
   // Return current sessionId
@@ -88,12 +91,30 @@ class Metadata {
     this._apiKeyValue = apiKeyValue;
   }
 
+  // Return current submission interval
+  get metadataSubmissionInterval() {
+    return this._metadataSubmissionInterval;
+  }
+
+  // Set current submission interval
+  set metadataSubmissionInterval(metadataSubmissionInterval) {
+    this._metadataSubmissionInterval = metadataSubmissionInterval;
+    // Recreate the timer
+    if (this._submissionTimer !== undefined) {
+      window.clearInterval(this._submissionTimer);
+      this._submissionTimer = window.setInterval(
+        this.submit,
+        this.metadataSubmissionInterval,
+      );
+    }
+  }
+
   // Enable periodical metadata submission
   enable() {
     if (this._submissionTimer === undefined) {
       this._submissionTimer = window.setInterval(
         this.submit,
-        DEFAULT_METADATA_SUBMISSION_INTERVAL,
+        this.metadataSubmissionInterval,
       );
       this.submit();
     }

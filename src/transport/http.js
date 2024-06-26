@@ -9,11 +9,11 @@
 import { strToU8, zlibSync } from 'fflate';
 
 import Transport from './transport';
-import simpleAutoBind from './simpleAutoBind';
+import simpleAutoBind from '../simpleAutoBind';
 
 class HTTP extends Transport {
-  constructor(metadata, buffer) {
-    super(metadata, buffer);
+  constructor(metadata, allowInMemoryBuffer = false) {
+    super(metadata, allowInMemoryBuffer);
     simpleAutoBind(this);
   }
 
@@ -28,6 +28,7 @@ class HTTP extends Transport {
   // extended with a `header` and `metadata` using an unconventional
   // `unshift()` call.
   async submit(buffer) {
+    super.submit(buffer);
     // Compress data if `enableCompression` is set
     const final = this._enableCompression
       ? zlibSync(strToU8(JSON.stringify(buffer)), { level: 9, mem: 10 })

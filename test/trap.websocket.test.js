@@ -39,11 +39,11 @@ describe('metadata', () => {
   });
 
   afterAll(() => {
-    trap.setUseWsTransport(false);
+    trap.setTransportMethod('http');
   });
 
   beforeEach(async () => {
-    trap.setUseWsTransport(true);
+    trap.setTransportMethod('ws');
     trap.url(`${fakeUrl}/\${sessionId}/\${streamId}`);
     trap.start();
   });
@@ -82,7 +82,7 @@ describe('metadata', () => {
   test('changing to HTTP transport closes connection', async () => {
     const mockServer = await commonSetup();
 
-    trap.setUseWsTransport(false);
+    trap.setTransportMethod('http');
 
     await expect(mockServer.closed).resolves.toBeUndefined();
   });
@@ -142,6 +142,47 @@ describe('metadata', () => {
       expect.any(Number),
       expect.objectContaining({
         message: 'message2',
+      }),
+    ]);
+  });
+
+  test('In memory event collection disabled test', async () => {
+    // Disable event collection
+    trap.setCollectEvents(false);
+
+    await commonSetup();
+
+    // Get the collected events in the in-memory buffer
+    const collectedEvents = trap.flushCollectedEvents();
+
+    // Ensure no data was captured in the in memory buffer
+    expect(collectedEvents).toHaveLength(0);
+  });
+
+  test('In memory event collection enabled test', async () => {
+    // Enable event collection
+    trap.setCollectEvents(true);
+
+    await commonSetup();
+
+    // Get the collected events in the in-memory buffer
+    const collectedEvents = trap.flushCollectedEvents();
+
+    // Ensure data was captured in the in memory buffer
+    expect(collectedEvents).toHaveLength(3);
+
+    // First message is header
+    expect(collectedEvents[0][0]).toEqual(HEADER_MESSAGE_TYPE);
+
+    // First message is header
+    expect(collectedEvents[1][0]).toEqual(METADATA_MESSAGE_TYPE);
+
+    // Third message is the custom event
+    expect(collectedEvents[2]).toMatchObject([
+      CUSTOM_MESSAGE_TYPE,
+      expect.any(Number),
+      expect.objectContaining({
+        message: 'message',
       }),
     ]);
   });
