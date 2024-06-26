@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import trap from '../src/trap';
 
@@ -10,7 +9,7 @@ import {
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
-describe('sending chunks', () => {
+describe('In-memory buffer tests', () => {
   beforeAll(() => {
     document.body.innerHTML = initialHtml;
 
@@ -21,86 +20,25 @@ describe('sending chunks', () => {
     // Use fake timers -- it means that timers must be advanced manually!
     jest.useFakeTimers();
 
-    // Enable fetch() mocks
-    enableFetchMocks();
-
     // Load Trap and mount it into the `document`
     trap.mount(document);
+
+    // Set up fetch() mocks
+    trap.setTransportMethod('dummy');
+
+    // Start data collection and submission
+    trap.start();
+    // Do a submission to make the test deterministic
+    trap.submit();
   });
 
   afterAll(() => {
-    // Disable fetch() mocks
-    disableFetchMocks();
-
     // Use real timers from now on
     jest.useRealTimers();
   });
 
-  beforeEach(() => {
-    // Set up fetch() mocks
-    fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
-  });
-
-  test('sends a single chunk', () => {
-    // Send a simple custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Expect a single chunk to be submitted
-    expect(fetch).toHaveBeenCalledTimes(1);
-
-    // Clear mock data
-    fetch.mockClear();
-
-    // Idle timer does not invoke a new chunk submission
-    jest.advanceTimersByTime(2000);
-    expect(fetch).toHaveBeenCalledTimes(0);
-  });
-
-  test('sends multiple chunks', () => {
-    // Send a simple custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Send another custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Expect two chunks to be submitted
-    expect(fetch).toHaveBeenCalledTimes(2);
-  });
-
-  test('does not send an empty chunk', () => {
-    // Manually invoke chunk submission without pushing data
-    trap.submit();
-
-    // Expect no chunks to be submitted
-    expect(fetch).toHaveBeenCalledTimes(0);
-  });
-
-  test('In memory event collection disabled test', () => {
-    trap.setCollectEvents(false);
-
-    // Send a simple custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Get the collected events in the in-memory buffer
-    const collectedEvents = trap.flushCollectedEvents();
-
-    // Ensure no data was captured in the in memory buffer
-    expect(collectedEvents).toHaveLength(0);
-  });
-
   test('In memory event collection enabled test', () => {
+    // Enable event collection
     trap.setCollectEvents(true);
 
     // Send a simple custom message
@@ -118,12 +56,75 @@ describe('sending chunks', () => {
     // First message is header
     expect(collectedEvents[0][0]).toEqual(HEADER_MESSAGE_TYPE);
 
-    // Second message is the custom event
+    // Third message is the custom event
     expect(collectedEvents[1]).toMatchObject([
       CUSTOM_MESSAGE_TYPE,
       expect.any(Number),
       expect.objectContaining({
         message: 'message',
+      }),
+    ]);
+  });
+
+  test('In memory event collection disabled test', () => {
+    // Disable event collection
+    trap.setCollectEvents(false);
+
+    // Send a simple custom message
+    trap.send('message');
+
+    // Manually invoke chunk submission
+    trap.submit();
+
+    // Get the collected events in the in-memory buffer
+    const collectedEvents = trap.flushCollectedEvents();
+
+    // Ensure no data was captured in the in memory buffer
+    expect(collectedEvents).toHaveLength(0);
+  });
+
+  test('Buffer size limit', async () => {
+    // Enable / disable event collection
+    trap.setCollectEvents(true);
+
+    // Set a small buffer size
+    trap.setEventCollectionSizeLimit(4);
+
+    // Send a simple custom message
+    trap.send('message1');
+    trap.send('message2');
+    trap.submit();
+
+    trap.send('message3');
+    trap.send('message4');
+    trap.submit();
+
+    // Manually invoke chunk submission
+    trap.send('message5');
+    trap.send('message6');
+    trap.submit();
+
+    // Get the collected events in the in-memory buffer
+    const collectedEvents = trap.flushCollectedEvents();
+    expect(collectedEvents).toHaveLength(3);
+
+    // First message is header
+    expect(collectedEvents[0][0]).toEqual(HEADER_MESSAGE_TYPE);
+
+    // Other messages are custom messages
+    expect(collectedEvents[1]).toMatchObject([
+      CUSTOM_MESSAGE_TYPE,
+      expect.any(Number),
+      expect.objectContaining({
+        message: 'message5',
+      }),
+    ]);
+
+    expect(collectedEvents[2]).toMatchObject([
+      CUSTOM_MESSAGE_TYPE,
+      expect.any(Number),
+      expect.objectContaining({
+        message: 'message6',
       }),
     ]);
   });

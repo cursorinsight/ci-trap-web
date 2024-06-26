@@ -86,3 +86,6 @@ export const DEFAULT_TRACKER_OBJECT_NAME = 'gt';
 
 // By default use HTTP transport
 export const DEFAULT_TRAP_USE_WS_TRANSPORT = false;
+
+// Default maximum number of in memory collected events
+export const DEFAULT_TRAP_IN_MEMORY_STORAGE_SIZE_LIMIT = 10000;
