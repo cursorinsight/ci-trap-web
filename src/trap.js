@@ -414,6 +414,24 @@ class Trap {
   }
 
   /**
+   * Set the metadata submission interval
+   *
+   * @param {int} metadataSubmissionInterval
+   */
+  setMetadataSubmissionInterval(metadataSubmissionInterval) {
+    this._metadata.metadataSubmissionInterval = metadataSubmissionInterval;
+  }
+
+  /**
+   * Add metadata event to the stream (immediately, independently from the
+   * periodic submission)
+   *
+   */
+  submitMetadata() {
+    this._metadata.submit();
+  }
+
+  /**
    * Log arbitrary messages
    *
    * @param {...any} props

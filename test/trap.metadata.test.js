@@ -44,6 +44,7 @@ describe('metadata', () => {
 
   afterEach(() => {
     trap.stop();
+    trap.setMetadataSubmissionInterval(DEFAULT_METADATA_SUBMISSION_INTERVAL);
   });
 
   test('sends metadata message', () => {
@@ -86,6 +87,63 @@ describe('metadata', () => {
 
     // advance time by exactly 1 minute
     jest.advanceTimersByTime(DEFAULT_METADATA_SUBMISSION_INTERVAL - 1);
+    trap.send('message3');
+    trap.submit();
+
+    // advance time by 1 microsecond -- which expires the internal timer
+    jest.advanceTimersByTime(1);
+    trap.send('message4');
+    trap.submit();
+
+    // Fetch "fetch bodies" and parse their JSON
+    const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);
+    const metadata1 = jsonBody1.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const jsonBody2 = JSON.parse(fetch.mock.calls[1][1].body);
+    const metadata2 = jsonBody2.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const jsonBody3 = JSON.parse(fetch.mock.calls[2][1].body);
+    const metadata3 = jsonBody3.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const jsonBody4 = JSON.parse(fetch.mock.calls[3][1].body);
+    const metadata4 = jsonBody4.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+
+    // Check number of metadata messages in the stream
+    expect(metadata1).toHaveLength(1);
+    expect(metadata2).toHaveLength(0);
+    expect(metadata3).toHaveLength(0);
+    expect(metadata4).toHaveLength(1);
+  });
+
+  test('sends metadata manually as well', () => {
+    // Send two messages in two separate submissions.
+    trap.send('message1');
+    trap.submit();
+
+    trap.send('message2');
+    trap.submitMetadata();
+    trap.submit();
+
+    // Fetch "fetch bodies" and parse their JSON
+    const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);
+    const metadata1 = jsonBody1.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const jsonBody2 = JSON.parse(fetch.mock.calls[1][1].body);
+    const metadata2 = jsonBody2.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+
+    // Check number of metadata messages in the stream
+    expect(metadata1).toHaveLength(1);
+    expect(metadata2).toHaveLength(1);
+  });
+
+  test('set custom metadata submission interval', () => {
+    const SUBMISSION_INTERVAL = 1000;
+    trap.setMetadataSubmissionInterval(1000);
+
+    // Send two messages in two separate submissions.
+    trap.send('message1');
+    trap.submit();
+    trap.send('message2');
+    trap.submit();
+
+    // advance time by exactly 1 minute
+    jest.advanceTimersByTime(SUBMISSION_INTERVAL - 1);
     trap.send('message3');
     trap.submit();
 
