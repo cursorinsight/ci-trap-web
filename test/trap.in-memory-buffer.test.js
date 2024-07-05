@@ -47,6 +47,12 @@ describe('In-memory buffer tests', () => {
     // Manually invoke chunk submission
     trap.submit();
 
+    // Two submitted events
+    expect(trap.collectedEventCount()).toBe(2);
+
+    // One submitted custom event
+    expect(trap.collectedEventCount((item) => item[0] === 1)).toBe(1);
+
     // Get the collected events in the in-memory buffer
     const collectedEvents = trap.flushCollectedEvents();
 
