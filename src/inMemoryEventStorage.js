@@ -54,15 +54,20 @@ class InMemoryEventStorage {
 
   // Ensure there are at most sizeLimit events
   cleanUpInMemoryBufferIfNeeded() {
-    let eventCount = this.inMemoryEventStorage.reduce(
-      (acc, item) => acc + item.length,
-      0,
-    );
+    let eventCount = this.eventCount();
 
     while (eventCount > this.sizeLimit) {
       const item = this.inMemoryEventStorage.shift();
       eventCount -= item.length;
     }
+  }
+
+  // Return the number of events
+  eventCount(filterFn = () => true) {
+    return this.inMemoryEventStorage.reduce(
+      (acc, item) => acc + item.filter(filterFn).length,
+      0,
+    );
   }
 }
 

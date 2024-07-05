@@ -70,7 +70,6 @@ class Trap {
       logger: (...m) => { console.log(...m); },
       transport: new HTTP(this._metadata, this._buffer),
       sequenceNumber: 0,
-      eventCount: 0,
       eventStorage: new InMemoryEventStorage(),
       collectEvents: false,
     };
@@ -258,7 +257,6 @@ class Trap {
     }
 
     const events = this._buffer.flush();
-    this.state.eventCount += events.length;
     if (!final) {
       this.addHeaderToBuffer();
     }
@@ -441,19 +439,22 @@ class Trap {
   }
 
   /**
-   * Return the number of events captured since start
+   * @typeDef filterFunction
+   * @param  {Array} item
+   * @returns  {boolean}
+   */
+
+  /**
+   * Returns the number of collected events. If `filterFn` is specified it
+   * returns only the events that match the specified filter.
+   *
+   * @param {filterFunction} filterFn
    *
    * @returns {int}
    */
-  eventCount() {
-    return this.state.eventCount + this._buffer.eventCount();
-  }
-
-  /**
-   * Reset event count
-   */
-  resetEventCount() {
-    this.state.eventCount = 0;
+  collectedEventCount(filterFn = () => true) {
+    return this.state.eventStorage.eventCount(filterFn)
+      + this._buffer.eventCount(filterFn);
   }
 
   /**

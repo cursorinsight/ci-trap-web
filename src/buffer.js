@@ -173,8 +173,8 @@ class Buffer {
   }
 
   // Returns the number of events
-  eventCount() {
-    return this._buffer.length;
+  eventCount(filterFn = () => true) {
+    return this._buffer.filter(filterFn).length;
   }
 }
 
