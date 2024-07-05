@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Trap.html">Trap</a><ul class='methods'><li data-type='method'><a href="Trap.html#addCustomMetadata">addCustomMetadata</a></li><li data-type='method'><a href="Trap.html#apiKey">apiKey</a></li><li data-type='method'><a href="Trap.html#apiKeyName">apiKeyName</a></li><li data-type='method'><a href="Trap.html#apiKeyValue">apiKeyValue</a></li><li data-type='method'><a href="Trap.html#bufferSizeLimit">bufferSizeLimit</a></li><li data-type='method'><a href="Trap.html#bufferTimeout">bufferTimeout</a></li><li data-type='method'><a href="Trap.html#customMetadata">customMetadata</a></li><li data-type='method'><a href="Trap.html#enableCompression">enableCompression</a></li><li data-type='method'><a href="Trap.html#eventCount">eventCount</a></li><li data-type='method'><a href="Trap.html#flushCollectedEvents">flushCollectedEvents</a></li><li data-type='method'><a href="Trap.html#generateNewStreamId">generateNewStreamId</a></li><li data-type='method'><a href="Trap.html#idleTimeout">idleTimeout</a></li><li data-type='method'><a href="Trap.html#log">log</a></li><li data-type='method'><a href="Trap.html#metadata">metadata</a></li><li data-type='method'><a href="Trap.html#mount">mount</a></li><li data-type='method'><a href="Trap.html#removeCustomMetadata">removeCustomMetadata</a></li><li data-type='method'><a href="Trap.html#resetEventCount">resetEventCount</a></li><li data-type='method'><a href="Trap.html#send">send</a></li><li data-type='method'><a href="Trap.html#sessionId">sessionId</a></li><li data-type='method'><a href="Trap.html#setCollectEvents">setCollectEvents</a></li><li data-type='method'><a href="Trap.html#setEventCollectionSizeLimit">setEventCollectionSizeLimit</a></li><li data-type='method'><a href="Trap.html#setLogDestination">setLogDestination</a></li><li data-type='method'><a href="Trap.html#setMetadataSubmissionInterval">setMetadataSubmissionInterval</a></li><li data-type='method'><a href="Trap.html#setTransportMethod">setTransportMethod</a></li><li data-type='method'><a href="Trap.html#setUseWsTransport">setUseWsTransport</a></li><li data-type='method'><a href="Trap.html#start">start</a></li><li data-type='method'><a href="Trap.html#stop">stop</a></li><li data-type='method'><a href="Trap.html#streamId">streamId</a></li><li data-type='method'><a href="Trap.html#submit">submit</a></li><li data-type='method'><a href="Trap.html#submitMetadata">submitMetadata</a></li><li data-type='method'><a href="Trap.html#umount">umount</a></li><li data-type='method'><a href="Trap.html#url">url</a></li></ul></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#instance">instance</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Trap.html">Trap</a><ul class='methods'><li data-type='method'><a href="Trap.html#addCustomMetadata">addCustomMetadata</a></li><li data-type='method'><a href="Trap.html#apiKey">apiKey</a></li><li data-type='method'><a href="Trap.html#apiKeyName">apiKeyName</a></li><li data-type='method'><a href="Trap.html#apiKeyValue">apiKeyValue</a></li><li data-type='method'><a href="Trap.html#bufferSizeLimit">bufferSizeLimit</a></li><li data-type='method'><a href="Trap.html#bufferTimeout">bufferTimeout</a></li><li data-type='method'><a href="Trap.html#collectedEventCount">collectedEventCount</a></li><li data-type='method'><a href="Trap.html#customMetadata">customMetadata</a></li><li data-type='method'><a href="Trap.html#enableCompression">enableCompression</a></li><li data-type='method'><a href="Trap.html#flushCollectedEvents">flushCollectedEvents</a></li><li data-type='method'><a href="Trap.html#generateNewStreamId">generateNewStreamId</a></li><li data-type='method'><a href="Trap.html#idleTimeout">idleTimeout</a></li><li data-type='method'><a href="Trap.html#log">log</a></li><li data-type='method'><a href="Trap.html#metadata">metadata</a></li><li data-type='method'><a href="Trap.html#mount">mount</a></li><li data-type='method'><a href="Trap.html#removeCustomMetadata">removeCustomMetadata</a></li><li data-type='method'><a href="Trap.html#send">send</a></li><li data-type='method'><a href="Trap.html#sessionId">sessionId</a></li><li data-type='method'><a href="Trap.html#setCollectEvents">setCollectEvents</a></li><li data-type='method'><a href="Trap.html#setEventCollectionSizeLimit">setEventCollectionSizeLimit</a></li><li data-type='method'><a href="Trap.html#setLogDestination">setLogDestination</a></li><li data-type='method'><a href="Trap.html#setMetadataSubmissionInterval">setMetadataSubmissionInterval</a></li><li data-type='method'><a href="Trap.html#setTransportMethod">setTransportMethod</a></li><li data-type='method'><a href="Trap.html#setUseWsTransport">setUseWsTransport</a></li><li data-type='method'><a href="Trap.html#start">start</a></li><li data-type='method'><a href="Trap.html#stop">stop</a></li><li data-type='method'><a href="Trap.html#streamId">streamId</a></li><li data-type='method'><a href="Trap.html#submit">submit</a></li><li data-type='method'><a href="Trap.html#submitMetadata">submitMetadata</a></li><li data-type='method'><a href="Trap.html#umount">umount</a></li><li data-type='method'><a href="Trap.html#url">url</a></li></ul></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#instance">instance</a></li></ul>
     
 </nav>
 
@@ -117,7 +117,6 @@ class Trap {
       logger: (...m) => { console.log(...m); },
       transport: new HTTP(this._metadata, this._buffer),
       sequenceNumber: 0,
-      eventCount: 0,
       eventStorage: new InMemoryEventStorage(),
       collectEvents: false,
     };
@@ -305,7 +304,6 @@ class Trap {
     }
 
     const events = this._buffer.flush();
-    this.state.eventCount += events.length;
     if (!final) {
       this.addHeaderToBuffer();
     }
@@ -488,19 +486,22 @@ class Trap {
   }
 
   /**
-   * Return the number of events captured since start
+   * @typeDef filterFunction
+   * @param  {Array} item
+   * @returns  {boolean}
+   */
+
+  /**
+   * Returns the number of collected events. If `filterFn` is specified it
+   * returns only the events that match the specified filter.
+   *
+   * @param {filterFunction} filterFn
    *
    * @returns {int}
    */
-  eventCount() {
-    return this.state.eventCount + this._buffer.eventCount();
-  }
-
-  /**
-   * Reset event count
-   */
-  resetEventCount() {
-    this.state.eventCount = 0;
+  collectedEventCount(filterFn = () => true) {
+    return this.state.eventStorage.eventCount(filterFn)
+      + this._buffer.eventCount(filterFn);
   }
 
   /**
@@ -555,7 +556,7 @@ export { Trap };
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed Jun 26 2024 16:38:43 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Fri Jul 05 2024 15:06:37 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
