@@ -286,7 +286,7 @@ class Trap {
    * @deprecated Use addCustomMetadata instead
    *
    * @param {string} key
-   * @param {string} value
+   * @param {any} value
    */
   metadata(key, value) {
     this.addCustomMetadata(key, value);
@@ -296,7 +296,7 @@ class Trap {
    * Set application specific, custom metadata key-value pair
    *
    * @param {string} key
-   * @param {string} value
+   * @param {any} value
    */
   addCustomMetadata(key, value) {
     this._metadata.set(key, value);
