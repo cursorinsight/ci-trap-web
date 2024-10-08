@@ -72,6 +72,7 @@ class Trap {
       sequenceNumber: 0,
       eventStorage: new InMemoryEventStorage(),
       collectEvents: false,
+      onDataSubmittedCallback: undefined,
     };
 
     this._handlers.on('message', this.pushMessage);
@@ -366,6 +367,10 @@ class Trap {
       'dataSubmitted',
       this.state.eventStorage.onDataSubmitted,
     );
+    this.state.transport.off(
+      'dataSubmitted',
+      this.state.onDataSubmittedCallback,
+    );
     this.state.transport.close();
     if (transportMethod.startsWith('ws')) {
       this.state.transport = new WS(this._metadata, this.log);
@@ -378,6 +383,12 @@ class Trap {
       this.state.transport.on(
         'dataSubmitted',
         this.state.eventStorage.onDataSubmitted,
+      );
+    }
+    if (this.state.onDataSubmittedCallback) {
+      this.state.transport.on(
+        'dataSubmitted',
+        this.state.onDataSubmittedCallback,
       );
     }
   }
@@ -475,6 +486,25 @@ class Trap {
    */
   flushCollectedEvents() {
     return this.state.eventStorage.flushStorage();
+  }
+
+  /**
+   * Event handler when data is submitted by the transport layer.
+   *
+   * @param {function(any[]):void} callback
+   */
+  onDataSubmitted(callback) {
+    this.state.transport.off(
+      'dataSubmitted',
+      this.state.onDataSubmittedCallback,
+    );
+    this.state.onDataSubmittedCallback = callback;
+    if (this.state.onDataSubmittedCallback) {
+      this.state.transport.on(
+        'dataSubmitted',
+        this.state.onDataSubmittedCallback,
+      );
+    }
   }
 }
 
