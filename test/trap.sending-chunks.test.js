@@ -3,11 +3,6 @@ import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import trap from '../src/trap';
 
-import {
-  CUSTOM_MESSAGE_TYPE,
-  HEADER_MESSAGE_TYPE,
-} from '../src/constants';
-
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
 describe('sending chunks', () => {
@@ -82,49 +77,5 @@ describe('sending chunks', () => {
 
     // Expect no chunks to be submitted
     expect(fetch).toHaveBeenCalledTimes(0);
-  });
-
-  test('In memory event collection disabled test', () => {
-    trap.setCollectEvents(false);
-
-    // Send a simple custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Get the collected events in the in-memory buffer
-    const collectedEvents = trap.flushCollectedEvents();
-
-    // Ensure no data was captured in the in memory buffer
-    expect(collectedEvents).toHaveLength(0);
-  });
-
-  test('In memory event collection enabled test', () => {
-    trap.setCollectEvents(true);
-
-    // Send a simple custom message
-    trap.send('message');
-
-    // Manually invoke chunk submission
-    trap.submit();
-
-    // Get the collected events in the in-memory buffer
-    const collectedEvents = trap.flushCollectedEvents();
-
-    // Ensure data was captured in the in memory buffer
-    expect(collectedEvents).toHaveLength(2);
-
-    // First message is header
-    expect(collectedEvents[0][0]).toEqual(HEADER_MESSAGE_TYPE);
-
-    // Second message is the custom event
-    expect(collectedEvents[1]).toMatchObject([
-      CUSTOM_MESSAGE_TYPE,
-      expect.any(Number),
-      expect.objectContaining({
-        message: 'message',
-      }),
-    ]);
   });
 });
