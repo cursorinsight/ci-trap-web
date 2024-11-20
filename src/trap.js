@@ -450,22 +450,30 @@ class Trap {
   }
 
   /**
-   * @typeDef filterFunction
-   * @param  {Array} item
-   * @returns  {boolean}
+   * Returns a deep copy of the collected events while keeping them unchanged in
+   * Trap.
+   *
+   * @returns {undefined|Array<Array>}
    */
+  collectedEvents() {
+    return this.state.eventStorage.collectedEvents().concat(
+      this._buffer.collectedEvents(),
+    );
+  }
 
   /**
    * Returns the number of collected events. If `filterFn` is specified it
    * returns only the events that match the specified filter.
+   *
+   * @deprecated use collectedEvents instead and do the filtering and counting
+   * in the calling application.
    *
    * @param {filterFunction} filterFn
    *
    * @returns {int}
    */
   collectedEventCount(filterFn = () => true) {
-    return this.state.eventStorage.eventCount(filterFn)
-      + this._buffer.eventCount(filterFn);
+    return this.collectedEvents().filter(filterFn).length;
   }
 
   /**

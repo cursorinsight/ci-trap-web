@@ -7,6 +7,7 @@
 //
 // It also manages the enabled/disabled state.
 //------------------------------------------------------------------------------
+import clone from 'rfdc/default';
 
 import simpleAutoBind from './simpleAutoBind';
 import eventEmitterMixin from './eventEmitterMixin';
@@ -172,9 +173,9 @@ class Buffer {
     this._headerItems.length = 0;
   }
 
-  // Returns the number of events
-  eventCount(filterFn = () => true) {
-    return this._buffer.filter(filterFn).length;
+  // Returns a deep copy of the collected events
+  collectedEvents() {
+    return clone(this._buffer);
   }
 }
 

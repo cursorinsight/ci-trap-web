@@ -48,10 +48,18 @@ describe('In-memory buffer tests', () => {
     trap.submit();
 
     // Two submitted events
-    expect(trap.collectedEventCount()).toBe(2);
+    expect(trap.collectedEvents()).toHaveLength(2);
 
     // One submitted custom event
-    expect(trap.collectedEventCount((item) => item[0] === 1)).toBe(1);
+    expect(trap.collectedEvents().filter((item) => item[0] === 1))
+      .toHaveLength(1);
+
+    // Expect the collectedEvents to be a clone of the collected data
+    const evts = trap.collectedEvents();
+    // Change the event type of the first event
+    const FAKE_EVENT_TYPE = -123;
+    evts[0][0] = FAKE_EVENT_TYPE;
+    expect(trap.collectedEvents()[0][0]).not.toBe(FAKE_EVENT_TYPE);
 
     // Get the collected events in the in-memory buffer
     const collectedEvents = trap.flushCollectedEvents();

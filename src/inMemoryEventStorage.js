@@ -5,9 +5,9 @@
 //------------------------------------------------------------------------------
 // In memory event storage for Cursor Insight's ligthweight mouse tracker.
 //------------------------------------------------------------------------------
+import clone from 'rfdc/default';
 
 import simpleAutoBind from './simpleAutoBind';
-
 import {
   DEFAULT_TRAP_IN_MEMORY_STORAGE_SIZE_LIMIT,
 } from './constants';
@@ -63,11 +63,16 @@ class InMemoryEventStorage {
   }
 
   // Return the number of events
-  eventCount(filterFn = () => true) {
+  eventCount() {
     return this.inMemoryEventStorage.reduce(
-      (acc, item) => acc + item.filter(filterFn).length,
+      (acc, item) => acc + item.length,
       0,
     );
+  }
+
+  // Returns a deep copy of the collected events
+  collectedEvents() {
+    return clone(this.inMemoryEventStorage.flat());
   }
 }
 
