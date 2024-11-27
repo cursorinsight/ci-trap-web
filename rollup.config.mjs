@@ -77,7 +77,7 @@ export default [{
   // CommonJS (for Node) and ES module (for bundlers) build
   input: 'src/trap.js',
 
-  external: ['fflate', 'js-cookie', 'platform', 'uuid'],
+  external: ['fflate', 'js-cookie', 'platform', 'rfdc/default', 'uuid'],
 
   output: [{
     file: 'dist/trap.min.js',
