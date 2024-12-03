@@ -145,13 +145,25 @@ class Handlers {
 
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
-    this.push(
-      MOUSE_MOVE_MESSAGE_TYPE,
-      TimeUtils.convertEventTimeToTs(event.timeStamp),
-      event.screenX,
-      event.screenY,
-      event.buttons,
-    );
+    if (event.getCoalescedEvents) {
+      event.getCoalescedEvents().forEach((coalescedEvent) => {
+        this.push(
+          MOUSE_MOVE_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(coalescedEvent.timeStamp),
+          coalescedEvent.screenX,
+          coalescedEvent.screenY,
+          coalescedEvent.buttons,
+        );
+      });
+    } else {
+      this.push(
+        MOUSE_MOVE_MESSAGE_TYPE,
+        TimeUtils.convertEventTimeToTs(event.timeStamp),
+        event.screenX,
+        event.screenY,
+        event.buttons,
+      );
+    }
   }
 
   // `pointerdown` and `mousedown` event handler
