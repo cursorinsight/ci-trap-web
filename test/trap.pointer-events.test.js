@@ -1,10 +1,36 @@
 import '@testing-library/jest-dom';
-import { fireEvent } from '@testing-library/dom';
+import { fireEvent, createEvent } from '@testing-library/dom';
 import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 
 import trap from '../src/trap';
+import { MOUSE_MOVE_MESSAGE_TYPE } from '../src/constants';
 
 const initialHtml = '<html><head></head><body>some text</body></html>';
+
+const pointerEventCtorProps = [
+  'screenX',
+  'screenY',
+  'buttons',
+  'coalescedEvents',
+];
+
+class PointerEventFake extends Event {
+  constructor(type, props) {
+    super(type, props);
+    pointerEventCtorProps.forEach((prop) => {
+      if (props[prop] != null) {
+        this[prop] = props[prop];
+      }
+    });
+  }
+
+  getCoalescedEvents() {
+    if (this.coalescedEvents) {
+      return this.coalescedEvents;
+    }
+    return [this];
+  }
+}
 
 // Change `POINTER_ENABLED` to `true`
 jest.mock('../src/constants', () => {
@@ -20,6 +46,7 @@ jest.mock('../src/constants', () => {
 describe('browser with pointer events', () => {
   beforeAll(() => {
     document.body.innerHTML = initialHtml;
+    window.PointerEvent = PointerEventFake;
 
     // Here you must use `jest.resetModules` because otherwise Jest will have
     // cached `trap.js` and it will _not_ run again.
@@ -74,6 +101,74 @@ describe('browser with pointer events', () => {
     trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('triggers coalesced pointer move event', () => {
+    const { body } = document;
+
+    const evt1Dict = {
+      bubbles: true,
+      cancelable: true,
+      screenX: 1,
+      screenY: 2,
+      buttons: 0,
+    };
+
+    const evt2Dict = {
+      bubbles: true,
+      cancelable: true,
+      screenX: 3,
+      screenY: 4,
+      buttons: 0,
+    };
+
+    const evt1 = createEvent.pointerMove(
+      body,
+      new PointerEventFake('pointermove', evt1Dict),
+    );
+    const evt2 = createEvent.pointerMove(
+      body,
+      new PointerEventFake('pointermove', evt2Dict),
+    );
+
+    fireEvent.pointerMove(
+      body,
+      new PointerEventFake('pointermove', {
+        ...evt2Dict,
+        coalescedEvents: [evt1, evt2],
+      }),
+    );
+
+    // Manually trigger submit
+    trap.submit();
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    // Fetch "fetch body" and parse its JSON
+    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+
+    // Filter pointer(mouse) move events
+    const moveEvents = jsonBody.filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
+
+    expect(moveEvents).toHaveLength(2);
+
+    expect(moveEvents[0])
+      .toMatchObject([
+        MOUSE_MOVE_MESSAGE_TYPE,
+        expect.any(Number),
+        1,
+        2,
+        0,
+      ]);
+
+    expect(moveEvents[1])
+      .toMatchObject([
+        MOUSE_MOVE_MESSAGE_TYPE,
+        expect.any(Number),
+        3,
+        4,
+        0,
+      ]);
   });
 
   test('triggers pointer down and up events', () => {
