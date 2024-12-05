@@ -441,6 +441,15 @@ class Trap {
   }
 
   /**
+   * Set the
+   *
+   * @param {bool} capture
+   */
+  setCaptureCoalescedEvents(capture) {
+    this._handlers.captureCoalescedEvents(capture);
+  }
+
+  /**
    * Log arbitrary messages
    *
    * @param {...any} props

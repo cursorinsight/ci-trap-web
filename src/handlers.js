@@ -33,6 +33,9 @@ class Handlers {
 
     // DOM elements to which these handlers are already mounted to
     this._registeredElements = [];
+
+    // Also capture coalesced events
+    this._captureCoalescedEvents = true;
   }
 
   // Mount global handlers -- that are not specific to any element.
@@ -143,9 +146,14 @@ class Handlers {
     this.emit('requestSubmission');
   }
 
+  // Set the captureCoalescedEvents option
+  captureCoalescedEvents(value) {
+    this._captureCoalescedEvents = value;
+  }
+
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
-    if (event.getCoalescedEvents) {
+    if (this._captureCoalescedEvents && event.getCoalescedEvents) {
       event.getCoalescedEvents().forEach((coalescedEvent) => {
         this.push(
           MOUSE_MOVE_MESSAGE_TYPE,
