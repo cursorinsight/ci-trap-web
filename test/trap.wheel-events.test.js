@@ -36,6 +36,7 @@ describe('browser with wheel events', () => {
     expect(document.addEventListener).toHaveBeenCalledWith(
       'wheel',
       expect.any(Function),
+      expect.objectContaining({ capture: true, passive: true }),
     );
 
     documentAddELSpy.mockRestore();
@@ -68,6 +69,7 @@ describe('browser with wheel events', () => {
     expect(document.removeEventListener).toHaveBeenCalledWith(
       'wheel',
       expect.any(Function),
+      expect.objectContaining({ capture: true, passive: true }),
     );
 
     documentRemoveELSpy.mockRestore();
