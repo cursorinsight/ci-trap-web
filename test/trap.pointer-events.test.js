@@ -103,7 +103,7 @@ describe('browser with pointer events', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
-  test('triggers coalesced pointer move event', () => {
+  function fireCoalescedEvent() {
     const { body } = document;
 
     const evt1Dict = {
@@ -138,6 +138,14 @@ describe('browser with pointer events', () => {
         coalescedEvents: [evt1, evt2],
       }),
     );
+  }
+
+  test('triggers coalesced pointer move event and capture it', () => {
+    // Configure trap to capture coalesced events
+    trap.setCaptureCoalescedEvents(true);
+
+    // Create and fire the event
+    fireCoalescedEvent();
 
     // Manually trigger submit
     trap.submit();
@@ -148,7 +156,8 @@ describe('browser with pointer events', () => {
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
     // Filter pointer(mouse) move events
-    const moveEvents = jsonBody.filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
+    const moveEvents = jsonBody
+      .filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
 
     expect(moveEvents).toHaveLength(2);
 
@@ -162,6 +171,37 @@ describe('browser with pointer events', () => {
       ]);
 
     expect(moveEvents[1])
+      .toMatchObject([
+        MOUSE_MOVE_MESSAGE_TYPE,
+        expect.any(Number),
+        3,
+        4,
+        0,
+      ]);
+  });
+
+  test('triggers coalesced pointer move event and do not capture them', () => {
+    // Configure trap to avoid capturing coalesced events
+    trap.setCaptureCoalescedEvents(false);
+
+    // Create and fire the event
+    fireCoalescedEvent();
+
+    // Manually trigger submit
+    trap.submit();
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    // Fetch "fetch body" and parse its JSON
+    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+
+    // Filter pointer(mouse) move events
+    const moveEvents = jsonBody
+      .filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
+
+    expect(moveEvents).toHaveLength(1);
+
+    expect(moveEvents[0])
       .toMatchObject([
         MOUSE_MOVE_MESSAGE_TYPE,
         expect.any(Number),
