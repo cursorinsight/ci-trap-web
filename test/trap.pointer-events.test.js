@@ -12,6 +12,8 @@ const pointerEventCtorProps = [
   'screenY',
   'buttons',
   'coalescedEvents',
+  'pointerId',
+  'pointerType',
 ];
 
 class PointerEventFake extends Event {
@@ -78,7 +80,7 @@ describe('browser with pointer events', () => {
     documentAddELSpy.mockRestore();
   });
 
-  test('triggers pointer move events', () => {
+  it.each(['mouse', 'touch'])('triggers pointer move events', (pointerType) => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -87,6 +89,8 @@ describe('browser with pointer events', () => {
     fireEvent.pointerMove(body, {
       bubbles: true,
       cancelable: true,
+      pointerType,
+      pointerId: 1,
       screenX: 1,
       screenY: 2,
     });
@@ -94,6 +98,8 @@ describe('browser with pointer events', () => {
     fireEvent.pointerMove(body, {
       bubbles: true,
       cancelable: true,
+      pointerType,
+      pointerId: 1,
       screenX: 3,
       screenY: 4,
     });
@@ -110,6 +116,7 @@ describe('browser with pointer events', () => {
     const evt1Dict = {
       bubbles: true,
       cancelable: true,
+      pointerType: 'mouse',
       screenX: 1,
       screenY: 2,
       buttons: 0,
@@ -118,6 +125,7 @@ describe('browser with pointer events', () => {
     const evt2Dict = {
       bubbles: true,
       cancelable: true,
+      pointerType: 'mouse',
       screenX: 3,
       screenY: 4,
       buttons: 0,
@@ -212,31 +220,77 @@ describe('browser with pointer events', () => {
       ]);
   });
 
-  test('triggers pointer down and up events', () => {
+  it.each(['mouse', 'touch'])(
+    'triggers pointer down and up events',
+    (pointerType) => {
+      const { body } = document;
+
+      fireEvent.pointerDown(body, {
+        bubbles: true,
+        cancelable: true,
+        pointerType,
+        pointerId: 1,
+        button: 0,
+        buttons: 1,
+        screenX: 1,
+        screenY: 2,
+      });
+
+      fireEvent.pointerUp(body, {
+        bubbles: true,
+        cancelable: true,
+        pointerType,
+        pointerId: 1,
+        button: 0,
+        buttons: 0,
+        screenX: 3,
+        screenY: 4,
+      });
+
+      // Manually trigger submit
+      trap.submit();
+
+      expect(fetch).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  test('do not capture pen events', () => {
+    // Set up fetch() mocks
+    fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+
     const { body } = document;
 
     fireEvent.pointerDown(body, {
       bubbles: true,
       cancelable: true,
-      button: 0,
-      buttons: 1,
+      pointerType: 'pen',
+      pointerId: 1,
       screenX: 1,
       screenY: 2,
+    });
+
+    fireEvent.pointerMove(body, {
+      bubbles: true,
+      cancelable: true,
+      pointerType: 'pen',
+      pointerId: 1,
+      screenX: 3,
+      screenY: 4,
     });
 
     fireEvent.pointerUp(body, {
       bubbles: true,
       cancelable: true,
-      button: 0,
-      buttons: 0,
-      screenX: 3,
-      screenY: 4,
+      pointerType: 'pen',
+      pointerId: 1,
+      screenX: 5,
+      screenY: 6,
     });
 
     // Manually trigger submit
     trap.submit();
 
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(0);
   });
 
   test('unregisters event handlers by unmounting Trap from document', () => {
