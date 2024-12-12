@@ -129,17 +129,17 @@ class Handlers {
     } else {
       element.addEventListener(
         'mousemove',
-        this.handlePointerMove,
+        this.handleMouseMove,
         EVENT_HANDLER_OPTIONS,
       );
       element.addEventListener(
         'mousedown',
-        this.handlePointerDown,
+        this.handleMouseDown,
         EVENT_HANDLER_OPTIONS,
       );
       element.addEventListener(
         'mouseup',
-        this.handlePointerUp,
+        this.handleMouseUp,
         EVENT_HANDLER_OPTIONS,
       );
     }
@@ -189,17 +189,17 @@ class Handlers {
     } else {
       element.removeEventListener(
         'mousemove',
-        this.handlePointerMove,
+        this.handleMouseMove,
         EVENT_HANDLER_OPTIONS,
       );
       element.removeEventListener(
         'mousedown',
-        this.handlePointerDown,
+        this.handleMouseDown,
         EVENT_HANDLER_OPTIONS,
       );
       element.removeEventListener(
         'mouseup',
-        this.handlePointerUp,
+        this.handleMouseUp,
         EVENT_HANDLER_OPTIONS,
       );
     }
@@ -236,27 +236,85 @@ class Handlers {
   handlePointerMove(event) {
     if (this._captureCoalescedEvents && event.getCoalescedEvents) {
       event.getCoalescedEvents().forEach((coalescedEvent) => {
-        this.push(
-          MOUSE_MOVE_MESSAGE_TYPE,
-          TimeUtils.convertEventTimeToTs(coalescedEvent.timeStamp),
-          coalescedEvent.screenX,
-          coalescedEvent.screenY,
-          coalescedEvent.buttons,
-        );
+        this.handleSinglePointerMove(coalescedEvent);
       });
     } else {
-      this.push(
-        MOUSE_MOVE_MESSAGE_TYPE,
-        TimeUtils.convertEventTimeToTs(event.timeStamp),
-        event.screenX,
-        event.screenY,
-        event.buttons,
-      );
+      this.handleSinglePointerMove(event);
     }
   }
 
-  // `pointerdown` and `mousedown` event handler
+  handleSinglePointerMove(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseMove(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_MOVE_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `pointerdown` event handler
   handlePointerDown(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseDown(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_START_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `pointerup` and `mouseup` event handler
+  handlePointerUp(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseUp(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_END_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `mousemove` event handler
+  handleMouseMove(event) {
+    this.push(
+      MOUSE_MOVE_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
+      event.screenX,
+      event.screenY,
+      event.buttons,
+    );
+  }
+
+  // `mousedown` event handler
+  handleMouseDown(event) {
     this.push(
       MOUSE_DOWN_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
@@ -267,8 +325,8 @@ class Handlers {
     );
   }
 
-  // `pointerup` and `mouseup` event handler
-  handlePointerUp(event) {
+  // `mouseup` event handler
+  handleMouseUp(event) {
     this.push(
       MOUSE_UP_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
