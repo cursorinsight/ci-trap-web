@@ -27,12 +27,20 @@ import {
 
 import TimeUtils from './timeUtils';
 
+const EVENT_HANDLER_OPTIONS = {
+  passive: true,
+  capture: true,
+};
+
 class Handlers {
   constructor() {
     simpleAutoBind(this);
 
     // DOM elements to which these handlers are already mounted to
     this._registeredElements = [];
+
+    // Also capture coalesced events
+    this._captureCoalescedEvents = true;
   }
 
   // Mount global handlers -- that are not specific to any element.
@@ -87,20 +95,56 @@ class Handlers {
     this.mountGlobal();
 
     if (TOUCH_ENABLED) {
-      element.addEventListener('touchstart', this.handleTouchStart);
-      element.addEventListener('touchmove', this.handleTouchMove);
-      element.addEventListener('touchend', this.handleTouchEnd);
+      element.addEventListener(
+        'touchstart',
+        this.handleTouchStart,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'touchmove',
+        this.handleTouchMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'touchend',
+        this.handleTouchEnd,
+        EVENT_HANDLER_OPTIONS,
+      );
     } else if (POINTER_ENABLED) {
-      element.addEventListener('pointermove', this.handlePointerMove);
-      element.addEventListener('pointerdown', this.handlePointerDown);
-      element.addEventListener('pointerup', this.handlePointerUp);
+      element.addEventListener(
+        'pointermove',
+        this.handlePointerMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'pointerdown',
+        this.handlePointerDown,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'pointerup',
+        this.handlePointerUp,
+        EVENT_HANDLER_OPTIONS,
+      );
     } else {
-      element.addEventListener('mousemove', this.handlePointerMove);
-      element.addEventListener('mousedown', this.handlePointerDown);
-      element.addEventListener('mouseup', this.handlePointerUp);
+      element.addEventListener(
+        'mousemove',
+        this.handleMouseMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'mousedown',
+        this.handleMouseDown,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.addEventListener(
+        'mouseup',
+        this.handleMouseUp,
+        EVENT_HANDLER_OPTIONS,
+      );
     }
 
-    element.addEventListener('wheel', this.handleWheel);
+    element.addEventListener('wheel', this.handleWheel, EVENT_HANDLER_OPTIONS);
 
     // Insert `element` into `_registeredElements`
     this._registeredElements.push(element);
@@ -111,20 +155,60 @@ class Handlers {
     if (!this._registeredElements.includes(element)) { return; }
 
     if (TOUCH_ENABLED) {
-      element.removeEventListener('touchstart', this.handleTouchStart);
-      element.removeEventListener('touchmove', this.handleTouchMove);
-      element.removeEventListener('touchend', this.handleTouchEnd);
+      element.removeEventListener(
+        'touchstart',
+        this.handleTouchStart,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'touchmove',
+        this.handleTouchMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'touchend',
+        this.handleTouchEnd,
+        EVENT_HANDLER_OPTIONS,
+      );
     } else if (POINTER_ENABLED) {
-      element.removeEventListener('pointermove', this.handlePointerMove);
-      element.removeEventListener('pointerdown', this.handlePointerDown);
-      element.removeEventListener('pointerup', this.handlePointerUp);
+      element.removeEventListener(
+        'pointermove',
+        this.handlePointerMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'pointerdown',
+        this.handlePointerDown,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'pointerup',
+        this.handlePointerUp,
+        EVENT_HANDLER_OPTIONS,
+      );
     } else {
-      element.removeEventListener('mousemove', this.handlePointerMove);
-      element.removeEventListener('mousedown', this.handlePointerDown);
-      element.removeEventListener('mouseup', this.handlePointerUp);
+      element.removeEventListener(
+        'mousemove',
+        this.handleMouseMove,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'mousedown',
+        this.handleMouseDown,
+        EVENT_HANDLER_OPTIONS,
+      );
+      element.removeEventListener(
+        'mouseup',
+        this.handleMouseUp,
+        EVENT_HANDLER_OPTIONS,
+      );
     }
 
-    element.removeEventListener('wheel', this.handleWheel);
+    element.removeEventListener(
+      'wheel',
+      this.handleWheel,
+      EVENT_HANDLER_OPTIONS,
+    );
 
     // Remove `element` from `_registeredElements`
     const idx = this._registeredElements.indexOf(element);
@@ -143,31 +227,94 @@ class Handlers {
     this.emit('requestSubmission');
   }
 
+  // Set the captureCoalescedEvents option
+  captureCoalescedEvents(value) {
+    this._captureCoalescedEvents = value;
+  }
+
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
-    if (event.getCoalescedEvents) {
+    if (this._captureCoalescedEvents && event.getCoalescedEvents) {
       event.getCoalescedEvents().forEach((coalescedEvent) => {
-        this.push(
-          MOUSE_MOVE_MESSAGE_TYPE,
-          TimeUtils.convertEventTimeToTs(coalescedEvent.timeStamp),
-          coalescedEvent.screenX,
-          coalescedEvent.screenY,
-          coalescedEvent.buttons,
-        );
+        this.handleSinglePointerMove(coalescedEvent);
       });
     } else {
-      this.push(
-        MOUSE_MOVE_MESSAGE_TYPE,
-        TimeUtils.convertEventTimeToTs(event.timeStamp),
-        event.screenX,
-        event.screenY,
-        event.buttons,
-      );
+      this.handleSinglePointerMove(event);
     }
   }
 
-  // `pointerdown` and `mousedown` event handler
+  handleSinglePointerMove(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseMove(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_MOVE_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `pointerdown` event handler
   handlePointerDown(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseDown(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_START_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `pointerup` and `mouseup` event handler
+  handlePointerUp(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+        this.handleMouseUp(event);
+        break;
+      case 'touch':
+        this.push(
+          TOUCH_END_MESSAGE_TYPE,
+          TimeUtils.convertEventTimeToTs(event.timeStamp),
+          event.pointerId,
+          event.screenX,
+          event.screenY,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // `mousemove` event handler
+  handleMouseMove(event) {
+    this.push(
+      MOUSE_MOVE_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(event.timeStamp),
+      event.screenX,
+      event.screenY,
+      event.buttons,
+    );
+  }
+
+  // `mousedown` event handler
+  handleMouseDown(event) {
     this.push(
       MOUSE_DOWN_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
@@ -178,8 +325,8 @@ class Handlers {
     );
   }
 
-  // `pointerup` and `mouseup` event handler
-  handlePointerUp(event) {
+  // `mouseup` event handler
+  handleMouseUp(event) {
     this.push(
       MOUSE_UP_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),

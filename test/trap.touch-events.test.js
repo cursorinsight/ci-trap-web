@@ -44,6 +44,7 @@ describe('browser with touch events', () => {
       (event) => expect(document.addEventListener).toHaveBeenCalledWith(
         event,
         expect.any(Function),
+        expect.objectContaining({ capture: true, passive: true }),
       ),
     );
 
@@ -102,6 +103,7 @@ describe('browser with touch events', () => {
       (event) => expect(document.removeEventListener).toHaveBeenCalledWith(
         event,
         expect.any(Function),
+        expect.objectContaining({ capture: true, passive: true }),
       ),
     );
 
