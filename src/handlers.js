@@ -234,19 +234,27 @@ class Handlers {
 
   // `pointermove` and `mousemove` event handler
   handlePointerMove(event) {
+    let events = [];
     if (this._captureCoalescedEvents && event.getCoalescedEvents) {
-      event.getCoalescedEvents().forEach((coalescedEvent) => {
-        this.handleSinglePointerMove(coalescedEvent);
-      });
+      events = event.getCoalescedEvents();
+    }
+
+    if (events.length === 0) {
+      this.handleSinglePointerMove(event, false);
     } else {
-      this.handleSinglePointerMove(event);
+      events.forEach((coalescedEvent, index) => {
+        this.handleSinglePointerMove(
+          coalescedEvent,
+          index !== events.length - 1,
+        );
+      });
     }
   }
 
-  handleSinglePointerMove(event) {
+  handleSinglePointerMove(event, coalesced) {
     switch (event.pointerType) {
       case 'mouse':
-        this.handleMouseMove(event);
+        this.handleMouseMove(event, coalesced);
         break;
       case 'touch':
         this.push(
@@ -255,6 +263,7 @@ class Handlers {
           event.pointerId,
           event.screenX,
           event.screenY,
+          coalesced ? 1 : 0,
         );
         break;
       default:
@@ -303,13 +312,14 @@ class Handlers {
   }
 
   // `mousemove` event handler
-  handleMouseMove(event) {
+  handleMouseMove(event, coalesced) {
     this.push(
       MOUSE_MOVE_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
       event.screenX,
       event.screenY,
       event.buttons,
+      coalesced ? 1 : 0,
     );
   }
 
@@ -359,6 +369,7 @@ class Handlers {
         touch.identifier,
         touch.screenX,
         touch.screenY,
+        false,
       );
     });
   }

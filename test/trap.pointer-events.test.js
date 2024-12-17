@@ -177,6 +177,7 @@ describe('browser with pointer events', () => {
         1,
         2,
         0,
+        1,
       ]);
 
     expect(moveEvents[1])
@@ -185,6 +186,7 @@ describe('browser with pointer events', () => {
         expect.any(Number),
         3,
         4,
+        0,
         0,
       ]);
   });
@@ -216,6 +218,7 @@ describe('browser with pointer events', () => {
         expect.any(Number),
         3,
         4,
+        0,
         0,
       ]);
   });
