@@ -72,6 +72,7 @@ class Trap {
       sequenceNumber: 0,
       eventStorage: new InMemoryEventStorage(),
       collectEvents: false,
+      captureRequestAnimationFrame: false,
       onDataSubmittedCallback: undefined,
     };
 
@@ -168,6 +169,9 @@ class Trap {
     this._buffer.enable();
     this.addHeaderToBuffer();
     this._metadata.enable();
+    if (this.state.captureRequestAnimationFrame) {
+      this._handlers.startRequestAnimationFrame();
+    }
   }
 
   /**
@@ -177,6 +181,7 @@ class Trap {
     this.submit(true);
     this._buffer.disable();
     this._metadata.disable();
+    this._handlers.stopRequestAnimationFrame();
   }
 
   /**
@@ -447,6 +452,20 @@ class Trap {
    */
   setCaptureCoalescedEvents(capture) {
     this._handlers.captureCoalescedEvents(capture);
+  }
+
+  /**
+   * Enable / disable requestAnimationFrame message collection
+   *
+   * @param {bool} capture
+   */
+  setCaptureRequestAnimationFrame(capture) {
+    this.state.captureRequestAnimationFrame = capture;
+    if (capture) {
+      this._handlers.startRequestAnimationFrame();
+    } else {
+      this._handlers.stopRequestAnimationFrame();
+    }
   }
 
   /**

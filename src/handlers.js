@@ -23,6 +23,7 @@ import {
   FOCUS_WINDOW_MESSAGE_TYPE,
   WHEEL_MESSAGE_TYPE,
   SCROLL_MESSAGE_TYPE,
+  REQUEST_ANIMATION_FRAME_MESSAGE_TYPE,
 } from './constants';
 
 import TimeUtils from './timeUtils';
@@ -41,6 +42,8 @@ class Handlers {
 
     // Also capture coalesced events
     this._captureCoalescedEvents = true;
+
+    this._requestAnimationFrameId = undefined;
   }
 
   // Mount global handlers -- that are not specific to any element.
@@ -457,6 +460,32 @@ class Handlers {
       FOCUS_WINDOW_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
       event,
+    );
+  }
+
+  // Start collecting requestAnimationFrame messages
+  startRequestAnimationFrame() {
+    this._requestAnimationFrameId = requestAnimationFrame(
+      this.onRequestAnimationFrame,
+    );
+  }
+
+  // Stop collecting requestAnimationFrame messages
+  stopRequestAnimationFrame() {
+    if (this._requestAnimationFrameId !== undefined) {
+      cancelAnimationFrame(this._requestAnimationFrameId);
+      this._requestAnimationFrameId = undefined;
+    }
+  }
+
+  // Event handler for requestAnimationFrame
+  onRequestAnimationFrame(timeStamp) {
+    this._requestAnimationFrameId = requestAnimationFrame(
+      this.onRequestAnimationFrame,
+    );
+    this.push(
+      REQUEST_ANIMATION_FRAME_MESSAGE_TYPE,
+      TimeUtils.convertEventTimeToTs(timeStamp),
     );
   }
 }

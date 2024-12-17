@@ -45,6 +45,7 @@ export const FOCUS_WINDOW_MESSAGE_TYPE = 8;
 export const WHEEL_MESSAGE_TYPE = 9;
 export const SCROLL_MESSAGE_TYPE = 10;
 export const METADATA_MESSAGE_TYPE = 11;
+export const REQUEST_ANIMATION_FRAME_MESSAGE_TYPE = 20;
 
 // Default Trap server endpoint
 export const DEFAULT_TRAP_SERVER_URL = '?UNCONFIGURED=http';
