@@ -39,22 +39,22 @@ describe('trap', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
-  test('sending new events are omitted', () => {
+  test('sending new events are omitted', async () => {
     // 10000 is more than DEFAULT_TRAP_BUFFER_SIZE_LIMIT
     [...Array(10000)].forEach(() => trap.send('message'));
     expect(fetch).toHaveBeenCalledTimes(0);
 
     // Submit a new event manually
     trap.send('message');
-    trap.submit();
+    await trap.submit();
     expect(fetch).toHaveBeenCalledTimes(0);
   });
 
-  test('#start reenables automatic data collection', () => {
+  test('#start reenables automatic data collection', async () => {
     trap.start();
     // Send a message and call `submit` manually
     trap.send('message');
-    trap.submit();
+    await trap.submit();
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 

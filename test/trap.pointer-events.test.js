@@ -80,35 +80,38 @@ describe('browser with pointer events', () => {
     documentAddELSpy.mockRestore();
   });
 
-  it.each(['mouse', 'touch'])('triggers pointer move events', (pointerType) => {
-    // Set up fetch() mocks
-    fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
+  it.each(['mouse', 'touch'])(
+    'triggers pointer move events',
+    async (pointerType) => {
+      // Set up fetch() mocks
+      fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
-    const { body } = document;
+      const { body } = document;
 
-    fireEvent.pointerMove(body, {
-      bubbles: true,
-      cancelable: true,
-      pointerType,
-      pointerId: 1,
-      screenX: 1,
-      screenY: 2,
-    });
+      fireEvent.pointerMove(body, {
+        bubbles: true,
+        cancelable: true,
+        pointerType,
+        pointerId: 1,
+        screenX: 1,
+        screenY: 2,
+      });
 
-    fireEvent.pointerMove(body, {
-      bubbles: true,
-      cancelable: true,
-      pointerType,
-      pointerId: 1,
-      screenX: 3,
-      screenY: 4,
-    });
+      fireEvent.pointerMove(body, {
+        bubbles: true,
+        cancelable: true,
+        pointerType,
+        pointerId: 1,
+        screenX: 3,
+        screenY: 4,
+      });
 
-    // Manually trigger submit
-    trap.submit();
+      // Manually trigger submit
+      await trap.submit();
 
-    expect(fetch).toHaveBeenCalledTimes(1);
-  });
+      expect(fetch).toHaveBeenCalledTimes(1);
+    },
+  );
 
   function fireCoalescedEvent() {
     const { body } = document;
@@ -149,7 +152,7 @@ describe('browser with pointer events', () => {
     );
   }
 
-  test('triggers coalesced pointer move event and capture it', () => {
+  test('triggers coalesced pointer move event and capture it', async () => {
     // Configure trap to capture coalesced events
     trap.setCaptureCoalescedEvents(true);
 
@@ -157,7 +160,7 @@ describe('browser with pointer events', () => {
     fireCoalescedEvent();
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
 
@@ -191,41 +194,44 @@ describe('browser with pointer events', () => {
       ]);
   });
 
-  test('triggers coalesced pointer move event and do not capture them', () => {
-    // Configure trap to avoid capturing coalesced events
-    trap.setCaptureCoalescedEvents(false);
+  test(
+    'triggers coalesced pointer move event and do not capture them',
+    async () => {
+      // Configure trap to avoid capturing coalesced events
+      trap.setCaptureCoalescedEvents(false);
 
-    // Create and fire the event
-    fireCoalescedEvent();
+      // Create and fire the event
+      fireCoalescedEvent();
 
-    // Manually trigger submit
-    trap.submit();
+      // Manually trigger submit
+      await trap.submit();
 
-    expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledTimes(1);
 
-    // Fetch "fetch body" and parse its JSON
-    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+      // Fetch "fetch body" and parse its JSON
+      const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
-    // Filter pointer(mouse) move events
-    const moveEvents = jsonBody
-      .filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
+      // Filter pointer(mouse) move events
+      const moveEvents = jsonBody
+        .filter((e) => e[0] === MOUSE_MOVE_MESSAGE_TYPE);
 
-    expect(moveEvents).toHaveLength(1);
+      expect(moveEvents).toHaveLength(1);
 
-    expect(moveEvents[0])
-      .toMatchObject([
-        MOUSE_MOVE_MESSAGE_TYPE,
-        expect.any(Number),
-        3,
-        4,
-        0,
-        0,
-      ]);
-  });
+      expect(moveEvents[0])
+        .toMatchObject([
+          MOUSE_MOVE_MESSAGE_TYPE,
+          expect.any(Number),
+          3,
+          4,
+          0,
+          0,
+        ]);
+    },
+  );
 
   it.each(['mouse', 'touch'])(
     'triggers pointer down and up events',
-    (pointerType) => {
+    async (pointerType) => {
       const { body } = document;
 
       fireEvent.pointerDown(body, {
@@ -251,13 +257,13 @@ describe('browser with pointer events', () => {
       });
 
       // Manually trigger submit
-      trap.submit();
+      await trap.submit();
 
       expect(fetch).toHaveBeenCalledTimes(1);
     },
   );
 
-  test('do not capture pen events', () => {
+  test('do not capture pen events', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -291,7 +297,7 @@ describe('browser with pointer events', () => {
     });
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(0);
   });

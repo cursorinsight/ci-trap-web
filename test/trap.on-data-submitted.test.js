@@ -10,7 +10,7 @@ import {
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
 describe('On data submitted tests', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     document.body.innerHTML = initialHtml;
 
     // Here you must use `jest.resetModules` because otherwise Jest will have
@@ -32,7 +32,7 @@ describe('On data submitted tests', () => {
     // Start data collection and submission
     trap.start();
     // Do a submission to make the test deterministic
-    trap.submit();
+    await trap.submit();
   });
 
   afterAll(() => {
@@ -43,7 +43,7 @@ describe('On data submitted tests', () => {
     disableFetchMocks();
   });
 
-  test('On data submitted enabled test', () => {
+  test('On data submitted enabled test', async () => {
     const collectedEvents = [];
 
     // Add onDataSubmitted handler
@@ -53,7 +53,7 @@ describe('On data submitted tests', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Ensure data was captured in the in memory buffer
     expect(collectedEvents).toHaveLength(2);
@@ -71,7 +71,7 @@ describe('On data submitted tests', () => {
     ]);
   });
 
-  test('On data submitted disabled test', () => {
+  test('On data submitted disabled test', async () => {
     const collectedEvents = [];
 
     // Add onDataSubmitted handler
@@ -84,7 +84,7 @@ describe('On data submitted tests', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Ensure no data was captured in the in memory buffer
     expect(collectedEvents).toHaveLength(0);
@@ -99,11 +99,11 @@ describe('On data submitted tests', () => {
     // Send messages with multiple submissions
     trap.send('message1');
     trap.send('message2');
-    trap.submit();
+    await trap.submit();
 
     trap.send('message3');
     trap.send('message4');
-    trap.submit();
+    await trap.submit();
 
     expect(collectedEvents).toHaveLength(6);
   });
@@ -119,7 +119,7 @@ describe('On data submitted tests', () => {
 
     // Send message and request manual submission
     trap.send('message');
-    trap.submit();
+    await trap.submit();
 
     expect(collectedEvents).toHaveLength(2);
   });

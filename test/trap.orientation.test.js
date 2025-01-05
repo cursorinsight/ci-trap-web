@@ -40,7 +40,7 @@ describe('screen orientation handlers', () => {
   const ANGLE_KEY = '2.screen.orientation.angle';
   const TYPE_KEY = '2.screen.orientation.type';
 
-  test('simulates portrait orientation', () => {
+  test('simulates portrait orientation', async () => {
     // Set `window.orientation` to `0` (portrait)
     const originalWindowOrientation = window.orientation;
     window.orientation = 0;
@@ -52,7 +52,7 @@ describe('screen orientation handlers', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -68,7 +68,7 @@ describe('screen orientation handlers', () => {
     window.orientation = originalWindowOrientation;
   });
 
-  test('simulates landscape orientation', () => {
+  test('simulates landscape orientation', async () => {
     // Set `window.orientation` to `90` (landscape)
     const originalWindowOrientation = window.orientation;
     window.orientation = 90;
@@ -80,7 +80,7 @@ describe('screen orientation handlers', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -96,7 +96,7 @@ describe('screen orientation handlers', () => {
     window.orientation = originalWindowOrientation;
   });
 
-  test('simulates inverted landscape orientation', () => {
+  test('simulates inverted landscape orientation', async () => {
     // Set `window.orientation` to `-90` (inverted landscape)
     const originalWindowOrientation = window.orientation;
     window.orientation = -90;
@@ -108,7 +108,7 @@ describe('screen orientation handlers', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -124,7 +124,7 @@ describe('screen orientation handlers', () => {
     window.orientation = originalWindowOrientation;
   });
 
-  test('simulates custom orientation', () => {
+  test('simulates custom orientation', async () => {
     // Set `window.screen.orientation` to `42`
     const originalWindowScreenOrientation = window.screen.orientation;
     window.screen.orientation = { type: 'custom-tilted', angle: 42 };
@@ -136,7 +136,7 @@ describe('screen orientation handlers', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -152,7 +152,7 @@ describe('screen orientation handlers', () => {
     window.screen.orientation = originalWindowScreenOrientation;
   });
 
-  test('disables orientation support', () => {
+  test('disables orientation support', async () => {
     // Unset related values
     window.screen.orientation = undefined;
     window.orientation = undefined;
@@ -164,7 +164,7 @@ describe('screen orientation handlers', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);

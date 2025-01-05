@@ -45,18 +45,18 @@ describe('time-property', () => {
     trap.stop();
   });
 
-  test('header and metadata timestamps are consistent', () => {
+  test('header and metadata timestamps are consistent', async () => {
     // Send two messages in their own submission calls 1 second apart
     // be sent over the wire
     trap.send('message1a');
     jest.advanceTimersByTime(100);
     trap.send('message1b');
-    trap.submit();
+    await trap.submit();
     jest.advanceTimersByTime(900);
     trap.send('message2a');
     jest.advanceTimersByTime(100);
     trap.send('message2b');
-    trap.submit();
+    await trap.submit();
 
     // Read the timestamp of the first custom message -- this will be our epoch
     // in this test session.

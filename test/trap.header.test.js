@@ -55,13 +55,13 @@ describe('header', () => {
     expect(trap.streamId()).not.toEqual(originalStreamId);
   });
 
-  test('sends header message', () => {
+  test('sends header message', async () => {
     // Send a simple custom message -- this message ensures that something will
     // be sent over the wire
     trap.send('message');
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -85,13 +85,13 @@ describe('header', () => {
     ]);
   });
 
-  test('checks consistent sequence number', () => {
+  test('checks consistent sequence number', async () => {
     // Send a simple custom message -- this message ensures that something will
     // be sent over the wire
     trap.send('message1');
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch message sent and save sequence number to check against the next
     // message
@@ -102,7 +102,7 @@ describe('header', () => {
     trap.send('message2');
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch SQ# from second message
     const secondSequenceNumber = JSON.parse(fetch.mock.calls[1][1].body)

@@ -64,12 +64,12 @@ describe('blur event handlers', () => {
       ]);
   });
 
-  test('registers focus event', () => {
+  test('registers focus event', async () => {
     // Trigger focus event -- trap registers it as an event
     fireEvent.focus(window, {});
 
     // Submit data and check results
-    trap.submit();
+    await trap.submit();
 
     // Check registered focus event
     const message = JSON.parse(fetch.mock.calls[0][1].body)

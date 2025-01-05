@@ -10,7 +10,7 @@ import {
 const initialHtml = '<html><head></head><body>some text</body></html>';
 
 describe('In-memory buffer tests', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     document.body.innerHTML = initialHtml;
 
     // Here you must use `jest.resetModules` because otherwise Jest will have
@@ -29,7 +29,7 @@ describe('In-memory buffer tests', () => {
     // Start data collection and submission
     trap.start();
     // Do a submission to make the test deterministic
-    trap.submit();
+    await trap.submit();
   });
 
   afterAll(() => {
@@ -37,7 +37,7 @@ describe('In-memory buffer tests', () => {
     jest.useRealTimers();
   });
 
-  test('In memory event collection enabled test', () => {
+  test('In memory event collection enabled test', async () => {
     // Enable event collection
     trap.setCollectEvents(true);
 
@@ -45,7 +45,7 @@ describe('In-memory buffer tests', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Two submitted events
     expect(trap.collectedEvents()).toHaveLength(2);
@@ -80,7 +80,7 @@ describe('In-memory buffer tests', () => {
     ]);
   });
 
-  test('In memory event collection disabled test', () => {
+  test('In memory event collection disabled test', async () => {
     // Disable event collection
     trap.setCollectEvents(false);
 
@@ -88,7 +88,7 @@ describe('In-memory buffer tests', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Get the collected events in the in-memory buffer
     const collectedEvents = trap.flushCollectedEvents();
@@ -107,16 +107,16 @@ describe('In-memory buffer tests', () => {
     // Send a simple custom message
     trap.send('message1');
     trap.send('message2');
-    trap.submit();
+    await trap.submit();
 
     trap.send('message3');
     trap.send('message4');
-    trap.submit();
+    await trap.submit();
 
     // Manually invoke chunk submission
     trap.send('message5');
     trap.send('message6');
-    trap.submit();
+    await trap.submit();
 
     // Get the collected events in the in-memory buffer
     const collectedEvents = trap.flushCollectedEvents();

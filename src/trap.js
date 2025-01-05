@@ -259,7 +259,7 @@ class Trap {
    */
   submit(final) {
     if (this._buffer.isEmpty()) {
-      return new Promise(() => { });
+      return Promise.resolve();
     }
 
     const events = this._buffer.flush();
