@@ -51,7 +51,7 @@ describe('browser with touch events', () => {
     documentAddELSpy.mockRestore();
   });
 
-  test('triggers touch events', () => {
+  test('triggers touch events', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -88,7 +88,7 @@ describe('browser with touch events', () => {
     });
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
   });

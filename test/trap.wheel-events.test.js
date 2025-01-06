@@ -42,7 +42,7 @@ describe('browser with wheel events', () => {
     documentAddELSpy.mockRestore();
   });
 
-  test('triggers wheel events', () => {
+  test('triggers wheel events', async () => {
     const { body } = document;
 
     fireEvent.wheel(body, {
@@ -55,7 +55,7 @@ describe('browser with wheel events', () => {
     });
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
   });

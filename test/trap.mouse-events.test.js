@@ -43,7 +43,7 @@ describe('browser with mouse events', () => {
     documentAddELSpy.mockRestore();
   });
 
-  test('triggers mouse move events', () => {
+  test('triggers mouse move events', async () => {
     const { body } = document;
 
     fireEvent.mouseMove(body, {
@@ -74,7 +74,7 @@ describe('browser with mouse events', () => {
       .toHaveLength(0);
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     // Submitted events are not counted
     expect(trap.collectedEvents()).toHaveLength(0);
@@ -98,7 +98,7 @@ describe('browser with mouse events', () => {
     expect(trap.collectedEvents()).toHaveLength(0);
   });
 
-  test('triggers mouse down and up events', () => {
+  test('triggers mouse down and up events', async () => {
     const { body } = document;
 
     fireEvent.mouseDown(body, {
@@ -120,7 +120,7 @@ describe('browser with mouse events', () => {
     });
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
   });

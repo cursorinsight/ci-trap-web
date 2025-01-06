@@ -31,7 +31,7 @@ describe('custom API-KEY', () => {
     disableFetchMocks();
   });
 
-  test('sets custom API-KEY value', () => {
+  test('sets custom API-KEY value', async () => {
     // Set custom API-KEY value
     trap.apiKeyValue('custom-api-key-value');
 
@@ -39,7 +39,7 @@ describe('custom API-KEY', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Expect a single chunk to be submitted
     expect(fetch).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe('custom API-KEY', () => {
     );
   });
 
-  test('sets custom API-KEY name', () => {
+  test('sets custom API-KEY name', async () => {
     // Set custom API-KEY value
     trap.apiKeyName('CUSTOM-API-KEY-NAME');
 
@@ -60,7 +60,7 @@ describe('custom API-KEY', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Expect a single chunk to be submitted
     expect(fetch).toHaveBeenCalledWith(
@@ -73,7 +73,7 @@ describe('custom API-KEY', () => {
     );
   });
 
-  test('sets custom API-KEY value using its legacy call', () => {
+  test('sets custom API-KEY value using its legacy call', async () => {
     // Set custom API-KEY value
     trap.apiKey('legacy-api-key-value');
 
@@ -81,7 +81,7 @@ describe('custom API-KEY', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Expect a single chunk to be submitted
     expect(fetch).toHaveBeenCalledWith(

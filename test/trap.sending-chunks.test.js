@@ -36,12 +36,12 @@ describe('sending chunks', () => {
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
   });
 
-  test('sends a single chunk', () => {
+  test('sends a single chunk', async () => {
     // Send a simple custom message
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Expect a single chunk to be submitted
     expect(fetch).toHaveBeenCalledTimes(1);
@@ -54,26 +54,26 @@ describe('sending chunks', () => {
     expect(fetch).toHaveBeenCalledTimes(0);
   });
 
-  test('sends multiple chunks', () => {
+  test('sends multiple chunks', async () => {
     // Send a simple custom message
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Send another custom message
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Expect two chunks to be submitted
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
-  test('does not send an empty chunk', () => {
+  test('does not send an empty chunk', async () => {
     // Manually invoke chunk submission without pushing data
-    trap.submit();
+    await trap.submit();
 
     // Expect no chunks to be submitted
     expect(fetch).toHaveBeenCalledTimes(0);

@@ -45,13 +45,13 @@ describe('buffer limit', () => {
     trap.stop();
   });
 
-  test('sends compressed, binary chunks', () => {
+  test('sends compressed, binary chunks', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
     // Send a new chunk with a message
     trap.send('message');
-    trap.submit();
+    await trap.submit();
 
     // Expect a 'json+zlib' encoding in the header
     expect(fetch).toHaveBeenCalledWith(

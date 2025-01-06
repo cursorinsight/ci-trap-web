@@ -26,7 +26,7 @@ describe('custom message', () => {
     disableFetchMocks();
   });
 
-  test('sends custom message', () => {
+  test('sends custom message', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -34,7 +34,7 @@ describe('custom message', () => {
     trap.send('message');
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -50,7 +50,7 @@ describe('custom message', () => {
     ]);
   });
 
-  test('sends custom object', () => {
+  test('sends custom object', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -58,7 +58,7 @@ describe('custom message', () => {
     trap.send({ custom: 'object' });
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);

@@ -61,7 +61,7 @@ describe('browser with requestAnimationFrame callbacks', () => {
     window.cancelAnimationFrame.mockRestore();
   });
 
-  test('Capture requestAnimationFrame messages', () => {
+  test('Capture requestAnimationFrame messages', async () => {
     trap.setCaptureRequestAnimationFrame(true);
 
     // Advance timers for two request animation frame callbacks
@@ -69,7 +69,7 @@ describe('browser with requestAnimationFrame callbacks', () => {
     jest.advanceTimersByTime(2.5 * RAF_MESSAGE_INTERVAL);
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
 

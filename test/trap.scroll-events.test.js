@@ -41,7 +41,7 @@ describe('browser with wheel events', () => {
     windowAddELSpy.mockRestore();
   });
 
-  test('triggers wheel events', () => {
+  test('triggers wheel events', async () => {
     const { body } = document;
 
     fireEvent.scroll(body, {
@@ -50,7 +50,7 @@ describe('browser with wheel events', () => {
     });
 
     // Manually trigger submit
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledTimes(1);
   });

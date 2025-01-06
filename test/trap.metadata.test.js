@@ -47,13 +47,13 @@ describe('metadata', () => {
     trap.setMetadataSubmissionInterval(DEFAULT_METADATA_SUBMISSION_INTERVAL);
   });
 
-  test('sends metadata message', () => {
+  test('sends metadata message', async () => {
     // Send a simple custom message -- this message ensures that something will
     // be sent over the wire
     trap.send('message');
 
     // Manually invoke submit
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -78,22 +78,22 @@ describe('metadata', () => {
     ]);
   });
 
-  test('sends metadata message only once in a minute', () => {
+  test('sends metadata message only once in a minute', async () => {
     // Send two messages in two separate submissions.
     trap.send('message1');
-    trap.submit();
+    await trap.submit();
     trap.send('message2');
-    trap.submit();
+    await trap.submit();
 
     // advance time by exactly 1 minute
     jest.advanceTimersByTime(DEFAULT_METADATA_SUBMISSION_INTERVAL - 1);
     trap.send('message3');
-    trap.submit();
+    await trap.submit();
 
     // advance time by 1 microsecond -- which expires the internal timer
     jest.advanceTimersByTime(1);
     trap.send('message4');
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch bodies" and parse their JSON
     const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);
@@ -112,14 +112,14 @@ describe('metadata', () => {
     expect(metadata4).toHaveLength(1);
   });
 
-  test('sends metadata manually as well', () => {
+  test('sends metadata manually as well', async () => {
     // Send two messages in two separate submissions.
     trap.send('message1');
-    trap.submit();
+    await trap.submit();
 
     trap.send('message2');
     trap.submitMetadata();
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch bodies" and parse their JSON
     const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);
@@ -132,25 +132,25 @@ describe('metadata', () => {
     expect(metadata2).toHaveLength(1);
   });
 
-  test('set custom metadata submission interval', () => {
+  test('set custom metadata submission interval', async () => {
     const SUBMISSION_INTERVAL = 1000;
     trap.setMetadataSubmissionInterval(1000);
 
     // Send two messages in two separate submissions.
     trap.send('message1');
-    trap.submit();
+    await trap.submit();
     trap.send('message2');
-    trap.submit();
+    await trap.submit();
 
     // advance time by exactly 1 minute
     jest.advanceTimersByTime(SUBMISSION_INTERVAL - 1);
     trap.send('message3');
-    trap.submit();
+    await trap.submit();
 
     // advance time by 1 microsecond -- which expires the internal timer
     jest.advanceTimersByTime(1);
     trap.send('message4');
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch bodies" and parse their JSON
     const jsonBody1 = JSON.parse(fetch.mock.calls[0][1].body);

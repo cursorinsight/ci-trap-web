@@ -25,7 +25,7 @@ describe('custom Trap Server URL', () => {
     disableFetchMocks();
   });
 
-  test('sets a custom URL', () => {
+  test('sets a custom URL', async () => {
     // Set custom URL
     trap.url('//custom.domain/with/path?and=arguments');
 
@@ -36,7 +36,7 @@ describe('custom Trap Server URL', () => {
     trap.send('message');
 
     // Default idle timer waits for 2 seconds.
-    trap.submit();
+    await trap.submit();
 
     expect(fetch).toHaveBeenCalledWith(
       'http://custom.domain/with/path?and=arguments',
@@ -44,7 +44,7 @@ describe('custom Trap Server URL', () => {
     );
   });
 
-  test('sets a custom URL with session and stream ids', () => {
+  test('sets a custom URL with session and stream ids', async () => {
     // Set custom URL
     // eslint-disable-next-line no-template-curly-in-string
     trap.url('//custom.domain/${sessionId}/${streamId}?and=arguments');
@@ -56,7 +56,7 @@ describe('custom Trap Server URL', () => {
     trap.send('message');
 
     // Default idle timer waits for 2 seconds.
-    trap.submit();
+    await trap.submit();
 
     // Check whether the URL consists of the replaced content
     const sessionId = trap.sessionId();

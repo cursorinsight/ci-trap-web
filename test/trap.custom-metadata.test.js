@@ -28,7 +28,7 @@ describe('custom metadata', () => {
     disableFetchMocks();
   });
 
-  test('sets a custom key/value pair', () => {
+  test('sets a custom key/value pair', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -39,7 +39,7 @@ describe('custom metadata', () => {
     trap.send('message');
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -52,7 +52,7 @@ describe('custom metadata', () => {
     expect(metadata).toHaveProperty(`2.custom.${customKey}`, customValue);
   });
 
-  test('Add and remove custom metadata', () => {
+  test('Add and remove custom metadata', async () => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
 
@@ -60,7 +60,7 @@ describe('custom metadata', () => {
     trap.addCustomMetadata(customKey, customValue);
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     let jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
@@ -76,7 +76,7 @@ describe('custom metadata', () => {
     trap.removeCustomMetadata(customKey);
 
     // Manually invoke chunk submission
-    trap.submit();
+    await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     jsonBody = JSON.parse(fetch.mock.calls[1][1].body);
