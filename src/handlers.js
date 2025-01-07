@@ -24,6 +24,8 @@ import {
   WHEEL_MESSAGE_TYPE,
   SCROLL_MESSAGE_TYPE,
   REQUEST_ANIMATION_FRAME_MESSAGE_TYPE,
+  PAGE_STATE_INACTIVE,
+  PAGE_STATE_ACTIVE,
 } from './constants';
 
 import TimeUtils from './timeUtils';
@@ -452,10 +454,12 @@ class Handlers {
       event,
     );
     this.requestSubmission();
+    this.emit('pageStateChanged', PAGE_STATE_INACTIVE);
   }
 
   // Handle window focus event: register a new event to the stream
   handleFocus(event) {
+    this.emit('pageStateChanged', PAGE_STATE_ACTIVE);
     this.push(
       FOCUS_WINDOW_MESSAGE_TYPE,
       TimeUtils.convertEventTimeToTs(event.timeStamp),
