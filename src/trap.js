@@ -33,6 +33,8 @@ import disableTouchEventMixin from './disableTouchEventMixin';
 import {
   CUSTOM_MESSAGE_TYPE,
   HEADER_MESSAGE_TYPE,
+  PAGE_STATE_ACTIVE,
+  PAGE_STATE_INACTIVE,
   SCHEMA,
 } from './constants';
 
@@ -74,12 +76,16 @@ class Trap {
       collectEvents: false,
       captureRequestAnimationFrame: false,
       onDataSubmittedCallback: undefined,
+      restartOnBecomingActive: false,
+      isRunning: false,
+      stopDataCollectionOnPageHide: false,
     };
 
     this._handlers.on('message', this.pushMessage);
     this._metadata.on('message', this.pushMessage);
     this._handlers.on('requestSubmission', this.submit);
     this._buffer.on('requestSubmission', this.submit);
+    this._handlers.on('pageStateChanged', this.onPageStateChanged);
     // Prepare current instance to freeze
     if (!Trap.instance) { Trap.instance = this; }
   }
@@ -172,6 +178,7 @@ class Trap {
     if (this.state.captureRequestAnimationFrame) {
       this._handlers.startRequestAnimationFrame();
     }
+    this.state.isRunning = true;
   }
 
   /**
@@ -182,6 +189,7 @@ class Trap {
     this._buffer.disable();
     this._metadata.disable();
     this._handlers.stopRequestAnimationFrame();
+    this.state.isRunning = false;
   }
 
   /**
@@ -540,6 +548,36 @@ class Trap {
         'dataSubmitted',
         this.state.onDataSubmittedCallback,
       );
+    }
+  }
+
+  /**
+   * `stopDataCollectionOnPageHide` setter
+   *
+   * @param {boolean} stop
+   */
+  stopDataCollectionOnPageHide(stop) {
+    this.state.stopDataCollectionOnPageHide = stop;
+  }
+
+  /**
+   * Event handler that is called when the visibility state of the page running
+   * the Trap code changes.
+   *
+   * @private
+   *
+   * @param {'active'|'inactive'} pageState
+   */
+  onPageStateChanged(pageState) {
+    if (pageState === PAGE_STATE_INACTIVE
+       && this.state.isRunning
+       && this.state.stopDataCollectionOnPageHide) {
+      this.stop();
+      this.state.restartOnBecomingActive = true;
+    } else if (pageState === PAGE_STATE_ACTIVE
+      && this.state.restartOnBecomingActive) {
+      this.start();
+      this.state.restartOnBecomingActive = false;
     }
   }
 }

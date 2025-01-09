@@ -90,3 +90,9 @@ export const DEFAULT_TRAP_USE_WS_TRANSPORT = false;
 
 // Default maximum number of in memory collected events
 export const DEFAULT_TRAP_IN_MEMORY_STORAGE_SIZE_LIMIT = 10000;
+
+// Page state when the page is focused
+export const PAGE_STATE_ACTIVE = 'active';
+
+// Page state when the page is not focused
+export const PAGE_STATE_INACTIVE = 'inactive';
