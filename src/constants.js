@@ -69,10 +69,6 @@ export const DEFAULT_TRAP_API_KEY_NAME = 'GRABOXY-API-KEY';
 // Default API-KEY value
 export const DEFAULT_TRAP_API_KEY_VALUE = 'UNCONFIGURED';
 
-// Check `performance.timeOrigin` support
-export const PERFORMANCE_TIMEORIGIN_ENABLED =
-  typeof performance.timeOrigin === 'number';
-
 // By default, transport compression is disabled
 export const DEFAULT_TRAP_ENABLE_COMPRESSION = false;
 
