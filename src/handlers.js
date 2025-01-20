@@ -459,6 +459,7 @@ class Handlers {
 
   // Handle window focus event: register a new event to the stream
   handleFocus(event) {
+    TimeUtils.actualizeEpoch();
     this.emit('pageStateChanged', PAGE_STATE_ACTIVE);
     this.push(
       FOCUS_WINDOW_MESSAGE_TYPE,
