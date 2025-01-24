@@ -23,6 +23,7 @@ import {
   DEFAULT_TRAP_API_KEY_NAME,
   DEFAULT_TRAP_API_KEY_VALUE,
   DEFAULT_METADATA_SUBMISSION_INTERVAL,
+  DEFAULT_METADATA_COLLECT_URLS,
   METADATA_MESSAGE_TYPE,
 } from './constants';
 
@@ -59,6 +60,9 @@ class Metadata {
 
     // Default submission inverval
     this._metadataSubmissionInterval = DEFAULT_METADATA_SUBMISSION_INTERVAL;
+
+    // Default setting for URL collection
+    this._collectUrls = DEFAULT_METADATA_COLLECT_URLS;
   }
 
   // Return current sessionId
@@ -107,6 +111,16 @@ class Metadata {
         this.metadataSubmissionInterval,
       );
     }
+  }
+
+  // Return if URL collection is enabled
+  get collectUrls() {
+    return this._collectUrls;
+  }
+
+  // Enable/disable URL collection
+  set collectUrls(collectUrls) {
+    this._collectUrls = collectUrls;
   }
 
   // Enable periodical metadata submission
@@ -194,12 +208,14 @@ class Metadata {
   }
 
   // Return location metadata -- i.e. URL data
-  // eslint-disable-next-line class-methods-use-this
   get location() {
-    return {
-      current: window.location.href,
-      previous: document.referrer,
-    };
+    if (this.collectUrls) {
+      return {
+        current: window.location.href,
+        previous: document.referrer,
+      };
+    }
+    return {};
   }
 
   get screen() {
