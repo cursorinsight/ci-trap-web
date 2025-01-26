@@ -75,6 +75,9 @@ export const DEFAULT_TRAP_ENABLE_COMPRESSION = false;
 // Default time interval between metadata submissions, 1 minute
 export const DEFAULT_METADATA_SUBMISSION_INTERVAL = 60 * 1000;
 
+// Default settings for collecting URLS in the metadata
+export const DEFAULT_METADATA_COLLECT_URLS = true;
+
 // Build schema
 export const SCHEMA = { version: SCHEMA_VERSION };
 

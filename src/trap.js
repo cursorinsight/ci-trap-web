@@ -445,6 +445,15 @@ class Trap {
   }
 
   /**
+   * Enable/disable collecting URLs in the metadata
+   *
+   * @param {boolean} metadataCollectUrls
+   */
+  setMetadataCollectUrls(metadataCollectUrls) {
+    this._metadata.collectUrls = metadataCollectUrls;
+  }
+
+  /**
    * Add metadata event to the stream (immediately, independently from the
    * periodic submission)
    *

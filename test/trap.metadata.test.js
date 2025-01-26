@@ -38,8 +38,6 @@ describe('metadata', () => {
   beforeEach(() => {
     // Set up fetch() mocks
     fetch.mockResponse(() => Promise.resolve({ result: 'ok' }));
-
-    trap.start();
   });
 
   afterEach(() => {
@@ -48,6 +46,7 @@ describe('metadata', () => {
   });
 
   test('sends metadata message', async () => {
+    trap.start();
     // Send a simple custom message -- this message ensures that something will
     // be sent over the wire
     trap.send('message');
@@ -79,6 +78,7 @@ describe('metadata', () => {
   });
 
   test('sends metadata message only once in a minute', async () => {
+    trap.start();
     // Send two messages in two separate submissions.
     trap.send('message1');
     await trap.submit();
@@ -113,6 +113,7 @@ describe('metadata', () => {
   });
 
   test('sends metadata manually as well', async () => {
+    trap.start();
     // Send two messages in two separate submissions.
     trap.send('message1');
     await trap.submit();
@@ -133,6 +134,7 @@ describe('metadata', () => {
   });
 
   test('set custom metadata submission interval', async () => {
+    trap.start();
     const SUBMISSION_INTERVAL = 1000;
     trap.setMetadataSubmissionInterval(1000);
 
@@ -167,5 +169,61 @@ describe('metadata', () => {
     expect(metadata2).toHaveLength(0);
     expect(metadata3).toHaveLength(0);
     expect(metadata4).toHaveLength(1);
+  });
+
+  test('collectUrls enabled test', async () => {
+    // Enable URL collection
+    trap.setMetadataCollectUrls(true);
+    trap.start();
+
+    trap.send('message');
+    await trap.submit();
+
+    // Fetch "fetch body" and parse its JSON
+    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+
+    // Check number of metadata messages in the stream
+    expect(metadata).toHaveLength(1);
+
+    expect(metadata[0])
+      .toEqual([
+        METADATA_MESSAGE_TYPE,
+        expect.any(Number),
+        expect.objectContaining({
+          location: expect.objectContaining({
+            current: expect.any(String),
+            previous: expect.any(String),
+          }),
+        }),
+      ]);
+  });
+
+  test('collectUrls disabled test', async () => {
+    // Disable URL collection
+    trap.setMetadataCollectUrls(false);
+    trap.start();
+
+    trap.send('message');
+    await trap.submit();
+
+    // Fetch "fetch body" and parse its JSON
+    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+    const metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+
+    // Check number of metadata messages in the stream
+    expect(metadata).toHaveLength(1);
+
+    expect(metadata[0])
+      .toEqual([
+        METADATA_MESSAGE_TYPE,
+        expect.any(Number),
+        expect.objectContaining({
+          location: expect.not.objectContaining({
+            current: expect.any(String),
+            previous: expect.any(String),
+          }),
+        }),
+      ]);
   });
 });
