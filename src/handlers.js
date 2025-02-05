@@ -374,7 +374,7 @@ class Handlers {
         touch.identifier,
         touch.screenX,
         touch.screenY,
-        false,
+        0,
       );
     });
   }
