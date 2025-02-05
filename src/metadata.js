@@ -25,7 +25,17 @@ import {
   DEFAULT_METADATA_SUBMISSION_INTERVAL,
   DEFAULT_METADATA_COLLECT_URLS,
   METADATA_MESSAGE_TYPE,
+  PACKAGE_VERSION,
+  PACKAGE_NAME,
+  PACKAGE_TYPE,
+  SCHEMA_VERSION,
 } from './constants';
+
+const PACKAGE_COMPONENT = {
+  name: PACKAGE_NAME,
+  version: PACKAGE_VERSION,
+  type: PACKAGE_TYPE,
+};
 
 class Metadata {
   constructor() {
@@ -63,6 +73,9 @@ class Metadata {
 
     // Default setting for URL collection
     this._collectUrls = DEFAULT_METADATA_COLLECT_URLS;
+
+    // Default setting for component list
+    this._components = [PACKAGE_COMPONENT];
   }
 
   // Return current sessionId
@@ -121,6 +134,21 @@ class Metadata {
   // Enable/disable URL collection
   set collectUrls(collectUrls) {
     this._collectUrls = collectUrls;
+  }
+
+  // Return current API key value
+  set components(components) {
+    this._components = [
+      PACKAGE_COMPONENT,
+      ...components,
+    ];
+  }
+
+  get schema() {
+    return {
+      version: SCHEMA_VERSION,
+      components: this._components,
+    };
   }
 
   // Enable periodical metadata submission

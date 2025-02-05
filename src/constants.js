@@ -12,7 +12,14 @@
 /* eslint-disable operator-linebreak, sonarjs/no-duplicate-string */
 
 // Manually managed schema version
-export const SCHEMA_VERSION = '20220202T022222Z';
+export const SCHEMA_VERSION = '1-0-0';
+
+// This is updated by npm version command
+export const PACKAGE_VERSION = '1.0.18';
+
+// Constants to define the current component in the schema
+export const PACKAGE_NAME = 'ci-trap-web';
+export const PACKAGE_TYPE = 'collector';
 
 // Check whether the client has touch interface or not
 export const TOUCH_ENABLED = 'ontouchstart' in window
@@ -77,9 +84,6 @@ export const DEFAULT_METADATA_SUBMISSION_INTERVAL = 60 * 1000;
 
 // Default settings for collecting URLS in the metadata
 export const DEFAULT_METADATA_COLLECT_URLS = true;
-
-// Build schema
-export const SCHEMA = { version: SCHEMA_VERSION };
 
 // Default Tracker object name ('gt'; which assigns Tracker as `window.gt`)
 export const DEFAULT_TRACKER_OBJECT_NAME = 'gt';
