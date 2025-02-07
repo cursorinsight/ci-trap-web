@@ -35,7 +35,6 @@ import {
   HEADER_MESSAGE_TYPE,
   PAGE_STATE_ACTIVE,
   PAGE_STATE_INACTIVE,
-  SCHEMA,
 } from './constants';
 
 /**
@@ -137,6 +136,19 @@ class Trap {
    */
   apiKey(apiKeyValue) {
     this._metadata.apiKeyValue = apiKeyValue;
+  }
+
+  /**
+   * Set the appVersion property
+   *
+   * @param {Array<{
+   *  name: string,
+   *  version: string,
+   *  type: 'library'|'application',
+   * }>} components
+   */
+  components(components) {
+    this._metadata.components = components;
   }
 
   // Handler API
@@ -291,7 +303,7 @@ class Trap {
       this._metadata.sessionId,
       this._metadata.streamId,
       sequenceNumber,
-      SCHEMA,
+      this._metadata.schema,
     );
   }
 

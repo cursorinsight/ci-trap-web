@@ -81,6 +81,72 @@ describe('header', () => {
       expect.any(Number), // sequenceNumber
       expect.objectContaining({ // schema
         version: expect.any(String), // schema version
+        components: [
+          {
+            name: 'ci-trap-web',
+            version: expect.stringMatching(/^[1-9]\.[0-9]+\.[0-9]+$/),
+            type: 'collector',
+          },
+        ],
+      }),
+    ]);
+  });
+
+  test('sends header message with component versions', async () => {
+    // Stop collection and clear the mock calls to make sure
+    // the components are taken into account in the first submitted
+    // headerevent (after start).
+    trap.stop();
+    fetch.mockClear();
+
+    const components = [{
+      name: 'libraryName',
+      version: '1.2.3',
+      type: 'library',
+    }, {
+      name: 'appName',
+      version: '4.5.6',
+      type: 'application',
+    }];
+
+    // Set the components
+    trap.components(components);
+
+    // (Re)start data collection
+    trap.start();
+    // Send a simple custom message -- this message ensures that something will
+    // be sent over the wire
+    trap.send('message');
+
+    // Manually invoke submit
+    await trap.submit();
+
+    // Fetch "fetch body" and parse its JSON
+    const jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
+
+    // Get metadata message
+    const headers = jsonBody.filter((e) => e[0] === HEADER_MESSAGE_TYPE);
+
+    // Check number of metadata messages in the stream
+    expect(headers).toHaveLength(1);
+
+    // Check first event's third argument -- which is an object
+    expect(headers[0]).toMatchObject([
+      HEADER_MESSAGE_TYPE, // message type
+      expect.any(Number), // current timestamp
+      expect.stringMatching(/^[-0-9a-f]{36}$/), // sessionId
+      expect.stringMatching(/^[-0-9a-f]{36}$/), // streamId
+      expect.any(Number), // sequenceNumber
+      expect.objectContaining({ // schema
+        version: expect.any(String), // schema version
+        components: [
+          {
+            name: 'ci-trap-web',
+            version: expect.stringMatching(/^[1-9]\.[0-9]+\.[0-9]+$/),
+            type: 'collector',
+          },
+          ...components,
+        ],
       }),
     ]);
   });
