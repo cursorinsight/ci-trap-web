@@ -144,7 +144,7 @@ class Trap {
    * @param {Array<{
    *  name: string,
    *  version: string,
-   *  type: 'library'|'application',
+   *  type: 'library'|'application'
    * }>} components
    */
   components(components) {
