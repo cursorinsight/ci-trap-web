@@ -13,6 +13,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Platform from 'platform';
+import clone from 'rfdc/default';
 
 import simpleAutoBind from './simpleAutoBind';
 import eventEmitterMixin from './eventEmitterMixin';
@@ -212,7 +213,7 @@ class Metadata {
 
   // Return custom, user-defined metadata
   get custom() {
-    return this._customMetadata;
+    return clone(this._customMetadata);
   }
 
   // Return platform (browser & OS) metadata

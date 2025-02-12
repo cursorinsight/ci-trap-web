@@ -7,6 +7,7 @@ import trap from '../src/trap';
 const initialHtml = '<html><head></head><body>some text</body></html>';
 const customKey = 'custom-key';
 const customValue = 'custom-value';
+const otherCustomValue = 'other-custom-value';
 
 describe('custom metadata', () => {
   beforeAll(() => {
@@ -59,18 +60,28 @@ describe('custom metadata', () => {
     // Set custom K/V pair
     trap.addCustomMetadata(customKey, customValue);
 
+    // Modify the value
+    trap.addCustomMetadata(customKey, otherCustomValue);
+
     // Manually invoke chunk submission
     await trap.submit();
 
     // Fetch "fetch body" and parse its JSON
     let jsonBody = JSON.parse(fetch.mock.calls[0][1].body);
 
-    // Select first metadata event
-    let metadata = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE)[0];
+    // Select metadata events
+    const metadatas = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
 
     // Expect a single chunk to be submitted with the actual "custom-key":
     // "custom-value" keypair serialized into the body
-    expect(metadata).toHaveProperty(`2.custom.${customKey}`, customValue);
+    expect(metadatas[0]).toHaveProperty(`2.custom.${customKey}`, customValue);
+
+    // Expect a single chunk to be submitted with the actual "custom-key":
+    // "other-custom-value" keypair serialized into the body
+    expect(metadatas[1]).toHaveProperty(
+      `2.custom.${customKey}`,
+      otherCustomValue,
+    );
 
     // Removes the custom key
     trap.removeCustomMetadata(customKey);
@@ -82,7 +93,7 @@ describe('custom metadata', () => {
     jsonBody = JSON.parse(fetch.mock.calls[1][1].body);
 
     // Select first metadata event
-    [metadata] = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const [metadata] = jsonBody.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
 
     // Expect no custom metadata
     expect(metadata).toHaveProperty('2.custom', {});
