@@ -16,6 +16,7 @@ import {
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
   DEFAULT_TRAP_BUFFER_TIMEOUT,
   DEFAULT_TRAP_IDLE_TIMEOUT,
+  METADATA_MESSAGE_TYPE,
 } from './constants';
 
 class Buffer {
@@ -146,8 +147,15 @@ class Buffer {
   }
 
   // Return whether the buffer is empty or not
-  isEmpty() {
-    return this._buffer.length === 0;
+  // If it is not the final submission a single metadata event counts
+  // as empty.
+  isEmpty(final) {
+    return this._buffer.length === 0
+      || (
+        !final
+        && this._buffer.length === 1
+        && this._buffer[0][0] === METADATA_MESSAGE_TYPE
+      );
   }
 
   // Submit data over the wire
@@ -176,6 +184,12 @@ class Buffer {
   // Returns a deep copy of the collected events
   collectedEvents() {
     return clone(this._buffer);
+  }
+
+  lastEvent() {
+    return this._buffer.length > 0
+      ? this._buffer[this._buffer.length - 1]
+      : undefined;
   }
 }
 

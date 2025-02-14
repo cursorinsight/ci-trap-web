@@ -29,6 +29,7 @@ describe('In-memory buffer tests', () => {
     // Start data collection and submission
     trap.start();
     // Do a submission to make the test deterministic
+    trap.send('dummyCustomMessage');
     await trap.submit();
   });
 

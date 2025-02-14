@@ -81,7 +81,7 @@ class Trap {
     };
 
     this._handlers.on('message', this.pushMessage);
-    this._metadata.on('message', this.pushMessage);
+    this._metadata.on('message', this.pushMetadataMessageIfNeeded);
     this._handlers.on('requestSubmission', this.submit);
     this._buffer.on('requestSubmission', this.submit);
     this._handlers.on('pageStateChanged', this.onPageStateChanged);
@@ -272,13 +272,33 @@ class Trap {
   }
 
   /**
+   * Only add metadata message to buffer if the last event in the buffer is
+   * a different event. (Either an event of different type or a metadata event
+   * with different content)
+   * @private
+   *
+   * @param {*} message
+   */
+  pushMetadataMessageIfNeeded(message) {
+    const [eventType, , ...data] = message;
+    const lastEvent = this._buffer.lastEvent();
+
+    if (lastEvent === undefined
+      || lastEvent[0] !== eventType
+      || JSON.stringify(lastEvent.slice(2)) !== JSON.stringify(data)
+    ) {
+      this.pushMessage(message);
+    }
+  }
+
+  /**
    * Submit data manually
    *
    * @param {boolean} final
    * @returns {Promise<void>}
    */
   submit(final) {
-    if (this._buffer.isEmpty()) {
+    if (this._buffer.isEmpty(final)) {
       return Promise.resolve();
     }
 
@@ -471,7 +491,7 @@ class Trap {
    *
    */
   submitMetadata() {
-    this._metadata.submit();
+    this._metadata.submit(true);
   }
 
   /**

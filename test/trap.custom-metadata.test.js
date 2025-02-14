@@ -86,6 +86,8 @@ describe('custom metadata', () => {
     // Removes the custom key
     trap.removeCustomMetadata(customKey);
 
+    // Add a dummy message (metadata is not submitted alone)
+    trap.send('message');
     // Manually invoke chunk submission
     await trap.submit();
 

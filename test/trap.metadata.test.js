@@ -149,8 +149,21 @@ describe('metadata', () => {
     trap.send('message3');
     await trap.submit();
 
+    // Previous three submits performed submissions
+    expect(fetch.mock.calls).toHaveLength(3);
+
     // advance time by 1 microsecond -- which expires the internal timer
     jest.advanceTimersByTime(1);
+    await trap.submit();
+    // Do not submit a metadataevent in itself
+    expect(fetch.mock.calls).toHaveLength(3);
+
+    jest.advanceTimersByTime(SUBMISSION_INTERVAL * 2);
+    await trap.submit();
+    // Do not submit a metadataevent in itself
+    expect(fetch.mock.calls).toHaveLength(3);
+
+    // Send a different message type
     trap.send('message4');
     await trap.submit();
 
