@@ -84,6 +84,9 @@ describe('stop data collection when page becomes inactive', () => {
       jest.clearAllMocks();
       // Advance more than the metadata submission interval (1 minute)
       jest.advanceTimersByTime(70_000);
+      // Add a custom message and wait for idle submission
+      trap.send('dummyCustomMessage');
+      jest.advanceTimersByTime(5_000);
 
       // No data should be submitted
       expect(fetch).toHaveBeenCalledTimes(1);
