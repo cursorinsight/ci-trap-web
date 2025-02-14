@@ -15,7 +15,7 @@
 export const SCHEMA_VERSION = '1-0-0';
 
 // This is updated by npm version command
-export const PACKAGE_VERSION = '1.0.20';
+export const PACKAGE_VERSION = '1.0.21';
 
 // Constants to define the current component in the schema
 export const PACKAGE_NAME = 'ci-trap-web';
