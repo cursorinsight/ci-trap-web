@@ -85,6 +85,8 @@ class Trap {
     this._handlers.on('requestSubmission', this.submit);
     this._buffer.on('requestSubmission', this.submit);
     this._handlers.on('pageStateChanged', this.onPageStateChanged);
+    this._buffer.on('bufferInactive', this._metadata.disable);
+    this._buffer.on('bufferActive', this._metadata.enable);
     // Prepare current instance to freeze
     if (!Trap.instance) { Trap.instance = this; }
   }
@@ -178,6 +180,15 @@ class Trap {
    */
   idleTimeout(idleTimeout) {
     this._buffer.idleTimeout = idleTimeout;
+  }
+
+  /**
+   * Set Buffer's inactiveTimeout
+   *
+   * @param {number} inactiveTimeout
+   */
+  inactiveTimeout(inactiveTimeout) {
+    this._buffer.inactiveTimeout = inactiveTimeout;
   }
 
   /**

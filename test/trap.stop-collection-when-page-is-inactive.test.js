@@ -84,9 +84,8 @@ describe('stop data collection when page becomes inactive', () => {
       jest.clearAllMocks();
       // Advance more than the metadata submission interval (1 minute)
       jest.advanceTimersByTime(70_000);
-
       // No data should be submitted
-      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledTimes(0);
       jest.clearAllMocks();
 
       // Trigger focus event
@@ -99,8 +98,8 @@ describe('stop data collection when page becomes inactive', () => {
       expect(fetch).toHaveBeenCalledTimes(1);
 
       const newMessages = JSON.parse(fetch.mock.calls[0][1].body);
-      // HeaderEvent and FocusEvent
-      expect(newMessages).toHaveLength(2);
+      // HeaderEvent, MetadataEvent and FocusEvent
+      expect(newMessages).toHaveLength(3);
     },
   );
 });

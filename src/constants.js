@@ -15,7 +15,7 @@
 export const SCHEMA_VERSION = '1-0-0';
 
 // This is updated by npm version command
-export const PACKAGE_VERSION = '1.0.20';
+export const PACKAGE_VERSION = '1.0.21';
 
 // Constants to define the current component in the schema
 export const PACKAGE_NAME = 'ci-trap-web';
@@ -59,6 +59,9 @@ export const DEFAULT_TRAP_SERVER_URL = '?UNCONFIGURED=http';
 
 // Default idle timeout (2 seconds)
 export const DEFAULT_TRAP_IDLE_TIMEOUT = 2000;
+
+// Default inactive timeout (59 seconds)
+export const DEFAULT_TRAP_INACTIVE_TIMEOUT = 59 * 1000;
 
 // Default maximum buffer size (3.600 events ~= 1 minute on 60fps systems)
 export const DEFAULT_TRAP_BUFFER_SIZE_LIMIT = 3600;
