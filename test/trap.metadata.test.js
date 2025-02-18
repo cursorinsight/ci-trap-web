@@ -4,6 +4,7 @@ import fetch, { disableFetchMocks, enableFetchMocks } from 'jest-fetch-mock';
 import {
   METADATA_MESSAGE_TYPE,
   DEFAULT_METADATA_SUBMISSION_INTERVAL,
+  DEFAULT_TRAP_INACTIVE_TIMEOUT,
 } from '../src/constants';
 import trap from '../src/trap';
 
@@ -85,12 +86,18 @@ describe('metadata', () => {
     trap.send('message2');
     await trap.submit();
 
-    // advance time by exactly 1 minute
-    jest.advanceTimersByTime(DEFAULT_METADATA_SUBMISSION_INTERVAL - 1);
-    trap.send('message3');
+    // advance time by 1 millisecond less than the inactive timeout to avoid
+    // the inactive timer's effect
+    jest.advanceTimersByTime(DEFAULT_TRAP_INACTIVE_TIMEOUT - 1);
+    trap.send('message3.1');
+    // advance time by 1 millisecond less than 1 minute in total
+    jest.advanceTimersByTime(
+      DEFAULT_METADATA_SUBMISSION_INTERVAL - DEFAULT_TRAP_INACTIVE_TIMEOUT,
+    );
+    trap.send('message3.2');
     await trap.submit();
 
-    // advance time by 1 microsecond -- which expires the internal timer
+    // advance time by 1 millisecond -- which expires the internal timer
     jest.advanceTimersByTime(1);
     trap.send('message4');
     await trap.submit();
@@ -136,7 +143,8 @@ describe('metadata', () => {
   test('set custom metadata submission interval', async () => {
     trap.start();
     const SUBMISSION_INTERVAL = 1000;
-    trap.setMetadataSubmissionInterval(1000);
+    trap.setMetadataSubmissionInterval(SUBMISSION_INTERVAL);
+    trap.inactiveTimeout(SUBMISSION_INTERVAL - 2);
 
     // Send two messages in two separate submissions.
     trap.send('message1');
@@ -144,13 +152,30 @@ describe('metadata', () => {
     trap.send('message2');
     await trap.submit();
 
-    // advance time by exactly 1 minute
-    jest.advanceTimersByTime(SUBMISSION_INTERVAL - 1);
-    trap.send('message3');
+    // Send some data in the meantime to avoid the inactive timeout
+    jest.advanceTimersByTime(SUBMISSION_INTERVAL / 2);
+    trap.send('message3.1');
+    jest.advanceTimersByTime(SUBMISSION_INTERVAL / 2 - 1);
+    trap.send('message3.2');
     await trap.submit();
 
-    // advance time by 1 microsecond -- which expires the internal timer
+    // Previous three submits performed submissions
+    expect(fetch.mock.calls).toHaveLength(3);
+
+    // advance time by 1 millisecond -- which expires the internal timer
     jest.advanceTimersByTime(1);
+    await trap.submit();
+    // Metadata event is added and submitted
+    expect(fetch.mock.calls).toHaveLength(4);
+
+    jest.advanceTimersByTime(SUBMISSION_INTERVAL * 2);
+    await trap.submit();
+    // Do not submit a metadataevent if Trap is inactive
+    // (no other data is submitted)
+    expect(fetch.mock.calls).toHaveLength(4);
+
+    // Send a different message type and a new metadata event should also be
+    // sent.
     trap.send('message4');
     await trap.submit();
 
@@ -163,12 +188,15 @@ describe('metadata', () => {
     const metadata3 = jsonBody3.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
     const jsonBody4 = JSON.parse(fetch.mock.calls[3][1].body);
     const metadata4 = jsonBody4.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
+    const jsonBody5 = JSON.parse(fetch.mock.calls[4][1].body);
+    const metadata5 = jsonBody5.filter((e) => e[0] === METADATA_MESSAGE_TYPE);
 
     // Check number of metadata messages in the stream
     expect(metadata1).toHaveLength(1);
     expect(metadata2).toHaveLength(0);
     expect(metadata3).toHaveLength(0);
     expect(metadata4).toHaveLength(1);
+    expect(metadata5).toHaveLength(1);
   });
 
   test('collectUrls enabled test', async () => {

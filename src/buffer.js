@@ -16,6 +16,7 @@ import {
   DEFAULT_TRAP_BUFFER_SIZE_LIMIT,
   DEFAULT_TRAP_BUFFER_TIMEOUT,
   DEFAULT_TRAP_IDLE_TIMEOUT,
+  DEFAULT_TRAP_INACTIVE_TIMEOUT,
 } from './constants';
 
 class Buffer {
@@ -47,6 +48,15 @@ class Buffer {
 
     // Idle timer, tracking idle state
     this._idleTimer = null;
+
+    // Inactive timeout (59 seconds)
+    this._inactiveTimeout = DEFAULT_TRAP_INACTIVE_TIMEOUT;
+
+    // Inactive timer, tracking inactive state
+    this._inactiveTimer = null;
+
+    // Is the buffer currently inactive
+    this._inactive = false;
   }
 
   // Set buffer size limit
@@ -89,6 +99,12 @@ class Buffer {
     this.setIdleTimer();
   }
 
+  // Set inactiveTimeout
+  set inactiveTimeout(inactiveTimeout) {
+    this._inactiveTimeout = inactiveTimeout;
+    this.setInactiveTimer();
+  }
+
   // Clear idle timer
   //
   // `clearIdleTimer` tries to be as thread safe as possible, since it
@@ -110,6 +126,22 @@ class Buffer {
     }
   }
 
+  setInactiveTimer() {
+    if (typeof this._inactiveTimeout === 'number') {
+      this._inactiveTimer = window.setTimeout(
+        this.bufferInactive,
+        this._inactiveTimeout,
+      );
+    }
+  }
+
+  clearInactiveTimer() {
+    if (this._inactiveTimer) {
+      window.clearTimeout(this._inactiveTimer);
+      this._inactiveTimer = null;
+    }
+  }
+
   // Register a new event to be sent
   push(type, timestamp, ...props) {
     // Skip event if collection is not enabled
@@ -117,8 +149,11 @@ class Buffer {
 
     const event = [type, timestamp, ...props];
 
+    this.bufferActive();
+    this.clearInactiveTimer();
     this.clearIdleTimer();
     this._buffer.push(event);
+    this.setInactiveTimer();
     this.setIdleTimer();
     this.setBufferTimer();
 
@@ -150,6 +185,21 @@ class Buffer {
     return this._buffer.length === 0;
   }
 
+  // Notify that the buffer became inactive
+  bufferInactive() {
+    this._inactive = true;
+    return this.emit('bufferInactive');
+  }
+
+  // Notify that the buffer became active
+  bufferActive() {
+    if (this._inactive) {
+      this._inactive = false;
+      return this.emit('bufferActive');
+    }
+    return null;
+  }
+
   // Submit data over the wire
   requestSubmission(final) {
     return this.emit('requestSubmission', final);
@@ -158,14 +208,17 @@ class Buffer {
   // Enable collection
   enable() {
     this._enabled = true;
+    this._inactive = false;
     this.setIdleTimer();
     this.setBufferTimer(); // We start over `bufferTimer`.
+    this.setInactiveTimer();
   }
 
   // Disable data collection
   //
   // Mounted handlers work as before but events are not put into the buffer.
   disable() {
+    this.clearInactiveTimer();
     this.clearIdleTimer();
     this.clearBufferTimer();
     this.requestSubmission(true);
