@@ -567,7 +567,7 @@ class Trap {
   /**
    * Event handler when data is submitted by the transport layer.
    *
-   * @param {(function(any[]):void) | undefined} callback
+   * @param {((function(any[]):void) | undefined)} callback
    */
   onDataSubmitted(callback) {
     this.state.transport.off(
