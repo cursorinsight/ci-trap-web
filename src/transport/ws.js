@@ -10,8 +10,8 @@ import simpleAutoBind from '../simpleAutoBind';
 import Transport from './transport';
 
 class WS extends Transport {
-  constructor(metadata, logger, allowInMemoryBuffer = false) {
-    super(metadata, allowInMemoryBuffer);
+  constructor(metadata, logger) {
+    super(metadata);
     simpleAutoBind(this);
 
     this._logger = logger;

@@ -10,8 +10,8 @@ import Transport from './transport';
 import simpleAutoBind from '../simpleAutoBind';
 
 class Dummy extends Transport {
-  constructor(metadata, allowInMemoryBuffer) {
-    super(metadata, allowInMemoryBuffer);
+  constructor(metadata) {
+    super(metadata);
     simpleAutoBind(this);
   }
 

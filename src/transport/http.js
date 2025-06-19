@@ -12,8 +12,8 @@ import Transport from './transport';
 import simpleAutoBind from '../simpleAutoBind';
 
 class HTTP extends Transport {
-  constructor(metadata, allowInMemoryBuffer = false) {
-    super(metadata, allowInMemoryBuffer);
+  constructor(metadata) {
+    super(metadata);
     simpleAutoBind(this);
   }
 
