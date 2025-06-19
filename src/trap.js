@@ -452,7 +452,7 @@ class Trap {
   /**
    * Set the buffer size limit for in-memory event collection
    *
-   * @param {int} sizeLimit
+   * @param {number} sizeLimit
    */
   setEventCollectionSizeLimit(sizeLimit) {
     this.state.eventStorage.sizeLimit = sizeLimit;
@@ -461,7 +461,7 @@ class Trap {
   /**
    * Set the metadata submission interval
    *
-   * @param {int} metadataSubmissionInterval
+   * @param {number} metadataSubmissionInterval
    */
   setMetadataSubmissionInterval(metadataSubmissionInterval) {
     this._metadata.metadataSubmissionInterval = metadataSubmissionInterval;
@@ -488,7 +488,7 @@ class Trap {
   /**
    * Enable / disable coalesced pointer event collection
    *
-   * @param {bool} capture
+   * @param {boolean} capture
    */
   setCaptureCoalescedEvents(capture) {
     this._handlers.captureCoalescedEvents(capture);
@@ -497,7 +497,7 @@ class Trap {
   /**
    * Enable / disable requestAnimationFrame message collection
    *
-   * @param {bool} capture
+   * @param {boolean} capture
    */
   setCaptureRequestAnimationFrame(capture) {
     this.state.captureRequestAnimationFrame = capture;
@@ -536,9 +536,9 @@ class Trap {
    * @deprecated use collectedEvents instead and do the filtering and counting
    * in the calling application.
    *
-   * @param {filterFunction} filterFn
+   * @param {function(Array<any>):boolean} filterFn
    *
-   * @returns {int}
+   * @returns {number}
    */
   collectedEventCount(filterFn = () => true) {
     return this.collectedEvents().filter(filterFn).length;
@@ -567,7 +567,7 @@ class Trap {
   /**
    * Event handler when data is submitted by the transport layer.
    *
-   * @param {function(any[]):void} callback
+   * @param {(function(any[]):void) | undefined} callback
    */
   onDataSubmitted(callback) {
     this.state.transport.off(
