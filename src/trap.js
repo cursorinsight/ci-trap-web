@@ -69,7 +69,7 @@ class Trap {
       // Default logger sends logs to console
       // eslint-disable-next-line no-console
       logger: (...m) => { console.log(...m); },
-      transport: new HTTP(this._metadata, this._buffer),
+      transport: new HTTP(this._metadata),
       sequenceNumber: 0,
       eventStorage: new InMemoryEventStorage(),
       collectEvents: false,
